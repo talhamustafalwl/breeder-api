@@ -17,6 +17,13 @@ app.use(express.urlencoded({extended: false}))
 
 //for image display
 app.use("/uploads", express.static("uploads"));
+app.get("/", (req, res) => {
+  res.json({ status: 200, message: "working...", data: {} });
+});
+app.get("*", (req, res) => {
+  res.json({ status: 400, message: "no route matched", data: {} });
+});
+
 
 //routes
 app.use("/api/users", require("./routes/users"));
