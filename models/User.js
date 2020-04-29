@@ -7,6 +7,9 @@ const userSchema = mongoose.Schema({
     name: {
         type:String,minglength: 5,maxlength:50
     },
+    mobile: {
+        type: Number,minglength: 9,maxlength:10
+    },
     email: {
         type:String,trim:true,unique: 1 
     },
@@ -14,7 +17,7 @@ const userSchema = mongoose.Schema({
         type: String,minglength: 6
     },
     role : {
-        type:Number,default: 0 //0 for regular,1 for admin
+        type:Number,default: 0 //0 for breeder,1 for emp,2 for admin
     },
     isAdmin:{ type:Boolean, default:false},
     image: String,
@@ -30,7 +33,10 @@ const userSchema = mongoose.Schema({
     secretToken:String,//for email confirmation
     resetToken:String,//for forget password
     //resetTokenExp:Date
-})
+    },
+    {
+      timestamps: true
+    })
 
 
 userSchema.pre('save', function( next ) {

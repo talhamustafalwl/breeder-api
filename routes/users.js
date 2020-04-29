@@ -8,6 +8,7 @@ const randomstring = require('randomstring');
 const config = require("../config/key");
 const registeremail = require('../emails/register');
 const forgetpasswordemail = require('../emails/forgetpassword');
+const passwordchangedemail = require('../emails/passwordchanged');
 const UserController = require('../controller/user.controller');
 
 // Load input validation
@@ -33,7 +34,7 @@ router.post("/register", (req, res) => {
     if (err) return res.status(201).json({ status: 400, message: "email is already registered", errors: err, data: {} });
 
     const html = registeremail(doc.secretToken, config.Server)
-    mailer.sendEmail('admin@breeder.com', doc.email, 'Please verify your email!', html);
+    mailer.sendEmail(config.mailthrough, doc.email, 'Please verify your email!', html);
 
     return res.status(200).json({ status: 200, message: "Verification email is send", data: doc });
   });
@@ -127,7 +128,7 @@ router.post("/forgetpassword", (req, res, next) => {
     user.save()
     //email send
     let html = forgetpasswordemail(req.body.email, config.Server, token)
-    mailer.sendEmail('admin@breeder.com', req.body.email, 'Password reset instructions', html);
+    mailer.sendEmail(config.mailthrough, req.body.email, 'Password reset instructions', html);
     //
 
     res.status(200).json({ status: 200, message: "email is send to recover password", data: { id: user._id, resettoken: user.resetToken } });
@@ -184,15 +185,8 @@ router.post('/forgetpassword/:token', async (req, res) => {
             });
           } else {
 
-            let html = `Hi there,
-              <br/>
-              <div>
-              
-              <p>Your Password changed successfully</p>
-              <br>
-              <p>Cheers!</p>
-              </div>`
-            mailer.sendEmail('admin@breeder.com', user.email, 'Password reset successfully', html);
+            let html = passwordchangedemail()
+            mailer.sendEmail(config.mailthrough, user.email, 'Password reset successfully', html);
 
             return res.status(200).json({
               status: 200, message: 'Password reset succeesfully', data: {}
