@@ -17,7 +17,7 @@ const userSchema = mongoose.Schema({
         type: String,minglength: 6
     },
     role : {
-        type:Number,default: 0 //0 for breeder,1 for emp,2 for admin
+        type:Number,default: 0 //0 for breeder,1 for admin (Employee have other table)
     },
     isAdmin:{ type:Boolean, default:false},
     image: String,
