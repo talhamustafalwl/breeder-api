@@ -1,4 +1,6 @@
 module.exports = {
     mongoURI:process.env.MONGO_URI,
-    Server:process.env.Server
+    Server:process.env.Server,
+    mailthrough:process.env.mailthrough,
+    
 }
