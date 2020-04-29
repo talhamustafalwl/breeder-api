@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 
 const routes = require("./routes");
 
-
+mongoose.set('useCreateIndex', true);
 //mongoose
 const connect = mongoose
     .connect(config.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
