@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { Category } = require("../models/Animal/Category");
+const { adminauth } = require("../middleware/adminauth");
 
-//create category
-router.post("/",async(req,res)=>{
+//create category only by admin
+router.post("/",adminauth,async(req,res)=>{
     const {name,active}=req.body
     if(!name){
         return res.json({ status: 400, message: "name required", data: {} });
