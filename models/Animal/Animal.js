@@ -61,13 +61,28 @@ const AnimalSchema = mongoose.Schema({
         maxlength:30
     },
     location:String,
-   
+    qrcodepath:{type:String}
     },
     {
       timestamps: true
     })
 
-    
+//qrcode of animal save
+const QRCode = require('qrcode')
+AnimalSchema.pre('save', function( next ) {
+    const animal = this;
+    const dat=Date.now()
+    QRCode.toFile(`uploads/qrcode/${this._id}-${dat}.png`, (this._id).toString(), {
+    }, function (err) {
+        if(err) return next(err);
+      //console.log('qrcode done')
+    })
+    animal.qrcodepath=`uploads/qrcode/${this._id}-${dat}.png`
+    next()
+});
+
+
+
 AnimalSchema.plugin(idvalidator);
 const Animal= mongoose.model('Animal', AnimalSchema);
 

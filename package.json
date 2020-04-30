@@ -21,6 +21,7 @@
     "mongoose": "^5.9.10",
     "mongoose-id-validator": "^0.5.4",
     "nodemailer": "^6.4.6",
+    "qrcode": "^1.4.4",
     "randomstring": "^1.1.5",
     "validator": "^13.0.0"
   }
