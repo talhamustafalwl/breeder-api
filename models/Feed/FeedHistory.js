@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+var idvalidator = require('mongoose-id-validator');
 
 const feedHistorySchema = mongoose.Schema({
     animalFeedId: {type: Schema.Types.ObjectId,
@@ -14,7 +16,7 @@ const feedHistorySchema = mongoose.Schema({
 
 }, { timestamps: true })
 
-
+feedHistorySchema.plugin(idvalidator);
 const FeedHistory = mongoose.model('FeedHistory', feedHistorySchema);
 
 module.exports = { FeedHistory }

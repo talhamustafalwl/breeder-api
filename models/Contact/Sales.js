@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-
+var idvalidator = require('mongoose-id-validator');
+const Schema = mongoose.Schema;
 //for Sales create to hold info
 const SalesSchema = mongoose.Schema({
     contactId: {type: Schema.Types.ObjectId,
@@ -12,7 +13,7 @@ const SalesSchema = mongoose.Schema({
     installmentId:{type:Number},//..
 }, { timestamps: true })
 
-
+SalesSchema.plugin(idvalidator);
 const Sale = mongoose.model('Sale', SalesSchema);
 
 module.exports = { Sale }

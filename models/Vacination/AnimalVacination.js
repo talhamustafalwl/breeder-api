@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+var idvalidator = require('mongoose-id-validator');
+
 //kis animal ko kn se vacination dene ha
 const animalvacinationSchema = mongoose.Schema({
     
@@ -10,7 +13,7 @@ const animalvacinationSchema = mongoose.Schema({
         ref: 'Vacination'}
 }, { timestamps: true })
 
-
+animalvacinationSchema.plugin(idvalidator);
 const AnimalVacination = mongoose.model('AnimalVacination', animalvacinationSchema);
 
 module.exports = { AnimalVacination }

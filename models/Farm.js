@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+var idvalidator = require('mongoose-id-validator');
 
 //for farm location and to whom breeder this belongs
 const farmSchema = mongoose.Schema({
@@ -14,7 +16,7 @@ const farmSchema = mongoose.Schema({
         ref: 'User'} //belongs to which breeder
 }, { timestamps: true })
 
-
+farmSchema.plugin(idvalidator);
 const Farm = mongoose.model('Farm', farmSchema);
 
 module.exports = { Farm }

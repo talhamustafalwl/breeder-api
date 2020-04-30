@@ -19,6 +19,7 @@
     "is-empty": "^1.2.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.10",
+    "mongoose-id-validator": "^0.5.4",
     "nodemailer": "^6.4.6",
     "randomstring": "^1.1.5",
     "validator": "^13.0.0"

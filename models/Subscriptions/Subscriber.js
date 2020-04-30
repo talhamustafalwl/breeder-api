@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+var idvalidator = require('mongoose-id-validator');
 
 //subscriber details
 const SubscriberSchema = mongoose.Schema({
@@ -23,6 +25,7 @@ const SubscriberSchema = mongoose.Schema({
 },{timestamps: true})
 
 
+SubscriberSchema.plugin(idvalidator);
 const Subscriber= mongoose.model('Subscriber', SubscriberSchema);
 
 module.exports = { Subscriber }

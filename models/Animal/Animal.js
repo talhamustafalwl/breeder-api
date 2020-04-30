@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
+var idvalidator = require('mongoose-id-validator');
 
+const Schema = mongoose.Schema;
 //these are master fields(will change strick to false for more fields add dynamically from formElements)
 const AnimalSchema = mongoose.Schema({
     breederId: {
@@ -29,7 +31,7 @@ const AnimalSchema = mongoose.Schema({
     },
     birthDate:Date,
     acquired:{type: String,required: true ,
-        enum:['purchased,raised,borrowed']
+        enum:['purchased','raised','borrowed']
     },
     tag:{type: String,
         enum:['metal','plastic','brisket']
@@ -50,13 +52,13 @@ const AnimalSchema = mongoose.Schema({
     country:String,
     breed:String,
 
-    image:[{type:String,required: true }],
-    video:[{type:String,required: true }],
+    image:[{type:String }],
+    video:[{type:String }],
 
     price:{type:Number,required: true },
     type:{
         type:String,minglength: 3,
-        maxlength:30,required: true 
+        maxlength:30
     },
     location:String,
    
@@ -65,6 +67,8 @@ const AnimalSchema = mongoose.Schema({
       timestamps: true
     })
 
+    
+AnimalSchema.plugin(idvalidator);
 const Animal= mongoose.model('Animal', AnimalSchema);
 
 module.exports = { Animal }

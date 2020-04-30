@@ -1,16 +1,23 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 //first thing to define animal categories
+//?? it is created by admin
 const categorySchema = mongoose.Schema({
-    userId: {type: Schema.Types.ObjectId,ref: 'User'},
+    //userId: {type: Schema.Types.ObjectId,ref: 'User'},
     name: {
-        type: String,
+        type: String,unique:true
     },
     active: {
         type: Boolean,default:0
     },
 }, { timestamps: true })
 
+
+//downcase name
+categorySchema.pre('save', function (next) {
+    var category = this;
+    category.name=this.name.toLowerCase();
+    next();
+  });
 
 const Category = mongoose.model('Category', categorySchema);
 

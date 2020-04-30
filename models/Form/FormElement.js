@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+var idvalidator = require('mongoose-id-validator');
+
 //FormElement will be taken by breeder
 const FormElementSchema = mongoose.Schema({    
     name:{type:String},
@@ -12,7 +15,7 @@ const FormElementSchema = mongoose.Schema({
     
 }, { timestamps: true })
 
-
+FormElementSchema.plugin(idvalidator);
 const FormElement = mongoose.model('FormElement', FormElementSchema);
 
 module.exports = { FormElement }

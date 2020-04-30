@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+var idvalidator = require('mongoose-id-validator');
+
 //name of Notification
 const NotificationSchema = mongoose.Schema({
     title:{type:String,required:true},
@@ -12,7 +15,7 @@ const NotificationSchema = mongoose.Schema({
         ref: 'User'}
 }, { timestamps: true })
 
-
+NotificationSchema.plugin(idvalidator);
 const Notification = mongoose.model('Notification', NotificationSchema);
 
 module.exports = { Notification }

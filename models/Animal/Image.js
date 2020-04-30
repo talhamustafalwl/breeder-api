@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+var idvalidator = require('mongoose-id-validator');
+
 const imgSchema = mongoose.Schema({
     userId: {
         type:Schema.Types.ObjectId,
@@ -16,7 +18,7 @@ const imgSchema = mongoose.Schema({
     
 }, { timestamps: true })
 
-
+imgSchema.plugin(idvalidator);
 const Image= mongoose.model('Image', imgSchema);
 
 module.exports = { Image }

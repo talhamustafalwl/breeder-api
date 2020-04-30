@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+var idvalidator = require('mongoose-id-validator');
 
 //for providing notes on animal by user
 const noteSchema = mongoose.Schema({
@@ -14,6 +16,7 @@ const noteSchema = mongoose.Schema({
 }, { timestamps: true })
 
 
+noteSchema.plugin(idvalidator);
 const Note = mongoose.model('Note', noteSchema);
 
 module.exports = { Note }

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+var idvalidator = require('mongoose-id-validator');
 
 const videoSchema = mongoose.Schema({
     userId: {
@@ -24,7 +25,7 @@ const videoSchema = mongoose.Schema({
     }
 }, { timestamps: true })
 
-
+videoSchema.plugin(idvalidator);
 const Video = mongoose.model('Video', videoSchema);
 
 module.exports = { Video }

@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+var idvalidator = require('mongoose-id-validator');
 
 //for Employee 
 const EmployeeSchema = mongoose.Schema({
@@ -30,7 +32,7 @@ const EmployeeSchema = mongoose.Schema({
         ref: 'Designation'}, 
 }, { timestamps: true })
 
-
+EmployeeSchema.plugin(idvalidator);
 const Employee = mongoose.model('Employee', EmployeeSchema);
 
 module.exports = { Employee }

@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+var idvalidator = require('mongoose-id-validator');
 
 const animalFeedSchema = mongoose.Schema({
     animalId: {type: Schema.Types.ObjectId,
@@ -10,7 +12,7 @@ const animalFeedSchema = mongoose.Schema({
     
 }, { timestamps: true })
 
-
+animalFeedSchema.plugin(idvalidator);
 const AnimalFeed = mongoose.model('AnimalFeed', animalFeedSchema);
 
 module.exports = { AnimalFeed }

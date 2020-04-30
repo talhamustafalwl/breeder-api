@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+var idvalidator = require('mongoose-id-validator');
+
 //VacinationHistory kb de kis ko
 const VacinationHistorySchema = mongoose.Schema({
     
@@ -12,7 +15,7 @@ const VacinationHistorySchema = mongoose.Schema({
         ref: 'User'}
 }, { timestamps: true })
 
-
+VacinationHistorySchema.plugin(idvalidator);
 const VacinationHistory = mongoose.model('VacinationHistory', VacinationHistorySchema);
 
 module.exports = { VacinationHistory }

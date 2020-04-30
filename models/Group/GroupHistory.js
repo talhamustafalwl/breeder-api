@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+var idvalidator = require('mongoose-id-validator');
 
 //new GroupHistory name
 const GroupHistorySchema = mongoose.Schema({   
@@ -11,7 +13,7 @@ const GroupHistorySchema = mongoose.Schema({
         ref: 'Group'}
 }, { timestamps: true })
 
-
+GroupHistorySchema.plugin(idvalidator);
 const GroupHistory = mongoose.model('GroupHistory', GroupHistorySchema);
 
 module.exports = { GroupHistory }

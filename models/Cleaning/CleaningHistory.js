@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+var idvalidator = require('mongoose-id-validator');
 
 const cleaningHistorySchema = mongoose.Schema({
     date:{type:Date},
@@ -12,7 +13,7 @@ const cleaningHistorySchema = mongoose.Schema({
     
 },{timestamps: true})
 
-
+cleaningHistorySchema.plugin(idvalidator);
 const CleaningHistory = mongoose.model('CleaningHistory', cleaningHistorySchema);
 
 module.exports = { CleaningHistory }

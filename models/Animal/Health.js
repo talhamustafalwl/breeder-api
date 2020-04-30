@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+var idvalidator = require('mongoose-id-validator');
+
 //health certificate
 const HealthSchema = mongoose.Schema({
     userId: {
@@ -17,6 +19,7 @@ const HealthSchema = mongoose.Schema({
 }, { timestamps: true })
 
 
+HealthSchema.plugin(idvalidator);
 const Health = mongoose.model('Health', HealthSchema);
 
 module.exports = { Health }
