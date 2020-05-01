@@ -5,24 +5,25 @@ var idvalidator = require('mongoose-id-validator');
 const videoSchema = mongoose.Schema({
     userId: {
         type: Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',required:true
     },//who have uploaded image
     animalId: {
         type: Schema.Types.ObjectId,
-        ref: 'Animal'
+        ref: 'Animal',required:true
     },//which animal belongs
-    empId: {type: Schema.Types.ObjectId,
-        ref: 'Employee'} ,//if employee uploaded
+    breederId: {type: Schema.Types.ObjectId,
+        ref: 'User',required:true} ,//owner of animal Id
     name: {
         type: String,
         maxlength: 50,
     },
-    filePath: {
-        type: String,
+    filepath: {
+        type: String,required:true
     },
     duration: {
         type: String
-    }
+    },
+    empAddedimage:{type:Boolean,default:false}
 }, { timestamps: true })
 
 videoSchema.plugin(idvalidator);

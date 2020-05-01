@@ -52,8 +52,8 @@ const AnimalSchema = mongoose.Schema({
     country:String,
     breed:String,
 
-    image:[{type:String }],
-    video:[{type:String }],
+    //images:[{type:Schema.Types.ObjectId,ref: 'Image'}],
+    //videos:[{type:Schema.Types.ObjectId,ref: 'Video'}],
 
     price:{type:Number,required: true },
     type:{

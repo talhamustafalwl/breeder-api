@@ -24,6 +24,47 @@ class LogicController {
         }
 
 
+         //delete all images
+         deleteallimages(req, res, next) {
+            //console.log("called deleteallqr")
+              try {
+                  const directory = 'uploads/images';
+      
+                  fs.readdir(directory, (err, files) => {
+                  if (err) throw err;
+      
+                  for (const file of files) {
+                      fs.unlink(path.join(directory, file), err => {
+                      if (err) throw err;
+                      });
+                  }
+                  });
+              } catch (err) {
+                  return next(err);
+              }
+        }
+
+
+
+              //delete all videos
+              deleteallvideos(req, res, next) {
+                //console.log("called deleteallqr")
+                  try {
+                      const directory = 'uploads/videos';
+          
+                      fs.readdir(directory, (err, files) => {
+                      if (err) throw err;
+          
+                      for (const file of files) {
+                          fs.unlink(path.join(directory, file), err => {
+                          if (err) throw err;
+                          });
+                      }
+                      });
+                  } catch (err) {
+                      return next(err);
+                  }
+            }
 
 
      //delete 1 qrcode images

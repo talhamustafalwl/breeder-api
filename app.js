@@ -19,7 +19,7 @@ app.use(cookieParser());
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
-//for image display
+//for image,qrcode,videos
 app.use("/uploads", express.static("uploads"));
 
 //routes
