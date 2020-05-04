@@ -13,7 +13,7 @@ router.route('/all').delete(adminauth,CategoryController.deleteall)
 
 //for see/delete/update category by id
 router.route('/:id').get(auth,CategoryController.getbyId)
-  .delete(auth,CategoryController.deletebyId)
-.patch(auth,CategoryController.updatebyId)
+  .delete(adminauth,CategoryController.deletebyId)
+.patch(adminauth,CategoryController.updatebyId)
 
 module.exports=router

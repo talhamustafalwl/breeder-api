@@ -53,7 +53,7 @@ class CategoryController {
       async deletebyId(req,res){
         try {
             const category = await Category.deleteOne({_id:req.params.id});
-            return res.status(200).json({ status: 200, message: "All Categories deleted successfully", data: category });
+            return res.status(200).json({ status: 200, message: "Category deleted successfully", data: category });
         } catch (err) {
             return res.json({ status: 400, message: "Error in deleting Category", errors: err, data: {} });
         }
@@ -61,6 +61,9 @@ class CategoryController {
 
     async updatebyId(req,res){
         const {name,active}=req.body
+        if(!name){
+          return res.json({ status: 400, message: "name required", data: {} });
+      }
         try {
             const category = await Category.updateOne({_id:req.params.id},{name,active});
     
