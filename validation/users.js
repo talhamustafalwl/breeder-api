@@ -87,7 +87,7 @@ function validateRegisterInputEmp(data) {
   data.appointmentDate = !isEmpty(data.appointmentDate) ? data.appointmentDate : "";
   data.breederId = !isEmpty(data.breederId) ? data.breederId : "";
   data.farmId = !isEmpty(data.farmId) ? data.farmId : "";
-  data.designationId = !isEmpty(data.designationId) ? data.designationId : "";
+  data.designationName = !isEmpty(data.designationName) ? data.designationName : "";
 
 
 
@@ -127,6 +127,7 @@ function validateRegisterInputEmp(data) {
     if (Validator.isEmpty(data.appointmentDate)) {
       errors.appointmentDate = "appointmentDate field is required";
     }
+     
     // breederId 
     if (Validator.isEmpty(data.breederId)) {
       errors.breederId = "breederId field is required";
@@ -137,9 +138,9 @@ function validateRegisterInputEmp(data) {
       errors.farmId = "farmId field is required";
     }
   
-    // appointmentDate 
-    if (Validator.isEmpty(data.designationId)) {
-      errors.designationId = "designationId field is required";
+    // designationName 
+    if (Validator.isEmpty(data.designationName)) {
+      errors.designationName = "designationName field is required";
     }
   
 

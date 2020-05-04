@@ -18,7 +18,7 @@ const userSchema = mongoose.Schema({
         type: String,minglength: 6
     },
     role : {
-        type:Number,default: 1 //0 for admin,1 for admin,2 for employee
+        type:Number,default: 1 //0 for admin,1 for breeder,2 for employee
     },
     ///for different status
     isAdmin:{ type:Boolean, default:false},
@@ -43,11 +43,8 @@ const userSchema = mongoose.Schema({
     dataOfBirth: {
         type: Date
     },
-    address: [
-        {
-            city: String, state: String, zipcode: Number, country: String,street:String
-        }
-    ],
+
+   city: String, state: String, zipcode: Number, 
 
      ////extra must fields for Employee
      appointmentDate: {
@@ -59,7 +56,12 @@ const userSchema = mongoose.Schema({
         ref: 'Farm'}, //belongs to which farm
     designationId: {type: Schema.Types.ObjectId,
         ref: 'Designation'}, 
-    //
+    farmName: {
+        type: String
+    },
+    designationName: {
+        type: String
+    },
 
 
     },

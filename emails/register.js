@@ -20,7 +20,7 @@ return `
             <br/>
             Token: <b>${secretToken}</b>
             <br/>
-            <a href="${Servername}/api/users/verify/${secretToken}">verify</a>
+            <a href="${Servername}/user/verify/${secretToken}">verify</a>
             <br/><br/>
             Have a pleasant day.
 
