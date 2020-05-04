@@ -6,7 +6,8 @@ const FeedController = require('../controller/feed.controller');
 //create,delete feed only by breeder
 router.post("/",auth,FeedController.create)
 
-router.route('/all').delete(auth,FeedController.deleteall)
+router.route('/all')
+.delete(auth,FeedController.deleteall)
   .get(auth,FeedController.getall)
 
 

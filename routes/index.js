@@ -8,6 +8,8 @@ const videoRoute = require('./videos');
 const unitRoute = require('./units');//units of feed (kg,gm...)
 const designationRoute = require('./designations');//designations of employee
 const farmRoute = require('./farms');//designations of employee
+const feedRoute = require('./feeds');//feeds
+const feedAnimalRoute = require('./feedanimals');//feed of animal
 
 const stateRoute = require('./states');
 const cityRoute = require('./cities');
@@ -21,6 +23,8 @@ app.use('/image', imageRoute);
 app.use('/unit', unitRoute);
 app.use('/designation', designationRoute);
 app.use('/farm', farmRoute);
+app.use('/feed', feedRoute);
+app.use('/feedanimal', feedAnimalRoute);
 
 
 app.use('/state', stateRoute);
