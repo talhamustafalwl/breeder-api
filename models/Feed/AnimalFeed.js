@@ -8,7 +8,10 @@ const animalFeedSchema = mongoose.Schema({
     feedId: {type: Schema.Types.ObjectId,
         ref: 'Feed'},
     quantity:{type:Number,required:true},
-    description:{type:Number,required:true}
+    description:{type:Number,required:true},
+    //userId: {type: Schema.Types.ObjectId,
+    //    ref: 'User'} //kn se breeder ne add kia ha
+        
     
 }, { timestamps: true })
 
