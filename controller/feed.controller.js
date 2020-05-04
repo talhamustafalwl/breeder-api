@@ -21,16 +21,16 @@ class FeedController {
     async getall(req, res) {
         try {
           const feed = await Feed.find({});
-          return res.status(200).json({ status: 200, message: "All Categories", data: feed });
+          return res.status(200).json({ status: 200, message: "All Feeds", data: feed });
         } catch (err) {
-          return res.json({ status: 400, message: "Error in get Categories", errors: err, data: {} });
+          return res.json({ status: 400, message: "Error in get Feeds", errors: err, data: {} });
         }
       }
 
       async deleteall(req,res){
         try {
             const feed = await Feed.deleteMany({});
-            return res.status(200).json({ status: 200, message: "All Categories deleted successfully", data: feed });
+            return res.status(200).json({ status: 200, message: "All Feeds deleted successfully", data: feed });
         } catch (err) {
             return res.json({ status: 400, message: "Error in deleting Feed", errors: err, data: {} });
         }

@@ -12,9 +12,9 @@ class FarmController {
         if (!isValid) {
           return res.json({ status: 400, message: "Errors present", errors: errors, data: {} });
         }
-        const {name,categoryId,state,city,zipcode}=req.body
+        const {name,categoryId,state,city,zipcode,categoryName}=req.body
         try {      
-            const employee = await new Farm({name,categoryId,state,city,zipcode,breederId:req.user._id})
+            const employee = await new Farm({name,categoryId,categoryName,state,city,zipcode,breederId:req.user._id})
             const doc=await employee.save()
             return res.status(200).json({ status: 200, message: "Farm of employee created successfully", data: doc });
         } catch (err) {
