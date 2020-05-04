@@ -9,6 +9,8 @@ const feedSchema = mongoose.Schema({
     },
     unitId:  {type: Schema.Types.ObjectId,
         ref: 'Unit'},
+    userId: {type: Schema.Types.ObjectId,
+        ref: 'User'} //kn se breeder ne add kia ha
     
 }, { timestamps: true })
 

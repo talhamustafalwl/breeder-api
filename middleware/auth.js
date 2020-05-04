@@ -1,7 +1,7 @@
 const { User } = require('../models/User');
 
 let auth = (req, res, next) => {
-  console.log("sdsd")
+  //console.log("auth")
   let token = req.headers['auth'];
   if(!token){
     token=req.cookies['w_auth'];

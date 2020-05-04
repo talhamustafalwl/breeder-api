@@ -2,10 +2,11 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const jwt = require('jsonwebtoken');
+const Schema = mongoose.Schema;
 
 const userSchema = mongoose.Schema({
     name: {
-        type:String,minglength: 5,maxlength:50
+        type:String,minglength: 5,maxlength:50,required:true
     },
     mobile: {
         type: Number,minglength: 9,maxlength:10
@@ -17,9 +18,11 @@ const userSchema = mongoose.Schema({
         type: String,minglength: 6
     },
     role : {
-        type:Number,default: 0 //0 for breeder,1 for admin (Employee have other table)
+        type:Number,default: 1 //0 for admin,1 for admin,2 for employee
     },
+    ///for different status
     isAdmin:{ type:Boolean, default:false},
+    ///
     image: String,
     token : {
         type: String,
@@ -33,7 +36,34 @@ const userSchema = mongoose.Schema({
     secretToken:String,//for email confirmation
     resetToken:String,//for forget password
     //resetTokenExp:Date
+
+    gender: {
+        type: String,enum: ["male", "female"]
     },
+    dataOfBirth: {
+        type: Date
+    },
+    address: [
+        {
+            city: String, state: String, zipcode: Number, country: String,street:String
+        }
+    ],
+
+     ////extra must fields for Employee
+     appointmentDate: {
+        type: Date
+    },
+    breederId: {type: Schema.Types.ObjectId,
+        ref: 'User'} ,//belongs to which breeder
+    farmId: {type: Schema.Types.ObjectId,
+        ref: 'Farm'}, //belongs to which farm
+    designationId: {type: Schema.Types.ObjectId,
+        ref: 'Designation'}, 
+    //
+
+
+    },
+
     {
       timestamps: true
     })

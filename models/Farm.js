@@ -7,13 +7,13 @@ const farmSchema = mongoose.Schema({
     name: {
         type: String,required:true
     },
-    address: [
-        {
-            city: String, state: String, zipcode: Number, country: String
-        }
-    ],
+
+     city: String, state: String, zipcode: Number,
+
     breederId: {type: Schema.Types.ObjectId,
-        ref: 'User'} //belongs to which breeder
+        ref: 'User',required:true}, //belongs to which breeder
+    categoryId: {type: Schema.Types.ObjectId,
+        ref: 'Category',required:true} //belongs to which category
 }, { timestamps: true })
 
 farmSchema.plugin(idvalidator);
