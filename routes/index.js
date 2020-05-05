@@ -17,6 +17,7 @@ const cleaningRoute = require('./cleaning');
 const cleaninganimalRoute = require('./cleaninganimal');
 const vacinationRoute = require('./vacination');
 const vacinationanimalRoute = require('./vacinationanimal');
+const healthRoute = require('./health');
 
 const stateRoute = require('./states');
 const cityRoute = require('./cities');
@@ -39,6 +40,7 @@ app.use('/cleaning', cleaningRoute);
 app.use('/cleaninganimal', cleaninganimalRoute);
 app.use('/vacination', vacinationRoute);
 app.use('/vacinationanimal', vacinationanimalRoute);
+app.use('/health', healthRoute);//for health of animal
 
 app.use('/state', stateRoute);
 app.use('/city', cityRoute);
