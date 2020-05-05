@@ -7,12 +7,13 @@ const noteSchema = mongoose.Schema({
     note: {
         type: String,required:true
     },
-    animalId: {type: Schema.Types.ObjectId,
-        ref: 'Animal'} ,
+    animalId: [{type: Schema.Types.ObjectId,
+        ref: 'Animal'}],//multiple animal
     userId: {type: Schema.Types.ObjectId,
         ref: 'User'},
     empId: {type: Schema.Types.ObjectId,
-        ref: 'Employee'} 
+        ref: 'Employee'},
+    date:Date 
 }, { timestamps: true })
 
 
