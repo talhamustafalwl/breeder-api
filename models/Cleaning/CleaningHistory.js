@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const cleaningHistorySchema = mongoose.Schema({
     date:{type:Date},
-    employeeId: {type: Schema.Types.ObjectId,
+    empId: {type: Schema.Types.ObjectId,
         ref: 'User'},
     animalId: {type: Schema.Types.ObjectId,
         ref: 'Animal'},
