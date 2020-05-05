@@ -15,6 +15,8 @@ const rotationRoute = require('./rotation');
 const noteRoute = require('./notes');
 const cleaningRoute = require('./cleaning');
 const cleaninganimalRoute = require('./cleaninganimal');
+const vacinationRoute = require('./vacination');
+const vacinationanimalRoute = require('./vacinationanimal');
 
 const stateRoute = require('./states');
 const cityRoute = require('./cities');
@@ -35,6 +37,8 @@ app.use('/rotation', rotationRoute);
 app.use('/note', noteRoute);
 app.use('/cleaning', cleaningRoute);
 app.use('/cleaninganimal', cleaninganimalRoute);
+app.use('/vacination', vacinationRoute);
+app.use('/vacinationanimal', vacinationanimalRoute);
 
 app.use('/state', stateRoute);
 app.use('/city', cityRoute);

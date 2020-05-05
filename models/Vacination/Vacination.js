@@ -7,13 +7,16 @@ const vacinationSchema = mongoose.Schema({
     name: {
         type: String,required:true
     },
+    unitName:{type:String},
     quantity:{type:Number},
-    rotation: {
+    rotationName: {
         type: String,enum:['daily','monthly','weekly','yearly']
     },
-
-    unitId: {type: Schema.Types.ObjectId,
-        ref: 'Unit'} 
+    uniName:{type:String},
+    //unitId: {type: Schema.Types.ObjectId,
+    //    ref: 'Unit'}
+    userId: {type: Schema.Types.ObjectId,
+        ref: 'User'} 
 }, { timestamps: true })
 
 vacinationSchema.plugin(idvalidator);
