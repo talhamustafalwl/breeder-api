@@ -10,7 +10,8 @@ const cleaningHistorySchema = mongoose.Schema({
         ref: 'Animal'},
     cleaningId: {type: Schema.Types.ObjectId,
         ref: 'Cleaning'},
-        
+    userId: {type: Schema.Types.ObjectId,
+        ref: 'User'},//who created this
     
 },{timestamps: true})
 

@@ -13,6 +13,7 @@ const feedAnimalRoute = require('./feedanimals');//feed of animal
 const feedHistoryRoute = require('./feedhistory');//feedHistory of animal
 const rotationRoute = require('./rotation');
 const noteRoute = require('./notes');
+const cleaningRoute = require('./cleaning');
 
 const stateRoute = require('./states');
 const cityRoute = require('./cities');
@@ -31,6 +32,7 @@ app.use('/feedanimal', feedAnimalRoute);
 app.use('/feedhistory', feedHistoryRoute);
 app.use('/rotation', rotationRoute);
 app.use('/note', noteRoute);
+app.use('/cleaning', cleaningRoute);
 
 app.use('/state', stateRoute);
 app.use('/city', cityRoute);
