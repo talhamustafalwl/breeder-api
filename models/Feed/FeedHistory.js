@@ -3,17 +3,19 @@ const Schema = mongoose.Schema;
 var idvalidator = require('mongoose-id-validator');
 
 const feedHistorySchema = mongoose.Schema({
-    animalFeedId: {type: Schema.Types.ObjectId,
-        ref: 'AnimalFeed'},
+    feedanimalId: {type: Schema.Types.ObjectId,
+        ref: 'FeedAnimal',required:true},
     quantity: {
         type: Number,required:true
     },
     animalId: {type: Schema.Types.ObjectId,
-        ref: 'Animal'},
-    employeeId: {type: Schema.Types.ObjectId,
-        ref: 'User'}
-
-
+        ref: 'Animal',required:true},
+    empId: {type: Schema.Types.ObjectId,
+        ref: 'User',required:true},
+    userId: {type: Schema.Types.ObjectId,
+        ref: 'User'}, //kn se breeder ya emp ne add kia ha
+    date:Date
+    
 }, { timestamps: true })
 
 feedHistorySchema.plugin(idvalidator);

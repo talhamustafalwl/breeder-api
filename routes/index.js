@@ -10,6 +10,7 @@ const designationRoute = require('./designations');//designations of employee
 const farmRoute = require('./farms');//designations of employee
 const feedRoute = require('./feeds');//feeds
 const feedAnimalRoute = require('./feedanimals');//feed of animal
+const feedHistoryRoute = require('./feedhistory');//feedHistory of animal
 
 const stateRoute = require('./states');
 const cityRoute = require('./cities');
@@ -25,6 +26,7 @@ app.use('/designation', designationRoute);
 app.use('/farm', farmRoute);
 app.use('/feed', feedRoute);
 app.use('/feedanimal', feedAnimalRoute);
+app.use('/feedhistory', feedHistoryRoute);
 
 
 app.use('/state', stateRoute);

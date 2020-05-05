@@ -67,6 +67,50 @@ function validateFeedAnimalInput(data) {
 };
 
 
+
+function validateFeedHistoryInput(data) {
+  let errors = {};
+  // Convert empty fields to an empty string so we can use validator functions
+  data.animalId = !isEmpty(data.animalId) ? data.animalId : "";
+  data.empId = !isEmpty(data.empId) ? data.empId : "";
+  data.quantity = !isEmpty(data.quantity) ? data.quantity : "";
+  data.feedanimalId = !isEmpty(data.feedanimalId) ? data.feedanimalId : "";
+
+
+ // name checks
+  if (Validator.isEmpty(data.animalId)) {
+    errors.animalId = "animalId field is required";
+  }
+
+   // zipcode checks
+   if (Validator.isEmpty(data.empId)) {
+    errors.empId = "empId field is required";
+  }
+  
+
+   // quantity checks
+   if (Validator.isEmpty(data.quantity)) {
+    errors.quantity = "quantity field is required";
+  }
+
+    
+  if (!Validator.isDecimal(data.quantity)) {
+    errors.quantity = "quantity can only contain Number";
+  }
+
+
+   // feedanimalId checks
+   if (Validator.isEmpty(data.feedanimalId)) {
+    errors.feedanimalId = "feedanimalId field is required";
+  }
+
+  return {
+    errors,
+    isValid: isEmpty(errors)
+  };
+};
+
+
 module.exports = {
-    validateFeedInput,validateFeedAnimalInput
+    validateFeedInput,validateFeedAnimalInput,validateFeedHistoryInput
 };

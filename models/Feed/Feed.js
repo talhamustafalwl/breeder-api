@@ -11,8 +11,8 @@ const feedSchema = mongoose.Schema({
         type: String,required:true
     },
     units: {
-        type: String
-    },
+        type: Number
+    },//weight or number
     //unitId:  {type: Schema.Types.ObjectId,
     //    ref: 'Unit'},
         
