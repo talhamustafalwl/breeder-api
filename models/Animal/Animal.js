@@ -6,7 +6,7 @@ const Schema = mongoose.Schema;
 const AnimalSchema = mongoose.Schema({
     breederId: {
         type:Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',required:true
     },
     employeeId: [{
         type:Schema.Types.ObjectId,

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { adminauth } = require("../middleware/adminauth");
 const { auth } = require("../middleware/auth");
+const { animalsubscriber } = require("../middleware/animalsubscriber");
 const AnimalController = require('../controller/animal.controller');
 
 
@@ -16,7 +17,7 @@ router.route('/breeder/:breederId').get(adminauth,AnimalController.getBreederAni
 //for breeder  animals crud can view/delete all (can only see his animals)
 router.route('/').get(auth,AnimalController.getBreederAnimals)
   .delete(auth,AnimalController.deleteBreederAnimals)
-  .post(auth,AnimalController.addBreederAnimals)
+  .post(auth,animalsubscriber,AnimalController.addBreederAnimals)
 
 
 

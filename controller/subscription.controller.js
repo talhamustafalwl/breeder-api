@@ -63,12 +63,8 @@ class SubscriptionController {
     }
 
     async updatebyId(req,res){
-        const {name,active}=req.body
-        if(!name){
-          return res.json({ status: 400, message: "name required", data: {} });
-      }
         try {
-            const feed = await Subscription.updateOne({_id:req.params.id},{name,active});
+            const feed = await Subscription.updateOne({_id:req.params.id},req.body);
     
             return res.status(200).json({ status: 200, message: "Subscription updated successfully", data: feed });
         } catch (err) {

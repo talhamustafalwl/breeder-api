@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path');
+const { Subscriber } = require("../models/Subscription/Subscriber");
 
 class LogicController {
 
@@ -77,6 +78,24 @@ class LogicController {
             return next(err);
         }
     }
+
+
+
+
+    async SubscriberdeleteFirst(breederId){   
+        await Subscriber.find({breederId}).then(result=> {
+           
+            if(result.length > 1){
+              Subscriber.deleteOne({breederId}).then(data => console.log("Deleted"))
+              .catch(err => console.log(""))
+            }
+        })
+
+        return;
+}
+
+
+
 
 
 };

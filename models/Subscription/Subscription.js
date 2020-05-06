@@ -9,8 +9,8 @@ const SubscriptionSchema = mongoose.Schema({
     isActive: {type: Boolean,default:true},//false hide this
     period: {type: Number,required:true},//number of days
     currency:{type:String,required:true},
-    price:{type:Number,required:true}
-
+    price:{type:Number,required:true},
+    defaultPackage:{type:Boolean,default:false},
 }, { timestamps: true })
 
 

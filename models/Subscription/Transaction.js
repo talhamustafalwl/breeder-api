@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 var idvalidator = require('mongoose-id-validator');
 
 //subscriber details
-const SubscriberSchema = mongoose.Schema({
+const TransactionSchema = mongoose.Schema({
     breederId: {
         type:Schema.Types.ObjectId,
         ref: 'User'
@@ -12,9 +12,9 @@ const SubscriberSchema = mongoose.Schema({
         type:Schema.Types.ObjectId,
         ref: 'Subscription'
     },
+    payment_gateway:{type:String},
     fromDate:{type:Date},
     toDate:{type:Date},
-    payment_gateway:{type:String},
     email:String,
     description:{type:String },
     customer:String,
@@ -32,7 +32,7 @@ const SubscriberSchema = mongoose.Schema({
 },{timestamps: true})
 
 
-SubscriberSchema.plugin(idvalidator);
-const Subscriber= mongoose.model('Subscriber', SubscriberSchema);
+TransactionSchema.plugin(idvalidator);
+const Transaction= mongoose.model('Transaction', TransactionSchema);
 
-module.exports = { Subscriber }
+module.exports = { Transaction }

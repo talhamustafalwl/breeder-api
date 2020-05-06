@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { User } = require("../models/User");
 const { auth } = require("../middleware/auth");
+const { employeesubscriber } = require("../middleware/empsubscriber");
 const mailer = require('../misc/mailer');
 const bcrypt = require('bcrypt');
 const randomstring = require('randomstring');
@@ -10,6 +11,7 @@ const registeremail = require('../emails/register');
 const forgetpasswordemail = require('../emails/forgetpassword');
 const passwordchangedemail = require('../emails/passwordchanged');
 const UserController = require('../controller/user.controller');
+const SubscriberController = require('../controller/subscriber.controller');
 
 // Load input validation
 const { validateLoginInput, validateRegisterInput, validateRegisterInputEmp } = require("../validation/users");
@@ -19,7 +21,7 @@ router.get("/auth", UserController.authentication);
 
 
 // register only for breeder and employee
-router.post("/register", (req, res) => {
+router.post("/register",employeesubscriber, (req, res) => {
 
   if (req.body.role == "employee") {
     const { errors, isValid } = validateRegisterInputEmp(req.body);
@@ -50,6 +52,7 @@ router.post("/register", (req, res) => {
 
 
 router.get('/verify/:id', async (req, res, next) => {
+  
   try {
     const secretToken = req.params.id;
     // Find account with matching secret token
@@ -59,6 +62,12 @@ router.get('/verify/:id', async (req, res, next) => {
     }
     user.verified = true;
     user.secretToken = '';
+
+    //default subscriber Package
+    if(user.role == "breeder"){
+      SubscriberController.createdefault(user)
+    }
+    ///
     await user.save();
     return res.status(200).json({ status: 200, message: "Account is verified", data: {} });
 
