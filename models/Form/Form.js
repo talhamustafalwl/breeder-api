@@ -24,3 +24,27 @@ FormSchema.pre('save', function (next) {
 const Form = mongoose.model('Form', FormSchema);
 
 module.exports = { Form };
+
+
+
+// {
+// 	"categoryId": "5eb0538bf7c4281aee712665",
+// 	"formStructure": [
+// 		{
+// 			"displayName": "First Name",
+// 			"name": "firstName",
+// 			"type": "text",
+// 			"validation" : {
+// 				"minLength": 4,
+// 				"maxLength": 30,
+// 				"allowNumber": false,
+// 				"allowSpecialCharacter": false,
+// 				"allowSpace": true,
+// 				"regex": ""
+// 			}
+
+// 		}	
+// 	],
+// 	"userType": "admin",
+// 	"userId": "5eb01d527f460917dee8b5ab"
+// }
