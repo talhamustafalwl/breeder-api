@@ -51,15 +51,15 @@ const userSchema = mongoose.Schema({
         type: Date
     },
     breederId: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },//belongs to which breeder
     farmId: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Farm'
     }, //belongs to which farm
     designationId: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Designation'
     },
     farmName: {
@@ -68,7 +68,7 @@ const userSchema = mongoose.Schema({
     designationName: {
         type: String
     },
-
+    currencyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Currency' },
 
 }, {
     timestamps: true

@@ -42,11 +42,6 @@ class FormController {
         }
     }
 
-
-    testFunction() {
-        console.log('this is test function');
-    }
-
     async cloneFormToBreeder(data) {
         return new Promise((resolve, reject) => {
             User.find({ role: roleValues.breeder }).then(result => result.map(user => (new Form({ ...data, ...{ userId: user._id, userType: roleValues.breeder } })))).then(resultUsers => {

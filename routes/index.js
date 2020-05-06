@@ -18,7 +18,7 @@ const cleaninganimalRoute = require('./cleaninganimal');
 const vacinationRoute = require('./vacination');
 const vacinationanimalRoute = require('./vacinationanimal');
 const healthRoute = require('./health');
-
+const currencyRoute = require('./currency');
 
 const formRoute = require('./form');
 const elementRoute = require('./elements');
@@ -35,7 +35,7 @@ app.use('/image', imageRoute);
 app.use('/unit', unitRoute);
 app.use('/designation', designationRoute);
 app.use('/farm', farmRoute);
-
+app.use('/currency', currencyRoute);
 // Form routes.. 
 app.use('/form', formRoute);
 app.use('/element', elementRoute);
