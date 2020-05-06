@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const jwt = require('jsonwebtoken');
+const Schema = mongoose.Schema;
 
 const userSchema = mongoose.Schema({
     name: {
@@ -18,8 +19,8 @@ const userSchema = mongoose.Schema({
     },
     role: {
         type: String,
-        required: true,
-        //0 for breeder,1 for admin (Employee have other table)
+        default:"breeder",
+        enum: ["admin", "breeder","employee"]
     },
     isAdmin: { type: Boolean, default: false },
     image: String,

@@ -21,7 +21,7 @@ router.get("/auth", UserController.authentication);
 // register only for breeder and employee
 router.post("/register", (req, res) => {
 
-  if (req.body.role == 2) {
+  if (req.body.role == "employee") {
     const { errors, isValid } = validateRegisterInputEmp(req.body);
     // Check validation
     if (!isValid) {

@@ -1,4 +1,4 @@
-const { Element } = require('../models/form/Element');
+const { Element } = require('../models/Form/Element');
 
 class ElementController {
     constructor() { }
