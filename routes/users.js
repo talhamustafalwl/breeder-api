@@ -19,11 +19,12 @@ router.get("/auth", UserController.authentication);
 
 
 
-
+// register only for breeder and employee
 router.post("/register", (req, res) => {
 
   const { errors, isValid } = validateRegisterInput(req.body);
-
+  console.log(isValid);
+  console.log(errors);
   // Check validation
   if (!isValid) {
     return res.json({ status: 400, message: "errors present", errors: errors, data: {} });
@@ -35,7 +36,6 @@ router.post("/register", (req, res) => {
 
     const html = registeremail(doc.secretToken, config.Server)
     mailer.sendEmail(config.mailthrough, doc.email, 'Please verify your email!', html);
-
     return res.status(200).json({ status: 200, message: "Verification email is send", data: doc });
   });
 });
@@ -50,7 +50,7 @@ router.get('/verify/:id', async (req, res, next) => {
     if (!user) {
       return res.status(404).json({ status: 404, message: "Invalid secret token", data: {} });
     }
-    user.active = 1;
+    user.verified = true;
     user.secretToken = '';
     await user.save();
     return res.status(200).json({ status: 200, message: "Account is verified", data: {} });
@@ -65,7 +65,7 @@ router.post("/login", (req, res) => {
 
   // Check validation
   if (!isValid) {
-    return res.json({ status: 400, message: "please fill all the required fields", errors: errors, data: {} });
+    return res.json({ status: 400, message: "Please fill all the required fields", errors: errors, data: {} });
   }
   User.findOne({ email: req.body.email }, (err, user) => {
     if (!user)
@@ -73,7 +73,7 @@ router.post("/login", (req, res) => {
         status: 400, message: "Auth failed, email not found", data: {}
       });
 
-    if (user.active == 0)
+    if (!user.verified)
       return res.json({
         status: 400, message: "Kindly verify your email", data: {}
       });
@@ -87,15 +87,16 @@ router.post("/login", (req, res) => {
         //io.emit("userSet", { msg: "email is registered", email: req.body.email });
 
 
-        res.cookie("w_auth", user.token)
+        return res.cookie("w_auth", user.token)
           .status(200)
           .json({
-            status: 200, message: "login successfully", data: { userId: user._id, token: user.token, email: user.email }
+            status: 200, message: "Login successfully", data: { userId: user._id, token: user.token, email: user.email }
           });
       });
     });
   });
 });
+
 
 router.get("/logout", auth, (req, res) => {
   User.updateOne({ _id: req.user._id }, { token: "", tokenExp: "" }, (err, doc) => {

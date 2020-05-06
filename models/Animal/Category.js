@@ -4,20 +4,23 @@ const mongoose = require('mongoose');
 const categorySchema = mongoose.Schema({
     //userId: {type: Schema.Types.ObjectId,ref: 'User'},
     name: {
-        type: String,unique:true
+        type: String, unique: true
     },
     active: {
-        type: Boolean,default:0
+        type: Boolean, default: 0
     },
+    parentId: {
+        type: mongoose.Schema.Types.ObjectId, ref: 'Category'
+    }
 }, { timestamps: true })
 
 
 //downcase name
 categorySchema.pre('save', function (next) {
     var category = this;
-    category.name=this.name.toLowerCase();
+    category.name = this.name.toLowerCase();
     next();
-  });
+});
 
 const Category = mongoose.model('Category', categorySchema);
 

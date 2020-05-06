@@ -9,6 +9,10 @@ const unitRoute = require('./units');//units of feed (kg,gm...)
 const designationRoute = require('./designations');//designations of employee
 const farmRoute = require('./farms');//designations of employee
 
+
+const formRoute = require('./form');
+const elementRoute = require('./elements');
+
 const stateRoute = require('./states');
 const cityRoute = require('./cities');
 const zipcodeRoute = require('./zipcodes');
@@ -22,6 +26,9 @@ app.use('/unit', unitRoute);
 app.use('/designation', designationRoute);
 app.use('/farm', farmRoute);
 
+// Form routes.. 
+app.use('/form', formRoute);
+app.use('/element', elementRoute);
 
 app.use('/state', stateRoute);
 app.use('/city', cityRoute);

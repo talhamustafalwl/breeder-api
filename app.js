@@ -10,7 +10,7 @@ const routes = require("./routes");
 mongoose.set('useCreateIndex', true);
 //mongoose
 const connect = mongoose
-    .connect(config.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .connect(config.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
     .then(() => console.log("MongoDB Connected..."))
     .catch((err) => console.log(err));
 ///

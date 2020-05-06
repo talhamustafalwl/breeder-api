@@ -2,83 +2,56 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const jwt = require('jsonwebtoken');
-const Schema = mongoose.Schema;
 
 const userSchema = mongoose.Schema({
     name: {
-        type:String,minglength: 5,maxlength:50,required:true
+        type: String, minglength: 5, maxlength: 50
     },
     mobile: {
-        type: Number,minglength: 9,maxlength:10
+        type: Number, minglength: 9, maxlength: 10
     },
     email: {
-        type:String,trim:true,unique: 1 
+        type: String, trim: true, unique: 1
     },
     password: {
-        type: String,minglength: 6
+        type: String, minglength: 6
     },
-    role : {
-        type:Number,default: 1 //0 for admin,1 for admin,2 for employee
+    role: {
+        type: String,
+        required: true,
+        //0 for breeder,1 for admin (Employee have other table)
     },
-    ///for different status
-    isAdmin:{ type:Boolean, default:false},
-    ///
+    isAdmin: { type: Boolean, default: false },
     image: String,
-    token : {
+    token: {
         type: String,
     },
-    tokenExp :{
+    tokenExp: {
         type: Date
     },
-    active : {
-        type:Number,default: 0 //0 for not active,1 for active
+    verified: { type: Boolean, default: false }, // For verification..
+    active: {
+        type: Number, default: 1 //0 for not active,1 for active
     },
-    secretToken:String,//for email confirmation
-    resetToken:String,//for forget password
+    secretToken: String,//for email confirmation
+    resetToken: String,//for forget password
     //resetTokenExp:Date
-
-    gender: {
-        type: String,enum: ["male", "female"]
-    },
-    dataOfBirth: {
-        type: Date
-    },
-    address: [
-        {
-            city: String, state: String, zipcode: Number, country: String,street:String
-        }
-    ],
-
-     ////extra must fields for Employee
-     appointmentDate: {
-        type: Date
-    },
-    breederId: {type: Schema.Types.ObjectId,
-        ref: 'User'} ,//belongs to which breeder
-    farmId: {type: Schema.Types.ObjectId,
-        ref: 'Farm'}, //belongs to which farm
-    designationId: {type: Schema.Types.ObjectId,
-        ref: 'Designation'}, 
-    //
-
-
-    },
-
+},
     {
-      timestamps: true
+        timestamps: true
     })
 
 
-userSchema.pre('save', function( next ) {
+userSchema.pre('save', function (next) {
     var user = this;
     // downcase email
-    user.email=this.email.toLowerCase()
-    if(user.isModified('password')){    
-        bcrypt.genSalt(saltRounds, function(err, salt){
-            if(err) return next(err);
-            bcrypt.hash(user.password, salt, function(err, hash){
-                if(err) return next(err);
-                user.password = hash 
+    user.email = this.email.toLowerCase()
+    if (user.isModified('password')) {
+        bcrypt.genSalt(saltRounds, function (err, salt) {
+            if (err) return next(err);
+            bcrypt.hash(user.password, salt, function (err, hash) {
+                if (err) return next(err);
+                user.password = hash
                 next()
             })
         })
@@ -89,28 +62,28 @@ userSchema.pre('save', function( next ) {
 
 
 
-userSchema.methods.comparePassword = function(plainPassword,cb){
-    bcrypt.compare(plainPassword, this.password, function(err, isMatch){
+userSchema.methods.comparePassword = function (plainPassword, cb) {
+    bcrypt.compare(plainPassword, this.password, function (err, isMatch) {
         if (err) return cb(err);
         cb(null, isMatch)
     })
 }
 
-userSchema.methods.generateToken = function(cb) {
+userSchema.methods.generateToken = function (cb) {
     var user = this;
-    var token =  jwt.sign(user._id.toHexString(),'secret')
-    user.token = token;  
-    user.save(function (err, user){
-        if(err) return cb(err)
+    var token = jwt.sign(user._id.toHexString(), 'secret')
+    user.token = token;
+    user.save(function (err, user) {
+        if (err) return cb(err)
         cb(null, user);
     })
 }
 
 userSchema.statics.findByToken = function (token, cb) {
     var user = this;
-    jwt.verify(token,'secret',function(err, decode){
-        user.findOne({"_id":decode, "token":token}, function(err, user){
-            if(err) return cb(err);
+    jwt.verify(token, 'secret', function (err, decode) {
+        user.findOne({ "_id": decode, "token": token }, function (err, user) {
+            if (err) return cb(err);
             cb(null, user);
         })
     })

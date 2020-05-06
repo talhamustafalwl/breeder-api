@@ -13,13 +13,19 @@ const InstallmentSchema = mongoose.Schema({
     reminder: {
         type: Date
     },
-    breederId: {type: Schema.Types.ObjectId,
-        ref: 'User'} ,//belongs to which breeder
-    invoiceId: {type: Schema.Types.ObjectId,
-        ref: 'Invoice'} 
+    breederId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },//belongs to which breeder
+    invoiceId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Invoice'
+    }
 }, { timestamps: true })
 
 InstallmentSchema.plugin(idvalidator);
 const Installment = mongoose.model('Installment', InstallmentSchema);
 
 module.exports = { Installment }
+
+
