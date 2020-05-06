@@ -1,15 +1,19 @@
-const { Feed } = require("../models/Animal/Feed");
+const { Feed } = require("../models/Feed/Feed");
+const { validateFeedInput } = require("../validation/feed");
 class FeedController {
     constructor() { }
 
-    //only breeder (working on it)
+    //breeder and employee can create
     async create(req,res){
-        const {name,active}=req.body
-        if(!name){
-            return res.json({ status: 400, message: "name required", data: {} });
-        }
+      const { errors, isValid } = validateFeedInput(req.body);
+      // Check validation
+      if (!isValid) {
+        return res.json({ status: 400, message: "errors present", errors: errors, data: {} });
+      }
+        const {name,unitName,units}=req.body
+
         try {      
-            const animal = await new Feed({name,active})
+            const animal = await new Feed({name,unitName,units,userId:req.user._id})
             const doc=await animal.save()
             return res.status(200).json({ status: 200, message: "Feed of animal created successfully", data: doc });
         } catch (err) {
@@ -20,17 +24,17 @@ class FeedController {
 
     async getall(req, res) {
         try {
-          const feed = await Feed.find({});
-          return res.status(200).json({ status: 200, message: "All Categories", data: feed });
+          const feed = await Feed.find({userId:req.user._id});
+          return res.status(200).json({ status: 200, message: "All Feeds", data: feed });
         } catch (err) {
-          return res.json({ status: 400, message: "Error in get Categories", errors: err, data: {} });
+          return res.json({ status: 400, message: "Error in get Feeds", errors: err, data: {} });
         }
       }
 
       async deleteall(req,res){
         try {
-            const feed = await Feed.deleteMany({});
-            return res.status(200).json({ status: 200, message: "All Categories deleted successfully", data: feed });
+            const feed = await Feed.deleteMany({userId:req.user._id});
+            return res.status(200).json({ status: 200, message: "All Feeds deleted successfully", data: feed });
         } catch (err) {
             return res.json({ status: 400, message: "Error in deleting Feed", errors: err, data: {} });
         }

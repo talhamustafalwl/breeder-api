@@ -12,8 +12,7 @@ const passwordchangedemail = require('../emails/passwordchanged');
 const UserController = require('../controller/user.controller');
 
 // Load input validation
-const { validateLoginInput, validateRegisterInput } = require("../validation/users");
-
+const { validateLoginInput, validateRegisterInput, validateRegisterInputEmp } = require("../validation/users");
 //auth route check
 router.get("/auth", UserController.authentication);
 
@@ -22,13 +21,21 @@ router.get("/auth", UserController.authentication);
 // register only for breeder and employee
 router.post("/register", (req, res) => {
 
-  const { errors, isValid } = validateRegisterInput(req.body);
-  console.log(isValid);
-  console.log(errors);
-  // Check validation
-  if (!isValid) {
-    return res.json({ status: 400, message: "errors present", errors: errors, data: {} });
+  if (req.body.role == 2) {
+    const { errors, isValid } = validateRegisterInputEmp(req.body);
+    // Check validation
+    if (!isValid) {
+      return res.json({ status: 400, message: "errors present", errors: errors, data: {} });
+    }
   }
+  else {
+    const { errors, isValid } = validateRegisterInput(req.body);
+    // Check validation
+    if (!isValid) {
+      return res.json({ status: 400, message: "errors present", errors: errors, data: {} });
+    }
+  }
+
   const user = new User(req.body);
   user.secretToken = randomstring.generate();
   user.save((err, doc) => {

@@ -8,6 +8,16 @@ const videoRoute = require('./videos');
 const unitRoute = require('./units');//units of feed (kg,gm...)
 const designationRoute = require('./designations');//designations of employee
 const farmRoute = require('./farms');//designations of employee
+const feedRoute = require('./feeds');//feeds
+const feedAnimalRoute = require('./feedanimals');//feed of animal
+const feedHistoryRoute = require('./feedhistory');//feedHistory of animal
+const rotationRoute = require('./rotation');
+const noteRoute = require('./notes');
+const cleaningRoute = require('./cleaning');
+const cleaninganimalRoute = require('./cleaninganimal');
+const vacinationRoute = require('./vacination');
+const vacinationanimalRoute = require('./vacinationanimal');
+const healthRoute = require('./health');
 
 
 const formRoute = require('./form');
@@ -29,6 +39,16 @@ app.use('/farm', farmRoute);
 // Form routes.. 
 app.use('/form', formRoute);
 app.use('/element', elementRoute);
+app.use('/feed', feedRoute);
+app.use('/feedanimal', feedAnimalRoute);
+app.use('/feedhistory', feedHistoryRoute);
+app.use('/rotation', rotationRoute);
+app.use('/note', noteRoute);
+app.use('/cleaning', cleaningRoute);
+app.use('/cleaninganimal', cleaninganimalRoute);
+app.use('/vacination', vacinationRoute);
+app.use('/vacinationanimal', vacinationanimalRoute);
+app.use('/health', healthRoute);//for health of animal
 
 app.use('/state', stateRoute);
 app.use('/city', cityRoute);

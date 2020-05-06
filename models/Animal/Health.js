@@ -14,8 +14,10 @@ const HealthSchema = mongoose.Schema({
     date: {
         type: Date
     },
-    animaltId: [{type: Schema.Types.ObjectId,
-        ref: 'Animal'}]
+    animalId: {type: Schema.Types.ObjectId,
+        ref: 'Animal'},
+    document:{type:String},
+    locationName:{type:String}
 }, { timestamps: true })
 
 

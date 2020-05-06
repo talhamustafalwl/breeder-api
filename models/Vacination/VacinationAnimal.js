@@ -10,10 +10,14 @@ const animalvacinationSchema = mongoose.Schema({
     animalId: {type: Schema.Types.ObjectId,
         ref: 'Animal'},
     vacinationId: {type: Schema.Types.ObjectId,
-        ref: 'Vacination'}
+        ref: 'Vacination'},
+    userId: {type: Schema.Types.ObjectId,
+        ref: 'User'},
+    empId: {type: Schema.Types.ObjectId,
+        ref: 'User'},   
 }, { timestamps: true })
 
 animalvacinationSchema.plugin(idvalidator);
-const AnimalVacination = mongoose.model('AnimalVacination', animalvacinationSchema);
+const VacinationAnimal = mongoose.model('VacinationAnimal', animalvacinationSchema);
 
-module.exports = { AnimalVacination }
+module.exports = { VacinationAnimal }

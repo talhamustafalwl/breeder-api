@@ -8,7 +8,7 @@ class AnimalController {
   //admin get delete all animals
   async getall(req, res) {
     try {
-      const animals = await Animal.find({}).populate('categoryId');
+      const animals = await Animal.find({})
       return res.status(200).json({ status: 200, message: "All Animals", data: animals });
     } catch (err) {
       return res.json({ status: 400, message: "Error in get animals", errors: err, data: {} });
@@ -23,7 +23,6 @@ class AnimalController {
       return res.json({ status: 400, message: "Error in deleted Animals", errors: err, data: {} });
     }
   }
-
 
 
 
@@ -128,7 +127,10 @@ class AnimalController {
       return res.json({ status: 400, message: "Error in creating Animal", errors: err, data: {} });
     }
   }
+}
 
-};
+
+
+
 
 module.exports = new AnimalController();

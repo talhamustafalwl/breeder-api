@@ -7,10 +7,17 @@ const feedSchema = mongoose.Schema({
     name: {
         type: String,required:true
     },
-    unitId:  {type: Schema.Types.ObjectId,
-        ref: 'Unit'},
+    unitName: {
+        type: String,required:true
+    },
+    units: {
+        type: Number
+    },//weight or number
+    //unitId:  {type: Schema.Types.ObjectId,
+    //    ref: 'Unit'},
+        
     userId: {type: Schema.Types.ObjectId,
-        ref: 'User'} //kn se breeder ne add kia ha
+        ref: 'User'} //kn se user ne add kia ha
     
 }, { timestamps: true })
 

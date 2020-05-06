@@ -14,6 +14,8 @@ const farmSchema = mongoose.Schema({
         ref: 'User',required:true}, //belongs to which breeder
     categoryId: {type: Schema.Types.ObjectId,
         ref: 'Category',required:true} //belongs to which category
+        ,
+    categoryName: {type: String}
 }, { timestamps: true })
 
 farmSchema.plugin(idvalidator);

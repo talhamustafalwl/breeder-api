@@ -16,6 +16,9 @@ const AnimalSchema = mongoose.Schema({
         type:Schema.Types.ObjectId,
         ref: 'Category'
     },
+    categoryName: {
+        type:String,
+    },
     name: {
         type:String,minglength: 3,
         maxlength:20 ,required: true 

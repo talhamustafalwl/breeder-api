@@ -11,8 +11,11 @@ const VacinationHistorySchema = mongoose.Schema({
         ref: 'Animal'},
     vacinationId: {type: Schema.Types.ObjectId,
         ref: 'Vacination'},
-    employeeId: {type: Schema.Types.ObjectId,
-        ref: 'User'}
+    empId: {type: Schema.Types.ObjectId,
+        ref: 'User'},
+    userId: {type: Schema.Types.ObjectId,
+        ref: 'User'},
+    location:String
 }, { timestamps: true })
 
 VacinationHistorySchema.plugin(idvalidator);

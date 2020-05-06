@@ -36,10 +36,43 @@ const userSchema = mongoose.Schema({
     secretToken: String,//for email confirmation
     resetToken: String,//for forget password
     //resetTokenExp:Date
-},
-    {
-        timestamps: true
-    })
+
+    gender: {
+        type: String, enum: ["male", "female"]
+    },
+    dataOfBirth: {
+        type: Date
+    },
+
+    city: String, state: String, zipcode: Number,
+
+    ////extra must fields for Employee
+    appointmentDate: {
+        type: Date
+    },
+    breederId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },//belongs to which breeder
+    farmId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Farm'
+    }, //belongs to which farm
+    designationId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Designation'
+    },
+    farmName: {
+        type: String
+    },
+    designationName: {
+        type: String
+    },
+
+
+}, {
+    timestamps: true
+})
 
 
 userSchema.pre('save', function (next) {
