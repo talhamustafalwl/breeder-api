@@ -23,7 +23,7 @@ class BusinessController {
             const doc=await businessvar.save()
             return res.status(200).json({ status: 200, message: "Business Profile created successfully", data: doc });
         } catch (err) {
-            return res.json({ status: 400, message: "Error in creating Business Profile (email registered) ", errors: err, data: {} });
+            return res.json({ status: 400, message: (err.name === 'MongoError' && err.code === 11000) ? 'Email already exists !' : "Error in creating Business Profile", errors: err, data: {} });
         }
     }
 

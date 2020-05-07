@@ -19,13 +19,6 @@ const BusinessSchema = mongoose.Schema({
     email:{type:String,required:true,unique:true},
 }, { timestamps: true })
 
-BusinessSchema.post('save', function(error, doc, next) {
-    if (error.name === 'MongoError' && error.code === 11000) {
-      next(new Error('email must be unique'));
-    } else {
-      next(error);
-    }
-  });
 
 BusinessSchema.plugin(idvalidator);
 const Business = mongoose.model('Business', BusinessSchema);
