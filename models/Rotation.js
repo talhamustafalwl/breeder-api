@@ -10,6 +10,11 @@ const RotationSchema = mongoose.Schema({
  
 }, { timestamps: true })
 
+RotationSchema.pre('save', function (next) {
+    var rotation = this;
+    rotation.name = this.rotation.toLowerCase()
+    next()
+})
 
 RotationSchema.plugin(idvalidator);
 const Rotation = mongoose.model('Rotation', RotationSchema);

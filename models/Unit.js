@@ -7,6 +7,11 @@ const unitSchema = mongoose.Schema({
     
 })
 
+unitSchema.pre('save', function (next) {
+    var unit = this;
+    unit.name = this.name.toLowerCase()
+    next()
+})
 
 const Unit = mongoose.model('Unit', unitSchema);
 
