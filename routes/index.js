@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const userRoute = require('./users.js');
 const animalRoute = require('./animals');
+const statusRoute = require('./status');//animal status
 const categoryRoute = require('./categories');
 const imageRoute = require('./images');
 const videoRoute = require('./videos');
@@ -31,6 +32,7 @@ const zipcodeRoute = require('./zipcodes');
 
 app.use('/user', userRoute);
 app.use('/animal', animalRoute);
+app.use('/status', statusRoute);//animl status
 app.use('/category', categoryRoute);
 app.use('/video', videoRoute);
 app.use('/image', imageRoute);

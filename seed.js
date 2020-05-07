@@ -1,6 +1,7 @@
 const { Unit } = require("./models/Unit");
 const { Category } = require("./models/Animal/Category");
 const { Rotation } = require("./models/Rotation");
+const { Status } = require("./models/Animal/Status");
 const mongoose = require("mongoose");
 const config = require("./config/key");
 
@@ -36,12 +37,17 @@ async function dataseed(){
     const rotations= [
       { name: 'yearly'}, { name: 'monthly'},{ name: 'weekly'}, { name: 'daily'},
     ];
-  
-   
       await Rotation.insertMany(rotations).then(()=> console.log("rotations added"))
       .catch(err=>console.log("err rotations present"))
  
       
+      const status= [
+        { name: 'Health'}, { name: 'Sick'},{ name: 'Dead'}, { name: 'Sold'},{ name: 'Purchased'}, { name: 'Raised'},
+      ];
+        await Status.insertMany(status).then(()=> console.log("status added"))
+        .catch(err=>console.log("err status present"))
+   
+        
 
   await mongoose.connection.close()
 }
