@@ -4,7 +4,7 @@ const cookieParser = require("cookie-parser");
 const config = require("./config/key");
 const { auth } = require("./middleware/auth");
 const mongoose = require("mongoose");
-
+require('dotenv').config()
 const routes = require("./routes");
 
 mongoose.set('useCreateIndex', true);
