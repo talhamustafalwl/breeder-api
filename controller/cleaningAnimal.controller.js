@@ -5,7 +5,7 @@ class CleaningAnimalController {
 
 //assign cleaning
     async create(req,res){
-        const { errors, isValid } = validateCleaningAnimalInput(req.body);
+        const { errors, isValid } =await validateCleaningAnimalInput(req.body);
         // Check validation
         if (!isValid) {
           return res.json({ status: 400, message: "errors present", errors: errors, data: {} });

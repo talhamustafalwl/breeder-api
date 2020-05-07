@@ -1,7 +1,9 @@
 const Validator = require("validator");
 const isEmpty = require("is-empty");
+const {Rotation}=require("../models/Rotation")
 
-function validateCleaningInput(data) {
+
+async function validateCleaningInput(data) {
   let errors = {};
   // Convert empty fields to an empty string so we can use validator functions
   data.rotationName = !isEmpty(data.rotationName) ? data.rotationName : "";
@@ -16,7 +18,13 @@ function validateCleaningInput(data) {
     errors.name = "name field is required";
   }
 
-  
+
+  const result=await Rotation.find({name:data.rotationName}).then(res => 
+    res)
+  if(result.length == 0){
+    errors.rotationName = "Invalid rotationName";
+  }
+
 
   return {
     errors,
@@ -27,7 +35,7 @@ function validateCleaningInput(data) {
 
 
 
-function validateCleaningAnimalInput(data) {
+async function validateCleaningAnimalInput(data) {
   let errors = {};
   // Convert empty fields to an empty string so we can use validator functions
   data.rotationName = !isEmpty(data.rotationName) ? data.rotationName : "";
@@ -39,6 +47,12 @@ function validateCleaningAnimalInput(data) {
   if (Validator.isEmpty(data.rotationName)) {
     errors.rotationName = "rotationName field is required";
   }
+  const result=await Rotation.find({name:data.rotationName}).then(res => 
+    res)
+  if(result.length == 0){
+    errors.rotationName = "Invalid rotationName";
+  }
+
  // cleaningName checks
   if (Validator.isEmpty(data.cleaningName)) {
     errors.cleaningName = "cleaningName field is required";

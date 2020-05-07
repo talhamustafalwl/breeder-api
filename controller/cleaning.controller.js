@@ -5,7 +5,7 @@ class CleaningController {
 
 
     async create(req,res){
-        const { errors, isValid } = validateCleaningInput(req.body);
+        const { errors, isValid } =await validateCleaningInput(req.body);
         // Check validation
         if (!isValid) {
           return res.json({ status: 400, message: "errors present", errors: errors, data: {} });
