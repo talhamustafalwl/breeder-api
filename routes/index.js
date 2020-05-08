@@ -23,6 +23,9 @@ const subscriptionRoute = require('./subscription');
 const subscriberRoute = require('./subscriber');
 const currencyRoute = require('./currency');
 const businessRoute = require('./business');
+const invoiceRoute = require('./invoice');
+const invoiceitemRoute = require('./invoiceitem');
+const installmentRoute = require('./installment');
 
 const formRoute = require('./form');
 const elementRoute = require('./elements');
@@ -57,6 +60,9 @@ app.use('/health', healthRoute);//for health of animal
 app.use('/subscription', subscriptionRoute);//admin
 app.use('/subscriber', subscriberRoute);
 app.use('/business', businessRoute);
+app.use('/invoice', invoiceRoute);
+app.use('/invoiceitem', invoiceitemRoute);
+app.use('/installment',installmentRoute);
 
 app.use('/state', stateRoute);
 app.use('/city', cityRoute);

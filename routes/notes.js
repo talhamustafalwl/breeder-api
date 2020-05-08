@@ -4,10 +4,10 @@ const { adminauth } = require("../middleware/adminauth");
 const { auth } = require("../middleware/auth");
 const NoteController = require('../controller/note.controller');
 
-//create,delete note only by admin
+
 router.route('/').post(auth,NoteController.create)
-    .delete(auth,NoteController.deleteall)
-    .get(auth,NoteController.getall)
+    .delete(auth,NoteController.deleteallbreeder)
+    .get(auth,NoteController.getallbreeder)
 
 router.route('/all').delete(adminauth,NoteController.deleteall)
   .get(adminauth,NoteController.getall)

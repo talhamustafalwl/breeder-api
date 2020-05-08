@@ -47,7 +47,7 @@ class NoteController {
     async getallbreeder(req, res) {
         try {
           const notes= await Note.find({userId:req.user._id});
-          return res.status(200).json({ status: 200, message: "All Note ",data: notess});
+          return res.status(200).json({ status: 200, message: "All Note ",data: notes});
         } catch (err) {
           return res.json({ status: 400, message: "Error in get Note ", errors: err, data: {} });
         }
