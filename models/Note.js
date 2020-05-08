@@ -12,7 +12,7 @@ const noteSchema = mongoose.Schema({
     userId: {type: Schema.Types.ObjectId,
         ref: 'User'},
     empId: {type: Schema.Types.ObjectId,
-        ref: 'Employee'},
+        ref: 'User'},
     date:Date 
 }, { timestamps: true })
 

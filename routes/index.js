@@ -33,6 +33,7 @@ const elementRoute = require('./elements');
 const stateRoute = require('./states');
 const cityRoute = require('./cities');
 const zipcodeRoute = require('./zipcodes');
+const locationRoute = require('./locations');
 
 app.use('/user', userRoute);
 app.use('/animal', animalRoute);
@@ -67,5 +68,5 @@ app.use('/installment',installmentRoute);
 app.use('/state', stateRoute);
 app.use('/city', cityRoute);
 app.use('/zipcode', zipcodeRoute);
-
+app.use('/location', locationRoute);
 module.exports = app;
