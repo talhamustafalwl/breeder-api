@@ -10,9 +10,7 @@ const AnimalController = require('../controller/animal.controller');
 router.route('/all').get(adminauth, AnimalController.getall)
   .delete(adminauth,AnimalController.deleteall)
 
-  //for admin   view/delete all (of specific breeder)
-router.route('/breeder/:breederId').get(adminauth,AnimalController.getBreederAnimalsAdmin)
-.delete(adminauth,AnimalController.deleteBreederAnimalsAdmin)
+
 
 //for breeder  animals crud can view/delete all (can only see his animals)
 router.route('/').get(auth,AnimalController.getBreederAnimals)

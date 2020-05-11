@@ -2,13 +2,8 @@ const { Animal } = require('../models/Animal/Animal');
 const { Subscriber } = require('../models/Subscription/Subscriber');
 let animalsubscriber =async (req, res, next) => {
     let breederId;
-    if(req.body.breederId){
-        breederId=req.body.breederId
-    }
-    else{
-        breederId=req.user._id
-    }
-  console.log("animalsubscriber breederId",breederId)
+    breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
+  //console.log("animalsubscriber breederId",breederId)
 
   const countallowed=await Subscriber.findOne({breederId}).then(
       result=> result.allowedAnimal

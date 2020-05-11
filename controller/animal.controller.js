@@ -1,9 +1,10 @@
-const fs = require('fs')
-const path = require('path');
 const { Animal } = require("../models/Animal/Animal");
+const { validateAnimalInput } = require("../validation/animal");
 const LogicController = require('../controller/logic.controller');
+
 class AnimalController {
-  constructor() { }
+  constructor() { 
+  }
 
   //admin get delete all animals
   async getall(req, res) {
@@ -24,33 +25,7 @@ class AnimalController {
     }
   }
 
-
-
-  //get delete animal for specific breeder by admin
-  async getBreederAnimalsAdmin(req, res) {
-    //console.log("isAdmin",req.user.isAdmin)
-    try {
-      const animals = await Animal.find({ breederId: req.params.breederId });
-      if (animals == '') {
-        return res.json({ status: 200, message: "No data", data: {} });
-      }
-      return res.status(200).json({ status: 200, message: "Animal data", data: animals });
-    } catch (err) {
-      return res.json({ status: 400, message: "Error in get animal", errors: err, data: {} });
-    }
-  }
-
-  async deleteBreederAnimalsAdmin(req, res) {
-    //console.log("isAdmin",req.user.isAdmin)
-    try {
-      const messages = await Animal.deleteMany({ breederId: req.params.breederId });
-      return res.status(200).json({ status: 200, message: "All breeder Animals deleted successfully", data: messages });
-    } catch (err) {
-      return res.json({ status: 400, message: "Error in deleted Animals", errors: err, data: {} });
-    }
-  }
-
-
+ 
   //get specific animal  by id
   async getanimal(req, res) {
     try {
@@ -77,7 +52,6 @@ class AnimalController {
   }
   //only breeder owner and admin can update animal
   async updateanimal(req, res) {
-    console.log("called")
     try {
       const messages = await Animal.updateOne({ _id: req.params.id }, req.body);
       return res.status(200).json({ status: 200, message: "Animals updated successfully", data: messages });
@@ -87,15 +61,32 @@ class AnimalController {
   }
 
 
-  ///
+
   //get delete animal of specific breeder
   async getBreederAnimals(req, res) {
-    console.log("login user id", req.user._id)
+    
+     ///////filters
+     let {name,date,categoryName,status,price}=req.query
+     var query = {};
+     if ( req.query.hasOwnProperty('name')  && name != '')
+       {name=new RegExp("^"+ name);
+       query.name = { "$in": name};}
+     if ( req.query.hasOwnProperty('status') && status != '')
+       query.status = { "$in": status};
+     if ( req.query.hasOwnProperty('categoryName') && categoryName != '')
+       {categoryName=new RegExp("^"+ categoryName);
+       query.categoryName = { "$in": categoryName};}
+     if ( req.query.hasOwnProperty('date') && date != '')
+       query.createdAt = { "$gte": date};
+     if ( req.query.hasOwnProperty('price') && price != '')
+       query.price = { "$gte": price};
+     //////
+     const breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
+     query.breederId = { "$in": breederId};
+    //console.log(query)
     try {
-      const animals = await Animal.find({ breederId: req.user._id });
-      if (animals == '') {
-        return res.json({ status: 400, message: "No data", data: {} });
-      }
+      //const animals = await Animal.find({ breederId });
+      const animals = await Animal.find(query)
       return res.status(200).json({ status: 200, message: "Animal data", data: animals });
     } catch (err) {
       return res.json({ status: 400, message: "Error in get animal", errors: err, data: {} });
@@ -103,9 +94,9 @@ class AnimalController {
   }
 
   async deleteBreederAnimals(req, res) {
-    console.log("login user id", req.user._id)
+    const breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
     try {
-      const messages = await Animal.deleteMany({ breederId: req.user._id });
+      const messages = await Animal.deleteMany({ breederId});
       return res.status(200).json({ status: 200, message: "All breeder Animals deleted successfully", data: messages });
     } catch (err) {
       return res.json({ status: 400, message: "Error in deleted Animals", errors: err, data: {} });
@@ -113,13 +104,14 @@ class AnimalController {
   }
 
   async addBreederAnimals(req, res) {
-    //const { errors, isValid } = validateaddInput(req.body);
-    // if (!isValid) {
-    //  console.log("errr",errors)
-    //   return res.json({status:400,message:"errors present", errors:errors,data:{}});
-    // }
+    const { errors, isValid } = validateAnimalInput(req.body);
+     if (!isValid) {
+       return res.json({status:400,message:"errors present", errors:errors,data:{}});
+     }
 
     try {
+      req.body.breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
+      req.body.addedBy=req.user._id
       const animal = await new Animal(req.body)
       const doc = await animal.save()
       return res.status(200).json({ status: 200, message: "Animals created successfully", data: doc });
