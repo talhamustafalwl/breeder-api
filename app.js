@@ -15,10 +15,11 @@ const connect = mongoose
     .catch((err) => console.log(err));
 ///
 
+//for frontend
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static('client/build'));
 }
-
+///
 
 app.use(cookieParser());
 app.use(express.json())

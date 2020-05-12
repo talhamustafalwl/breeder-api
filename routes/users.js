@@ -16,7 +16,7 @@ const SubscriberController = require('../controller/subscriber.controller');
 // Load input validation
 const { validateLoginInput, validateRegisterInput, validateRegisterInputEmp } = require("../validation/users");
 //auth route check
-router.get("/auth", UserController.authentication);
+router.get("/auth",auth, UserController.authentication);
 
 
 
