@@ -65,6 +65,7 @@ app.use('/invoice', invoiceRoute);
 app.use('/invoiceitem', invoiceitemRoute);
 app.use('/installment',installmentRoute);
 
+app.use('/contact', require('./contact'));
 app.use('/state', stateRoute);
 app.use('/city', cityRoute);
 app.use('/zipcode', zipcodeRoute);
