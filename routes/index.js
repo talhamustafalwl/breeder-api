@@ -21,6 +21,7 @@ const vacinationanimalRoute = require('./vacinationanimal');
 const healthRoute = require('./health');
 const subscriptionRoute = require('./subscription');
 const subscriberRoute = require('./subscriber');
+const transactionRoute = require('./transaction');
 const currencyRoute = require('./currency');
 const businessRoute = require('./business');
 const invoiceRoute = require('./invoice');
@@ -62,6 +63,7 @@ app.use('/vacinationanimal', vacinationanimalRoute);
 app.use('/health', healthRoute);//for health of animal
 app.use('/subscription', subscriptionRoute);//admin
 app.use('/subscriber', subscriberRoute);
+app.use('/transaction', transactionRoute);//admin
 app.use('/business', businessRoute);
 app.use('/invoice', invoiceRoute);
 app.use('/invoiceitem', invoiceitemRoute);
