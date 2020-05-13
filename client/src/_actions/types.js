@@ -29,3 +29,14 @@ export const GET_TRANSACTIONS = 'get_transactions';
 export const GET_TRANSACTION = 'get_transaction';
 
 
+///----animal----
+//admin
+export const GET_ALL_ANIMALS = 'get_all_animals';
+export const DELETE_ALL_ANIMALS = 'delete_all_animals';
+//
+export const CREATE_ANIMAL = 'create_animal';
+export const UPDATE_ANIMAL= 'update_animal';
+export const DELETE_ANIMAL= 'delete_animal';
+export const GET_ANIMAL= 'get_animal';
+export const GET_ANIMALS= 'get_animals';
+export const FILTER_ANIMALS= 'filter_animals';
