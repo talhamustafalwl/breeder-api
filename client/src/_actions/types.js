@@ -40,3 +40,22 @@ export const DELETE_ANIMAL= 'delete_animal';
 export const GET_ANIMAL= 'get_animal';
 export const GET_ANIMALS= 'get_animals';
 export const FILTER_ANIMALS= 'filter_animals';
+
+
+///breeder business profile
+export const CREATE_BUSINESS = 'create_business';
+export const UPDATE_BUSINESS= 'update_business';
+export const GET_BUSINESS= 'get_business';
+export const DELETE_BUSINESS= 'delete_business';
+
+//location ,city,state,zipcode
+export const CREATE_LOCATION = 'create_location';
+export const UPDATE_LOCATION= 'update_location';
+export const GET_LOCATION= 'get_location';
+export const GET_LOCATIONS= 'get_locations';
+export const GET_ALL_LOCATIONS= 'get_all_location';
+export const DELETE_LOCATION= 'delete_location';
+
+export const GET_CITIES= 'get_cities';
+export const GET_STATES= 'get_states';
+export const GET_ZIPCODES= 'get_zipcodes';
