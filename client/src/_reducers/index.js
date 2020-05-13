@@ -5,10 +5,14 @@ import transaction from './transaction_reducer';
 import animal from './animal_reducer';
 import business from './business_reducer';
 import location from './location_reducer';
+import category from './category_reducer';
+import feed from './feed_reducer';
+import cleaning from './cleaning_reducer';
 
 const rootReducer = combineReducers({
     user,subscription,transaction,animal,business,location,
-    
+    category,
+    feed,cleaning
 });
 
 export default rootReducer;

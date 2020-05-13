@@ -48,7 +48,7 @@ export const UPDATE_BUSINESS= 'update_business';
 export const GET_BUSINESS= 'get_business';
 export const DELETE_BUSINESS= 'delete_business';
 
-//location ,city,state,zipcode
+//location ,-------city,state,zipcode---------
 export const CREATE_LOCATION = 'create_location';
 export const UPDATE_LOCATION= 'update_location';
 export const GET_LOCATION= 'get_location';
@@ -59,3 +59,42 @@ export const DELETE_LOCATION= 'delete_location';
 export const GET_CITIES= 'get_cities';
 export const GET_STATES= 'get_states';
 export const GET_ZIPCODES= 'get_zipcodes';
+
+//--------categories------------
+//admin
+export const CREATE_CATEGORY = 'create_category';
+export const UPDATE_CATEGORY= 'update_category';
+export const DELETE_CATEGORY= 'delete_category';
+//
+export const GET_CATEGORY= 'get_category';
+export const GET_CATEGORIES= 'get_categories';
+
+
+//--------feed------------
+export const CREATE_FEED = 'create_feed';
+export const UPDATE_FEED= 'update_feed';
+export const DELETE_FEED= 'delete_feed';
+export const GET_FEED= 'get_feed';
+export const GET_FEEDS= 'get_feeds';
+
+export const CREATE_FEEDANIMAL = 'create_feedanimal';
+export const UPDATE_FEEDANIMAL= 'update_feedanimal';
+export const DELETE_FEEDANIMAL= 'delete_feedanimal';
+export const GET_FEEDANIMAL= 'get_feedanimal';
+export const GET_FEEDANIMALS= 'get_feedanimals';
+
+
+
+
+//--------cleaning------------
+export const CREATE_CLEANING= 'create_cleaning';
+export const UPDATE_CLEANING= 'update_cleaning';
+export const DELETE_CLEANING= 'delete_cleaning';
+export const GET_CLEANING= 'get_cleaning';
+export const GET_CLEANINGS= 'get_cleanings';
+
+export const CREATE_CLEANINGANIMAL = 'create_cleaninganimal';
+export const UPDATE_CLEANINGANIMAL= 'update_cleaninganimal';
+export const DELETE_CLEANINGANIMAL= 'delete_cleaninganimal';
+export const GET_CLEANINGANIMAL= 'get_cleaninganimal';
+export const GET_CLEANINGANIMALS= 'get_cleaninganimals';
