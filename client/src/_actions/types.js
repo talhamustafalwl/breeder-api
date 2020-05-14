@@ -98,3 +98,29 @@ export const UPDATE_CLEANINGANIMAL= 'update_cleaninganimal';
 export const DELETE_CLEANINGANIMAL= 'delete_cleaninganimal';
 export const GET_CLEANINGANIMAL= 'get_cleaninganimal';
 export const GET_CLEANINGANIMALS= 'get_cleaninganimals';
+
+
+//---currency
+export const CREATE_CURRENCY= 'create_currency';
+export const UPDATE_CURRENCY= 'update_currency';
+export const DELETE_CURRENCY= 'delete_currency';
+export const GET_CURRENCY= 'get_currency';
+export const GET_CURRENCIES= 'get_currencies';
+
+
+//---units
+export const CREATE_UNIT= 'create_unit';
+export const UPDATE_UNIT= 'update_unit';
+export const DELETE_UNIT= 'delete_unit';
+export const GET_UNIT= 'get_unit';
+export const GET_UNITS= 'get_units';
+
+
+//---health
+export const CREATE_HEALTH= 'create_health';
+export const UPDATE_HEALTH= 'update_health';
+export const DELETE_HEALTH= 'delete_health';
+export const GET_HEALTH= 'get_health';
+export const GET_HEALTHS= 'get_healths';//specific to breeders
+export const DELETE_ALL_HEALTH= 'delete_all_health';//admin
+export const GET_ALL_HEALTH= 'get_all_health';//admin
