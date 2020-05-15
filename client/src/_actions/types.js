@@ -100,6 +100,20 @@ export const GET_CLEANINGANIMAL= 'get_cleaninganimal';
 export const GET_CLEANINGANIMALS= 'get_cleaninganimals';
 
 
+//--------vacination------------
+export const CREATE_VACINATION= 'create_vacination';
+export const UPDATE_VACINATION= 'update_vacination';
+export const DELETE_VACINATION= 'delete_vacination';
+export const GET_VACINATION= 'get_vacination';
+export const GET_VACINATIONS= 'get_vacinations';
+
+export const CREATE_VACINATIONANIMAL = 'create_vacinationanimal';
+export const UPDATE_VACINATIONANIMAL= 'update_vacinationanimal';
+export const DELETE_VACINATIONANIMAL= 'delete_vacinationanimal';
+export const GET_VACINATIONANIMAL= 'get_vacinationanimal';
+export const GET_VACINATIONANIMALS= 'get_vacinationanimals';
+
+
 //---currency
 export const CREATE_CURRENCY= 'create_currency';
 export const UPDATE_CURRENCY= 'update_currency';
@@ -124,3 +138,40 @@ export const GET_HEALTH= 'get_health';
 export const GET_HEALTHS= 'get_healths';//specific to breeders
 export const DELETE_ALL_HEALTH= 'delete_all_health';//admin
 export const GET_ALL_HEALTH= 'get_all_health';//admin
+
+
+//---group
+export const CREATE_GROUP= 'create_group';
+export const UPDATE_GROUP= 'update_group';
+export const DELETE_GROUP= 'delete_group';
+export const GET_GROUP= 'get_group';
+export const GET_GROUPS= 'get_groups';//specific to breeders
+
+export const CREATE_GROUP_LOG = 'create_group_log';
+export const UPDATE_GROUP_LOG= 'update_group_log';
+export const DELETE_GROUP_LOG= 'delete_group_log';
+export const GET_GROUP_LOG= 'get_group_log';
+export const GET_GROUP_LOGS= 'get_group_logs';
+
+
+
+//---notes
+export const CREATE_NOTE= 'create_note';
+export const UPDATE_NOTE= 'update_note';
+export const DELETE_NOTE= 'delete_note';
+export const GET_NOTE= 'get_note';
+export const GET_NOTES= 'get_notes';//specific to breeders
+
+
+//---form and elements(admin)------
+export const CREATE_ELEMENT= 'create_element';
+export const UPDATE_ELEMENT= 'update_element';
+export const DELETE_ELEMENT= 'delete_element';
+export const GET_ELEMENT= 'get_element';
+export const GET_ELEMENTS= 'get_elements';
+
+export const CREATE_FORM= 'create_form';
+export const UPDATE_FORM= 'update_form';
+export const DELETE_FORM= 'delete_form';
+export const GET_FORM= 'get_form';
+export const GET_FORMS= 'get_forms';
