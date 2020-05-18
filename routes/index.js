@@ -37,6 +37,7 @@ const stateRoute = require('./states');
 const cityRoute = require('./cities');
 const zipcodeRoute = require('./zipcodes');
 const locationRoute = require('./locations');
+const notificationRoute = require('./notifications');
 
 app.use('/user', userRoute);
 app.use('/animal', animalRoute);
@@ -76,4 +77,5 @@ app.use('/state', stateRoute);
 app.use('/city', cityRoute);
 app.use('/zipcode', zipcodeRoute);
 app.use('/location', locationRoute);
+app.use('/notification', notificationRoute);
 module.exports = app;
