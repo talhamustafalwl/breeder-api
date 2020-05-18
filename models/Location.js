@@ -11,7 +11,7 @@ const LocationSchema = mongoose.Schema({
         type: String,required:true
     },
     country: {
-        type: String,default:"Usa"
+        type: String,default:"USA"
     },
     zipcode: {
         type: Number,required:true
@@ -20,7 +20,7 @@ const LocationSchema = mongoose.Schema({
     area: {type: String},
     breederId: {type: Schema.Types.ObjectId,
         ref: 'User'},
-    code: {type: String,required:true},//postal code
+    // code: {type: String,required:true},//postal code
 }, { timestamps: true })
 
 

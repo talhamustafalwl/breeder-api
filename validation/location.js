@@ -6,7 +6,7 @@ function validateLocationInput(data) {
   // Convert empty fields to an empty string so we can use validator functions
   data.city = !isEmpty(data.city) ? data.city : "";
   data.state = !isEmpty(data.state) ? data.state : "";
-  data.code = !isEmpty(data.code) ? data.code : "";
+  // data.code = !isEmpty(data.code) ? data.code : "";
   data.street = !isEmpty(data.street) ? data.street : "";
   data.zipcode = !isEmpty(data.zipcode) ? data.zipcode : "";
 
@@ -21,9 +21,9 @@ function validateLocationInput(data) {
   }
   
     // postal code checks
-    if (Validator.isEmpty(data.code)) {
-        errors.code = "code field is required";
-      }
+    // if (Validator.isEmpty(data.code)) {
+    //     errors.code = "code field is required";
+    //   }
 
 
          // street checks

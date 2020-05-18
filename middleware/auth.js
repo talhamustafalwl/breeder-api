@@ -19,30 +19,30 @@ let auth = (req, res, next) => {
         status:400,isAuth: false,message:"auth token is invalid",data:{}
       });
 
-      // Skip subscription if user is admin ..
-      if(user.role == "admin") {
-        req.token = token;
-        req.user = user;
-        return next();
-      }
-    ///subscribtion date validation (block apis after trial period)
-      breederId=user.role == "employee" ? user.breederId : user._id
+    //   // Skip subscription if user is admin ..
+    //   if(user.role == "admin") {
+    //     req.token = token;
+    //     req.user = user;
+    //     return next();
+    //   }
+    // ///subscribtion date validation (block apis after trial period)
+    //   breederId=user.role == "employee" ? user.breederId : user._id
       
-        const toDate = await Subscriber.findOne({breederId}).then(
-          result=> !result ? result: result.toDate
-      );
-      if(!toDate) return res.json({
-        status:400,message:"Not Subscribd Yet!",data:{}
-      });
-      diff=toDate.getTime() - new Date(Date.now()).getTime()
-      //console.log(breederId)
-      //console.log(toDate,"---",new Date(Date.now()))
-      //console.log(toDate.getTime() - new Date(Date.now()).getTime())
-      if(diff <= 0){
-        return res.json({
-          status:400,message:"Subscription package is expired",data:{}
-        });
-      }
+    //     const toDate = await Subscriber.findOne({breederId}).then(
+    //       result=> !result ? result: result.toDate
+    //   );
+    //   if(!toDate) return res.json({
+    //     status:400,message:"Not Subscribd Yet!",data:{}
+    //   });
+    //   diff=toDate.getTime() - new Date(Date.now()).getTime()
+    //   //console.log(breederId)
+    //   //console.log(toDate,"---",new Date(Date.now()))
+    //   //console.log(toDate.getTime() - new Date(Date.now()).getTime())
+    //   if(diff <= 0){
+    //     return res.json({
+    //       status:400,message:"Subscription package is expired",data:{}
+    //     });
+    //   }
 
     req.token = token;
     req.user = user;

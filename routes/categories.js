@@ -5,7 +5,7 @@ const { auth } = require("../middleware/auth");
 const CategoryController = require('../controller/category.controller');
 
 //create,delete category only by admin
-router.post("/",adminauth,CategoryController.create)
+router.post("/",CategoryController.create)
 
 router.route('/all').delete(adminauth,CategoryController.deleteall)
   .get(auth,CategoryController.getall)

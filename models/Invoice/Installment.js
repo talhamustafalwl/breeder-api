@@ -5,13 +5,18 @@ const InstallmentSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Invoice',required:true
     },
-    contactId: {
+
+    // removed contact id i.e contactId...
+
+    salesId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Contact',required:true
-    },
-   
-    installmentNo:{type:Number,required:true},
+        ref: 'Sale',required:true
+    },   
     amount:{type:Number,required:true},
+    startDate: {type: Date, required: true},
+    endDate: {type: Date, required: true},
+    isPaid: {type: Boolean, required: true, default: false},
+    
     reminded:{type:Boolean,default:false}
 
 }, { timestamps: true })

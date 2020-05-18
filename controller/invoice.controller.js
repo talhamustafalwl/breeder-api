@@ -93,6 +93,14 @@ async getallbreeder(req, res) {
             return res.json({ status: 400, message: "Error in updating Invoice", errors: err, data: {} });
         }
     }
+
+
+    async addInvoice(contactId, type, saleId, items) {
+      return new Promise(async (resolve, reject) => {
+        const invoice = await new Invoice({contactId, type, saleId, items});
+        invoice.save().then(resolve);
+      });
+    }
     
 };
 

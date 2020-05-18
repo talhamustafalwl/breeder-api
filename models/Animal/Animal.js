@@ -8,16 +8,16 @@ const AnimalSchema = mongoose.Schema({
         type:Schema.Types.ObjectId,
         ref: 'User',required:true
     },
-    employeeId: [{
+    addedBy: {
         type:Schema.Types.ObjectId,
         ref: 'User'
-    }],//taking array here for more employees
+    },//kis user ne add kiya ha
     categoryId: {
         type:Schema.Types.ObjectId,
         ref: 'Category'
     },
     categoryName: {
-        type:String,
+        type:String,required:true
     },
     name: {
         type:String,minglength: 3,
@@ -42,8 +42,14 @@ const AnimalSchema = mongoose.Schema({
     tattoo:String,
     identificationMark:String,
     notes:String,
-    buyer:String,
-    seller:String,
+    buyer: {
+        type: Schema.Types.ObjectId,
+        ref: 'Contact',
+    },
+    seller:{
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    },
     status:{type: String,
         enum:['sold','died','sick','healthy']},
     description:{
@@ -58,12 +64,15 @@ const AnimalSchema = mongoose.Schema({
     //images:[{type:Schema.Types.ObjectId,ref: 'Image'}],
     //videos:[{type:Schema.Types.ObjectId,ref: 'Video'}],
 
-    price:{type:Number,required: true },
+    price:{type:Number},
     type:{
         type:String,minglength: 3,
         maxlength:30
     },
-    location:String,
+    locationId: {
+        type:Schema.Types.ObjectId,
+        ref: 'Location',required:true
+    },
     qrcodepath:{type:String}
     },
     {
@@ -85,6 +94,12 @@ AnimalSchema.pre('save', function( next ) {
 });
 
 
+
+// AnimalSchema.statics.saleUpdateAnimal = function (animalArr, cb) {
+//     Animal.update({_id: {$in: animalArr.map(e => mongoose.(e._id))}}, {status: 'sold', buyer, seller}).then(result => {
+//         resolve(result);
+//       });
+// } 
 
 AnimalSchema.plugin(idvalidator);
 const Animal= mongoose.model('Animal', AnimalSchema);

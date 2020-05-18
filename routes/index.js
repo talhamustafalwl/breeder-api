@@ -26,6 +26,8 @@ const businessRoute = require('./business');
 const invoiceRoute = require('./invoice');
 const invoiceitemRoute = require('./invoiceitem');
 const installmentRoute = require('./installment');
+const groupRoute = require('./groups');
+const grouplogRoute = require('./grouplogs');
 
 const formRoute = require('./form');
 const elementRoute = require('./elements');
@@ -64,8 +66,12 @@ app.use('/business', businessRoute);
 app.use('/invoice', invoiceRoute);
 app.use('/invoiceitem', invoiceitemRoute);
 app.use('/installment',installmentRoute);
+app.use('/group',groupRoute);
+app.use('/grouplog',grouplogRoute);
+
 
 app.use('/contact', require('./contact'));
+app.use('/sale', require('./sale'));
 app.use('/state', stateRoute);
 app.use('/city', cityRoute);
 app.use('/zipcode', zipcodeRoute);

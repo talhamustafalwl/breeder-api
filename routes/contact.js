@@ -4,6 +4,6 @@ const router = express.Router();
 const { auth } = require("../middleware/auth");
 
 router.post('/', auth, contactController.addContact)
-.get('/', contactController.getContact);
+.get('/', auth, contactController.getContact);
 
 module.exports = router;

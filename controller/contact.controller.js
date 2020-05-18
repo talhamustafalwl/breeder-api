@@ -27,6 +27,11 @@ class ContactController {
     getContact(req, res, next) {
         try {
 
+            Contact.find(req.user.role === 'admin' ?  {} :{createdBy: req.user.id}).then(result => {
+                return res.status(200).json({ status: 200, message: "contacts fetched successfully", data: result });
+            }).catch(error => {
+                return res.json({ status: 400, message: "Error in fetching contacts ", errors: error, data: {} });
+            })
         } catch(error) {
             return next(error);
         }
