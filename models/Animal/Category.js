@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+var idvalidator = require('mongoose-id-validator');
 //first thing to define animal categories
 //?? it is created by admin
 const categorySchema = mongoose.Schema({
@@ -22,6 +23,7 @@ categorySchema.pre('save', function (next) {
     next();
 });
 
+categorySchema.plugin(idvalidator);
 const Category = mongoose.model('Category', categorySchema);
 
 module.exports = { Category }
