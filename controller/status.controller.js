@@ -6,7 +6,7 @@ class StatusController {
     async create(req,res){
         const {name}=req.body
         if(!name){
-            return res.json({ status: 400, message: "name required", data: {} });
+            return res.json({ status: 400, message: "name required",errors:{name:"Name is required"}, data: {} });
         }
         try {      
             const animal = await new Status({name})
