@@ -7,7 +7,7 @@ class CategoryController {
     const { name, active, parentId } = req.body
     console.log(name);
     if (!name) {
-      return res.json({ status: 400, message: "Name is required", data: {} });
+      return res.json({ status: 400, message: "Name is required",errors:{name:"Name is required"}, data: {} });
     }
     try {
       const animal = await new Category({ name, active, parentId });

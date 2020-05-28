@@ -29,6 +29,8 @@ const invoiceitemRoute = require('./invoiceitem');
 const installmentRoute = require('./installment');
 const groupRoute = require('./groups');
 const grouplogRoute = require('./grouplogs');
+const relationRoute = require('./relation');
+const productRoute = require('./product');
 
 const formRoute = require('./form');
 const elementRoute = require('./elements');
@@ -37,6 +39,7 @@ const stateRoute = require('./states');
 const cityRoute = require('./cities');
 const zipcodeRoute = require('./zipcodes');
 const locationRoute = require('./locations');
+const notificationRoute = require('./notifications');
 
 app.use('/user', userRoute);
 app.use('/animal', animalRoute);
@@ -70,7 +73,8 @@ app.use('/invoiceitem', invoiceitemRoute);
 app.use('/installment',installmentRoute);
 app.use('/group',groupRoute);
 app.use('/grouplog',grouplogRoute);
-
+app.use('/relation',relationRoute); //animal relationship create
+app.use('/product',productRoute);
 
 app.use('/contact', require('./contact'));
 app.use('/sale', require('./sale'));
@@ -78,4 +82,5 @@ app.use('/state', stateRoute);
 app.use('/city', cityRoute);
 app.use('/zipcode', zipcodeRoute);
 app.use('/location', locationRoute);
+app.use('/notification', notificationRoute);
 module.exports = app;

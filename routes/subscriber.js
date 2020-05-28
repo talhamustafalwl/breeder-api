@@ -7,6 +7,9 @@ const SubscriberController = require('../controller/subscriber.controller');
 const { Transaction } = require("../models/Subscription/Transaction");
 //stripe
 router.route('/stripe').post(auth,SubscriberController.createstripe)
+//paypal
+router.route('/paypal').post(auth,SubscriberController.createpaypal)
+
 //for new breeder (default package)
 router.route('/default').post(auth,SubscriberController.createdefault)
 

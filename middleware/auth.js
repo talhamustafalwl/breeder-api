@@ -19,14 +19,12 @@ let auth = (req, res, next) => {
         status:400,isAuth: false,message:"auth token is invalid",data:{}
       });
 
-    //   // Skip subscription if user is admin ..
-    //   if(user.role == "admin") {
-    //     req.token = token;
-    //     req.user = user;
-    //     return next();
-    //   }
-    // ///subscribtion date validation (block apis after trial period)
-    //   breederId=user.role == "employee" ? user.breederId : user._id
+      if (user.isblocked)
+      return res.json({status: 400,message: "blocked by admin",
+        data: {}});
+    
+    ///subscribtion date validation (block apis after trial period)
+      breederId=user.role == "employee" ? user.breederId : user._id
       
     //     const toDate = await Subscriber.findOne({breederId}).then(
     //       result=> !result ? result: result.toDate

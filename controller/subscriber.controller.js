@@ -6,7 +6,93 @@ const { validateSubscriberInput } = require("../validation/subscriber");
 const config = require("../config/key");
 const stripe = require('stripe')(config.stripe_private)
 class SubscriberController {
-  constructor() { }
+    constructor() { }
+
+    ///paypal payment made from react using react-paypal-express-checkout then call this to save
+    async createpaypal(req,res){
+      const { errors, isValid } = validateSubscriberInput(req.body);
+      if (!isValid) {
+      return res.json({ status: 400, message: "errors present", errors: errors, data: {} });
+      }
+      Subscription.findById(subscriptionId).then(
+        result=>  {const subscriber = new Subscriber({breederId:req.user._id, description:req.body.description,fromDate:Date.now(),toDate:Date.now() + result.period*24*60*60*1000,
+          subscriptionId:result.subscriptionId,allowedEmp:result.allowedEmp,allowedAnimal:result.allowedAnimal,
+          name:result.name,price:result.price,currency:result.currency,payment_gateway:"paypal", 
+      })
+
+      /////transaction not delete it is for lof purpose
+      const transaction = new Transaction({breederId:req.user._id, description:req.body.description,fromDate:Date.now(),toDate:Date.now() + result.period*24*60*60*1000,
+      subscriptionId:result.subscriptionId,allowedEmp:result.allowedEmp,allowedAnimal:result.allowedAnimal,
+      })
+      transaction.save((err, doc) => {
+      if (err) return res.json({  status:400,message:"Subscriber Payment error in transaction", errors:err,data:{} });
+      })
+      ///////////////
+
+      subscriber.save(async (err, doc) => {
+      if (err) return res.json({  status:400,message:"Subscriber Payment error", errors:err,data:{} });
+
+      ///delete older
+      await LogicController.SubscriberdeleteFirst(req.user._id)
+      ///
+      return res.status(200).json({status:200,message:"Subscriber Payment made successfully", data:doc});
+      })
+      })
+      .catch(err => {return res.json({ status: 400, message: "Error in creating Subscriber (ckeck subscriptionId)", errors: err, data: {}})
+    })
+    }
+
+       ///stripe payment create 
+       async createstripe(req,res){
+
+      
+            const { errors, isValid } = validateSubscriberInput(req.body);
+            if (!isValid) {
+            return res.json({ status: 400, message: "errors present", errors: errors, data: {} });
+            }
+            let {subscriptionId,description} = req.body;
+            
+           
+
+            Subscription.findById(subscriptionId).then(
+                result=> 
+                //stripe
+                //await stripe.customers.create({source}})
+                //.then(customer => stripe.charges.create({
+                //    amount:result.price,
+                //    currency:result.currency,
+                //    customer: customer.id
+                //  }))
+
+                //.then(charge => 
+                    {const subscriber = new Subscriber({breederId:req.user._id, description,fromDate:Date.now(),toDate:Date.now() + result.period*24*60*60*1000,
+                                        subscriptionId:result.subscriptionId,allowedEmp:result.allowedEmp,allowedAnimal:result.allowedAnimal,
+                                        name:result.name,price:result.price,currency:result.currency,payment_gateway:"stripe",
+                                     //   price:charge.amount,   email:charge.billing_details.name
+                                     // ,created:charge.created,    currency:charge.currency, customer:charge.customer,
+                                     // brand:charge.payment_method_details.card.brand,  country:charge.payment_method_details.card.country, 
+                                    })
+                    
+                    /////transaction not delete it is for lof purpose
+                    const transaction = new Transaction({breederId:req.user._id, description,fromDate:Date.now(),toDate:Date.now() + result.period*24*60*60*1000,
+                        subscriptionId:result.subscriptionId,allowedEmp:result.allowedEmp,allowedAnimal:result.allowedAnimal,
+                      })
+                    transaction.save((err, doc) => {
+                        if (err) return res.json({  status:400,message:"Subscriber Payment error in transaction", errors:err,data:{} });
+                     })
+                     ///////////////
+
+                    subscriber.save(async (err, doc) => {
+                    if (err) return res.json({  status:400,message:"Subscriber Payment error", errors:err,data:{} });
+                   
+                    ///delete older
+                    await LogicController.SubscriberdeleteFirst(req.user._id)
+                    ///
+                    return res.status(200).json({status:200,message:"Subscriber Payment made successfully", data:doc});
+                })
+            })
+            .catch(err => {return res.json({ status: 400, message: "Error in creating Subscriber (ckeck subscriptionId)", errors: err, data: {}})
+                 })
 
 
   ///stripe payment create 

@@ -6,7 +6,7 @@ class DesignationController {
     async create(req,res){
         const {name}=req.body
         if(!name){
-            return res.json({ status: 400, message: "name required", data: {} });
+            return res.json({ status: 400, message: "name required",errors:{name:"name required"}, data: {} });
         }
         try {      
             const employee = await new Designation({name,breederId:req.user._id})

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { User } = require("../models/User");
 const { auth } = require("../middleware/auth");
+const { adminauth } = require("../middleware/adminauth");
 const { employeesubscriber } = require("../middleware/empsubscriber");
 const mailer = require('../misc/mailer');
 const bcrypt = require('bcrypt');
@@ -17,6 +18,7 @@ const SubscriberController = require('../controller/subscriber.controller');
 const { validateLoginInput, validateRegisterInput, validateRegisterInputEmp } = require("../validation/users");
 //auth route check
 router.get("/auth",auth, UserController.authentication);
+router.patch("/isblocked/:id",adminauth, UserController.isblocked);
 
 
 
