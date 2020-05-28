@@ -8,10 +8,19 @@ const AnimalSchema = mongoose.Schema({
         type:Schema.Types.ObjectId,
         ref: 'User',required:true
     },
+
     addedBy: {
         type:Schema.Types.ObjectId,
         ref: 'User'
     },//kis user ne add kiya ha
+    
+    // can have only one farm..
+    farmId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Farm',
+        required: true,
+    }, // in which farm this animal belongs to ..
+    
     categoryId: {
         type:Schema.Types.ObjectId,
         ref: 'Category'
@@ -60,7 +69,7 @@ const AnimalSchema = mongoose.Schema({
     registrationNumber:Number,
     country:String,
     breed:String,
-
+    isPrivate: {type: Boolean, default: false},
     //images:[{type:Schema.Types.ObjectId,ref: 'Image'}],
     //videos:[{type:Schema.Types.ObjectId,ref: 'Video'}],
 

@@ -54,10 +54,10 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },//belongs to which breeder
-    farmId: {
+    farmId: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Farm'
-    }, //belongs to which farm
+        ref: 'Farm',
+    }], //belongs to which farm and can be multiple farms ..
     designationId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Designation'

@@ -86,8 +86,13 @@ class AnimalController {
     //console.log(query)
     try {
       //const animals = await Animal.find({ breederId });
-      const animals = await Animal.find(query)
-      return res.status(200).json({ status: 200, message: "Animal data", data: animals });
+      if(req.user.role == 'employee') {
+        const animals = await Animal.find({...query, ...{farmId: {"$in": req.user.farmId}}});
+        return res.status(200).json({ status: 200, message: "Animal data", data: animals });  
+      } else {
+        const animals = await Animal.find(query)
+        return res.status(200).json({ status: 200, message: "Animal data", data: animals });  
+      }
     } catch (err) {
       return res.json({ status: 400, message: "Error in get animal", errors: err, data: {} });
     }

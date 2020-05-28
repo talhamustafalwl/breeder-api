@@ -4,15 +4,15 @@ const isEmpty = require("is-empty");
 function validateFarmInput(data) {
   let errors = {};
   // Convert empty fields to an empty string so we can use validator functions
-  data.categoryId = !isEmpty(data.categoryId) ? data.categoryId : "";
+  data.categories = (data.categories && data.categories[0]) ? data.categories : "";
   data.name = !isEmpty(data.name) ? data.name : "";
   data.city = !isEmpty(data.city) ? data.city : "";
   data.state = !isEmpty(data.state) ? data.state : "";
   data.zipcode = !isEmpty(data.zipcode) ? data.zipcode : "";
 
   // categoryId checks
-  if (Validator.isEmpty(data.categoryId)) {
-    errors.categoryId = "categoryId field is required";
+  if (!(data.categories)) {
+    errors.categories = "At least one category is required";
   }
  // name checks
   if (Validator.isEmpty(data.name)) {

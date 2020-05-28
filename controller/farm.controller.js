@@ -12,13 +12,13 @@ class FarmController {
         if (!isValid) {
           return res.json({ status: 400, message: "Errors present", errors: errors, data: {} });
         }
-        const {name,categoryId,state,city,zipcode,categoryName}=req.body
+        const {name,state,city,zipcode,categories}=req.body
         try {      
-            const employee = await new Farm({name,categoryId,categoryName,state,city,zipcode,breederId:req.user._id})
+            const employee = await new Farm({name,categories,state,city,zipcode,breederId:req.user._id})
             const doc=await employee.save()
-            return res.status(200).json({ status: 200, message: "Farm of employee created successfully", data: doc });
+            return res.status(200).json({ status: 200, message: "Farm created successfully", data: doc });
         } catch (err) {
-            return res.json({ status: 400, message: "Error in creating Farm of employee", errors: err, data: {} });
+            return res.json({ status: 400, message: "Error in creating Farm", errors: err, data: {} });
         }
     }
 
