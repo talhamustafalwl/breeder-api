@@ -69,7 +69,7 @@ const userSchema = mongoose.Schema({
         type: String
     },
     currencyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Currency' },
-
+    isblocked:{type:Boolean,default:false}
 }, {
     timestamps: true
 })

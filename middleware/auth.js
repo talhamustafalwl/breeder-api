@@ -18,6 +18,10 @@ let auth = (req, res, next) => {
       return res.json({
         status:400,isAuth: false,message:"auth token is invalid",data:{}
       });
+
+      if (user.isblocked)
+      return res.json({status: 400,message: "blocked by admin",
+        data: {}});
     
     ///subscribtion date validation (block apis after trial period)
       breederId=user.role == "employee" ? user.breederId : user._id
