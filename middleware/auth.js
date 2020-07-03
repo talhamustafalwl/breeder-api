@@ -14,15 +14,20 @@ let auth = (req, res, next) => {
   User.findByToken(token, async (err, user) => {
     if (err) throw err;
     if (!user)
-    
       return res.json({
         status:400,isAuth: false,message:"auth token is invalid",data:{}
       });
 
-      if (user.isblocked)
-      return res.json({status: 400,message: "blocked by admin",
-        data: {}});
-    
+    req.token = token;
+    req.user = user;
+    req.isAuthenticate = false;
+    if(user.isAdmin) return next();
+
+    if (user.isblocked)
+    return res.json({status: 400,message: "blocked by admin",
+      data: {}});
+      
+      
     ///subscribtion date validation (block apis after trial period)
       breederId=user.role == "employee" ? user.breederId : user._id
       
@@ -42,11 +47,46 @@ let auth = (req, res, next) => {
     //     });
     //   }
 
-    req.token = token;
-    req.user = user;
     
-    next();
+    
+    return next();
   });
 };
 
-module.exports = { auth };
+
+let allowAdmin = (req, res, next) => {
+  if(req.user.role === 'admin') {
+    req.isAuthenticate = true;
+    next();
+  } else {
+    next();
+  }
+}
+let allowBreeder = (req, res, next) => {
+  console.log(req.isAuthenticate)
+  console.log(req.user);
+  if(req.user.role === 'breeder') {
+    req.isAuthenticate = true;
+    next();
+  } else {
+    next();
+  }
+}
+
+let allowEmployee = (req, res, next) => {
+  if(req.user.role === 'employee') {
+    req.isAuthenticate = true;
+    next();
+  } else {
+    next();
+  }
+}
+
+let authenticateRole = (req, res, next) => {
+  console.log(req.isAuthenticate);
+  if(req.isAuthenticate) return next();  
+  console.log(req.user);
+  return res.status(400).json({status: 400,message: "Restricted! Unauthorized User", data: {}});
+}
+
+module.exports = { auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole  };

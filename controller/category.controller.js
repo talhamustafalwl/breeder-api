@@ -1,4 +1,5 @@
 const { Category } = require("../models/Animal/Category");
+const { restart } = require("nodemon");
 class CategoryController {
   constructor() { }
 
@@ -72,6 +73,17 @@ class CategoryController {
     } catch (err) {
       return res.json({ status: 400, message: "Error in updating Category", errors: err, data: {} });
     }
+  }
+
+  async getCategoryByIdAndFindParent(_id) {
+    return await Category.find().then(res => {
+      console.log('filter category');
+      return res.filter(e=> (e.parentId==_id))[0] ? {error: true, message: 'This is parent category'} : res;
+    }).then(res => {
+      if(res.error) return res;
+     
+      return res.filter(e => (e._id==_id))[0] ? {error: false, message: ''} : {error: true, message: 'Category is not available'} 
+    });
   }
 
 };

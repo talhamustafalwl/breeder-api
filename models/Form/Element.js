@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+
+
 //element will created by admin
 const ElementSchema = mongoose.Schema({
     name: { type: String },
@@ -15,7 +17,7 @@ const ElementSchema = mongoose.Schema({
         shouldAtLeastOneSpecialCharacter: { type: Boolean },
         shouldAtLeastOneLowerCase: { type: Boolean },
         shouldAtLeastOneNumber: { type: Boolean },
-    }
+    },
 }, { timestamps: true })
 
 
