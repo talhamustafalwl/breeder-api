@@ -79,6 +79,7 @@ router.get('/verify/:id', async (req, res, next) => {
 })
 
 router.post("/login", (req, res) => {
+  //console.log("login called")
   const { errors, isValid } = validateLoginInput(req.body);
 
   // Check validation
