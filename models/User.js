@@ -8,7 +8,7 @@ const userSchema = mongoose.Schema({
     name: {
         type: String, minglength: 5, maxlength: 50
     },
-    mobile: {
+    phone: {
         type: Number, minglength: 9, maxlength: 10
     },
     email: {
@@ -30,9 +30,12 @@ const userSchema = mongoose.Schema({
         type: Date
     },
     verified: { type: Boolean, default: false }, // For verification..
+
+
     active: {
         type: Number, default: 1 //0 for not active,1 for active
     },
+
     secretToken: String,//for email confirmation
     resetToken: String,//for forget password
     //resetTokenExp:Date
@@ -44,7 +47,19 @@ const userSchema = mongoose.Schema({
         type: Date
     },
 
+
     city: String, state: String, zipcode: Number,
+    address: String,
+    
+
+
+    // For employees need to give access rights.. 
+    canAccessMobileApp: Boolean,
+    canAccessInventoryManagement: Boolean,
+
+    // For employees need to enter business name.. 
+    businessName: String,
+    noOfEmployees: Number,
 
     ////extra must fields for Employee
     appointmentDate: {
@@ -54,6 +69,7 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },//belongs to which breeder
+    
     farmId: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Farm',
@@ -86,8 +102,8 @@ userSchema.pre('save', function (next) {
                 if (err) return next(err);
                 user.password = hash
                 next()
-            })
-        })
+            });
+        });
     } else {
         next()
     }
