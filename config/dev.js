@@ -9,6 +9,8 @@ module.exports = {
     stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",
     stripe_private:"sk_test_Cozb0IU8FFmiHpepGUVqQCUM00gNg0NJRk",
 
+
+    
     //paypal
     paypalId:"",
     paypalSecret:"",
