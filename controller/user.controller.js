@@ -79,8 +79,8 @@ class UserController {
                 if (err) return res.status(201).json({ status: 400, message: "Email is already registered", errors: err, data: {} });
 
                 // Email is pending for later use..
-                // const html = registeremail(doc.secretToken, config.Server)
-                // mailer.sendEmail(config.mailthrough, doc.email, 'Please verify your email!', html);
+                const html = registeremail(doc.secretToken, config.Server)
+                mailer.sendEmail(config.mailthrough, doc.email, 'Please verify your email!', html);
                 return res.status(200).json({ status: 200, message: "Verification email is send", data: doc });
             });
         } catch (err) {
@@ -103,6 +103,7 @@ class UserController {
 
     async registerBreeder(req, res, next) {
         try {
+            console.log("register called")
             const { errors, isValid } = validateRegisterInputBreeder(req.body);
             console.log(errors);
             console.log(isValid);
@@ -120,21 +121,21 @@ class UserController {
             //     }
             //   }
 
-            console.log(req.body);
+            //console.log(req.body);
             const user = new User(req.body);
             user.secretToken = randomstring.generate();
             user.save((err, doc) => {
-                if (err) return res.status(201).json({ status: 400, message: "Email is already registered", errors: err, data: {} });
+                if (err) return res.json({ status: 400, message: "Email is already registered", errors: err, data: {} });
 
 
                 console.log(doc);
                 // Initialize the forms that available to breeder .. 
-                formController.cloneFormToBreeder(doc._id);
+                //formController.cloneFormToBreeder(doc._id);
 
                 // Send email to breeder..
                 // Email is pending for later use.. 
-                // const html = registeremail(doc.secretToken, config.Server, 'breeder');
-                // mailer.sendEmail(config.mailthrough, doc.email, 'Please verify your email!', html);
+                 const html = registeremail(doc.secretToken, config.Server, 'breeder');
+                 mailer.sendEmail(config.mailthrough, doc.email, 'Please verify your email!', html);
                 return res.status(200).json({ status: 200, message: "Verification email is send", data: doc });
             });
         } catch (err) {
