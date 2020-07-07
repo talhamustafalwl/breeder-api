@@ -139,6 +139,15 @@ router.get('/isForgotTokenActive', UserController.isForgotTokenActive);
 router.post('/resetForgotPassword', UserController.resetForgotPassword);
 
 
+
+router.post('/force_verify', (req, res, next) => {
+  User.updateOne({email: req.body.email} , {$set: {verified: true}}).then(result => {
+    return res.status(200).json({
+      success: true, status: 200, message: "Verified successfully", data: {}
+    });
+  })
+})
+
 // router.get('/forgetpassword/:token', (req, res) => {
 //   User.findOne({
 //     resetToken: req.params.token

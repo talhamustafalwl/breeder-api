@@ -15,6 +15,7 @@ const city = mongoose.Schema({
     stateId: {
         type: String,required:true
     },
+    prefix: String,
     lat: {
         type: String
     },

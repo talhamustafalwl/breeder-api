@@ -8,7 +8,7 @@ const StateController = require('../controller/state.controller');
 router.post("/",adminauth,StateController.create)
 
 router.route('/all').delete(adminauth,StateController.deleteall)
-  .get(auth,StateController.getall)
+  .get(StateController.getall)
 
 
 //for see/delete/update state by id
