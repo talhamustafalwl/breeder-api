@@ -44,14 +44,30 @@ router.put("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, Us
 // Register Breeder only .. Using portal
 router.post("/breeder/register", UserController.registerBreeder);
 
+router.post("/emailCheck", (req, res) => {
+  console.log("emailCheck called",req.body)
+  if(!req.body.email){
+    return res.json({status: 400, message: "Email is required", data: {}});
+  }
+  User.findOne({ email: req.body.email }, (err, user) => {
+    if (user)
+    {
+      return res.json({status: 400, message: "Email is already registered", data: {}});
+    }
+    else{
+      return res.status(200).json({ status: 200, message: "Email is not registered", data: {} });
+    }
+   } )}
+)
+
 router.get('/verify/:id', async (req, res, next) => {
-  
+  //console.log("called verify")
   try {
     const secretToken = req.params.id;
     // Find account with matching secret token
     const user = await User.findOne({ 'secretToken': secretToken });
     if (!user) {
-      return res.status(404).json({ status: 404, message: "Invalid secret token", data: {} });
+      return res.json({ status: 404, message: "Invalid secret token", data: {} });
     }
     user.verified = true;
     user.secretToken = '';
