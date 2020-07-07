@@ -147,12 +147,12 @@ class UserController {
     async forgotPassword(req, res, next) {
         try {
             if (!req.body.email) {
-                return res.json({ status: 400, email: "Email field is required", data: {} });
+                return res.json({ status: 400, message: "Email field is required", data: {} });
               }
             
               User.findOne({ email: req.body.email }).then(user => {
                 if (!user) {
-                  return res.json({ status: 400, email: "Email do not exists", data: {} });
+                  return res.json({ status: 400, message: "Email do not exists", data: {} });
                 }
                 //check for active user
                 if (user.active == 0)
@@ -180,10 +180,10 @@ class UserController {
 
     async isForgotTokenActive(req, res, next) {
         try {
-            if(!req.query.token) return res.status(400).json({ status: 400, email: "Token is required", data: {} });
+            if(!req.query.token) return res.status(400).json({ status: 400, message: "Token is required", data: {} });
 
             User.findOne({resetToken: removeQuote(req.query.token)}).then(resToken => {
-                if(!resToken) return res.status(400).json({ status: 400, email: "Invalid token", data: {} });
+                if(!resToken) return res.status(400).json({ status: 400, message: "Invalid token", data: {} });
                 return res.status(200).json({status: 200, message: "Token found successfully", data:{token: removeQuote(req.query.token)} })
             });
         } catch(error) {
@@ -194,10 +194,10 @@ class UserController {
     async resetForgotPassword(req, res, next) {
         try {  
             const {errors, isValid} = validateResetPassword(req.body);
-            if(!isValid) return res.status(400).json({ status: 400, email: "Error presents",   errors: errors, data: {} });
+            if(!isValid) return res.status(400).json({ status: 400, message: "Error presents",   errors: errors, data: {} });
             const {token, password} = req.body;
             User.findOne({resetToken: token}).then(user=> {
-                if(!user) return res.status(400).json({ status: 400, email: "Invalid token", data: {} });
+                if(!user) return res.status(400).json({ status: 400, message: "Invalid token", data: {} });
                 user.password = password;
                 user.resetToken = '';
                 user.save().then(resultSaved => {

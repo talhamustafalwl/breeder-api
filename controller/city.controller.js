@@ -32,6 +32,15 @@ class CityController {
         }
       }
 
+    //   async getCityByState (req, res, next) {
+    //       try {
+    //             await City.find({})
+    //       }
+    //       catch(error) {
+    //         return res.json({ status: 400, message: "Error in get City by state", errors: err, data: {} });
+    //       }
+    //   }
+
       async deleteall(req,res){
           let city;
         try {

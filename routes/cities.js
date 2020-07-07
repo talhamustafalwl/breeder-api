@@ -7,8 +7,11 @@ const CityController = require('../controller/city.controller');
 //create,delete city only by admin
 router.post("/",adminauth,CityController.create)
 
-router.route('/all').delete(adminauth,CityController.deleteall)
-  .get(auth,CityController.getall)
+router.route('/all').delete(CityController.deleteall)
+  .get(CityController.getall)
+
+
+// router.route('/byState/:state').get(CityController.getCityByState)
 
 
 //for see/delete/update city by id
