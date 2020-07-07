@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 const config = require("./config/key");
 const { auth } = require("./middleware/auth");
 const mongoose = require("mongoose");
+const cors = require('cors');
 require('dotenv').config()
 const routes = require("./routes");
 
@@ -20,7 +21,7 @@ if (process.env.NODE_ENV === 'production') {
     app.use(express.static('client/build'));
 }
 ///
-
+app.use(cors());
 app.use(cookieParser());
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
