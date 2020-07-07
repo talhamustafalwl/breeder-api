@@ -8,7 +8,8 @@ const ZipcodeController = require('../controller/zipcode.controller');
 router.post("/",adminauth,ZipcodeController.create)
 
 router.route('/all').delete(adminauth,ZipcodeController.deleteall)
-  .get(auth,ZipcodeController.getall)
+.get(auth,ZipcodeController.getall)
+
 
 
 //for see/delete/update zipcode by id
