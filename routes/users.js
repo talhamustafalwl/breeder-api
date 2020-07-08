@@ -50,6 +50,7 @@ router.post("/emailCheck", (req, res) => {
     return res.json({status: 400, message: "Email is required", data: {}});
   }
   User.findOne({ email: req.body.email }, (err, user) => {
+    console.log(user);
     if (user)
     {
       return res.json({status: 400, message: "Email is already registered", data: {}});

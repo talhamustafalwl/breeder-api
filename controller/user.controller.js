@@ -121,10 +121,11 @@ class UserController {
             //     }
             //   }
 
-            //console.log(req.body);
+            console.log(req.body);
             const user = new User(req.body);
             user.secretToken = randomstring.generate();
             user.save((err, doc) => {
+                console.log(err);
                 if (err) return res.json({ status: 400, message: "Email is already registered", errors: err, data: {} });
 
 
