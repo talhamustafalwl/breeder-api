@@ -9,7 +9,7 @@ const userSchema = mongoose.Schema({
         type: String, minglength: 5, maxlength: 50
     },
     phone: {
-        type: String, minglength: 10, maxlength: 12
+        type: String, minglength: 10, maxlength: 15
     },
     email: {
         type: String, trim: true, unique: 1
