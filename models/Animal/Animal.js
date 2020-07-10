@@ -81,7 +81,7 @@ const AnimalSchema = mongoose.Schema({
     },
     locationId: {
         type:Schema.Types.ObjectId,
-        ref: 'Location',required:true
+        ref: 'Location'
     },
     qrcodepath:{type:String}
     },

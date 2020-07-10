@@ -6,7 +6,7 @@ function validateAnimalInput(data) {
   // Convert empty fields to an empty string so we can use validator functions
   data.categoryName = !isEmpty(data.categoryName) ? data.categoryName : "";
   data.categoryId = !isEmpty(data.categoryId) ? data.categoryId : "";
-  data.data = !isEmpty(data.data) ? data.data : "";
+  data.data = (data.data) ? data.data : "";
   // data.color = !isEmpty(data.color) ? data.color : "";
   // data.status = !isEmpty(data.status) ? data.status : "";
   // data.acquired = !isEmpty(data.acquired) ? data.acquired : "";
@@ -17,12 +17,12 @@ function validateAnimalInput(data) {
   if (Validator.isEmpty(data.categoryName)) {
     errors.categoryName = "categoryName field is required";
   }
-  
+
   if (Validator.isEmpty(data.categoryId)) {
     errors.categoryId = "categoryId field is required";
   }
 
-  if (Validator.isEmpty(data.data)) {
+  if (!(data.data)) {
     errors.data = "data field is required";
   }
 //  // color checks
