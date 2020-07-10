@@ -32,6 +32,7 @@ const AnimalSchema = mongoose.Schema({
         type:String,minglength: 3,
         maxlength:20 ,required: true 
     },
+    data: Object,
     age:Number,
     gender:{type: String,
         enum: ["male", "female"]

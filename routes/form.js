@@ -8,6 +8,7 @@ const formController = require('../controller/form.controller');
 router.get('/:categoryId', FormController.getFormByCategory)
 .get('/', FormController.getAllForms)
     .post('/', adminauth, FormController.addForm)
-    .put('/:id', auth, FormController.modifyForm);
+    .put('/:id', auth, FormController.modifyForm)
+    .delete('/category/:id', FormController.deleteFormByCategory);
 
 module.exports = router;

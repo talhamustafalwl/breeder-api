@@ -11,7 +11,9 @@ const { use } = require("../routes/users");
 
 class UserController {
     constructor() { }
-    
+    async test () {
+        console.log('test called');
+      }
     authentication(req, res, next) {
         try {
             return res.status(200).json({
@@ -212,13 +214,11 @@ class UserController {
         }
     }
 
-    async resetPassword() {
+    // async resetPassword() {
 
-    }
+    // }
 
-    async getAllBreedersId() {
-        return User.find({role: 'breeder'}).then(breederResult  => breederResult.map((value) => value._id));
-    }
+ 
 
 };
 
