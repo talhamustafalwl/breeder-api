@@ -4,8 +4,8 @@ class VacinationController {
   constructor() { }
 
 
-  async test () {
-    console.log('test called');
+  test () {
+    console.log('test called')
   }
 
   //assign cleaning

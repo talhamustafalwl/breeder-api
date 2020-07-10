@@ -2,12 +2,10 @@ const { Form } = require("../models/Form/Form");
 const { User } = require("../models/User");
 const { roleValues } = require('../config/roles');
 const { getCategoryByIdAndFindParent } = require('./category.controller');
-const usercontroller = require('./user.controller');
+const {getAllBreedersId} = require('./user.controller');
 const { validateAddForm } = require('../validation/form');
 const { Mongoose } = require("mongoose");
 const { Animal } = require("../models/Animal/Animal");
-const vacinationController = require("./vacination.controller");
-const userController = require("./user.controller");
 class FormController {
     constructor() {
         this.addForm = this.addForm.bind(this);
@@ -62,30 +60,22 @@ class FormController {
                     console.log('category res');
                     if (categoryResult.error) return res.json({ status: 400, message: categoryResult.message });
                     // getAllBreedersId()
-                    vacinationController.test();
-                    userController.test();
-                    try {
-                        return res.status(200).json({ status: 200, message: "Form Created Successfully" });
-
-                        // usercontroller.getAllBreedersId().then(breedersId => {
-                        //     const form = new Form({ ...req.body, ...{ userId: req.user._id, userType: req.user.role, breedersId } });
-                        //     form.save().then(async result => {
-                        //         return res.status(200).json({ status: 200, message: "Form Created Successfully", data: result });
-                        //         // await this.cloneFormToBreeder(req.body).then(result => {
-                        //         //     console.log(result);
-                        //         // }).catch(err => {
-                        //         //     return res.json({ status: 400, message: "Form created but error cloning to breeder", errors: err, data: {} });
-                        //         // });
-                        //     }).catch(err => {
-                        //         console.log(err.message);
-                        //         return res.json({ status: 400, message: err.message ? err.message : "Error Creating form", err, data: {} });
-                        //     })
-                        // }).catch(error => {
-                        //     console.log(error);
-                        // })
-                    } catch(error) {
-                        console.log(error);
-                    }
+                    getAllBreedersId().then(breedersId => {
+                        const form = new Form({ ...req.body, ...{ userId: req.user._id, userType: req.user.role, breedersId } });
+                        form.save().then(async result => {
+                            return res.status(200).json({ status: 200, message: "Form Created Successfully", data: result });
+                            // await this.cloneFormToBreeder(req.body).then(result => {
+                            //     console.log(result);
+                            // }).catch(err => {
+                            //     return res.json({ status: 400, message: "Form created but error cloning to breeder", errors: err, data: {} });
+                            // });
+                        }).catch(err => {
+                            console.log(err.message);
+                            return res.json({ status: 400, message: err.message ? err.message : "Error Creating form", err, data: {} });
+                        })
+                    }).catch(error => {
+                        console.log(error)
+                    })
                   
                 })
             });
@@ -97,8 +87,6 @@ class FormController {
             return next(err);
         }
     }
-
-   
 
     // async cloneFormToBreeder(data) {
     //     return new Promise((resolve, reject) => {
