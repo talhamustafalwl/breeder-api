@@ -135,14 +135,7 @@ function validateResetPassword(data) {
   let errors = {};
 
   // Convert empty fields to an empty string
-  data.token = !isEmpty(data.token) ? data.token : "";
   data.password = !isEmpty(data.password) ? data.password : "";
-  
-  
-  
-  if (Validator.isEmpty(data.token)) {
-    errors.token = "Token is required";
-  }
 
 
   if (Validator.isEmpty(data.password)) {
@@ -174,13 +167,13 @@ function validateRegisterInputEmp(data) {
   // data.farmId = !isEmpty(data.farmId) ? data.farmId : "";
   // data.designationName = !isEmpty(data.designationName) ? data.designationName : "";
 
-  if(data.canAccessMobileApp === undefined) {
+  if (data.canAccessMobileApp === undefined) {
     errors.canAccessMobileApp = "Can Access Mobile App field is required";
   }
-  if(data.canAccessInventoryManagement === undefined) {
+  if (data.canAccessInventoryManagement === undefined) {
     errors.canAccessInventoryManagement = "Can Access Inventory Management field is required";
   }
-  if(data.active === undefined) {
+  if (data.active === undefined) {
     errors.active = "Active field is required";
   }
 
@@ -205,7 +198,7 @@ function validateRegisterInputEmp(data) {
     errors.password = "Password field is required";
   }
 
-  
+
 
   if (!Validator.isLength(data.password, { min: 6, max: 30 })) {
     errors.password = "Password must be at least 6 characters";
