@@ -21,15 +21,15 @@ const { validateLoginInput, validateRegisterInput, validateRegisterInputEmp } = 
 
 
 router.get('/allusers', (req, res) => {
-  User.find().then(result  => {
-    res.status(200).send({status: 200, result});
+  User.find().then(result => {
+    res.status(200).send({ status: 200, result });
   });
 });
 
 
 //auth route check
-router.get("/auth",auth, UserController.authentication);
-router.patch("/isblocked/:id",adminauth, UserController.isblocked);
+router.get("/auth", auth, UserController.authentication);
+router.patch("/isblocked/:id", adminauth, UserController.isblocked);
 
 
 // Employees ---------------------------------------------------------------------------
@@ -52,20 +52,19 @@ router.post("/breeder/register", UserController.registerBreeder);
 
 
 router.post("/emailCheck", (req, res) => {
-  console.log("emailCheck called",req.body)
-  if(!req.body.email){
-    return res.json({status: 400, message: "Email is required", data: {}});
+  console.log("emailCheck called", req.body)
+  if (!req.body.email) {
+    return res.json({ status: 400, message: "Email is required", data: {} });
   }
   User.findOne({ email: req.body.email }, (err, user) => {
-    console.log(user);
-    if (user)
-    {
-      return res.json({status: 400, message: "Email is already registered", data: {}});
+    if (user) {
+      return res.json({ status: 400, message: "Email is already registered", data: {} });
     }
-    else{
+    else {
       return res.status(200).json({ status: 200, message: "Email is not registered", data: {} });
     }
-   } )}
+  })
+}
 )
 
 router.get('/verify/:id', async (req, res, next) => {
@@ -81,7 +80,7 @@ router.get('/verify/:id', async (req, res, next) => {
     user.secretToken = '';
 
     //default subscriber Package
-    if(user.role == "breeder"){
+    if (user.role == "breeder") {
       SubscriberController.createdefault(user)
     }
     ///
@@ -120,9 +119,8 @@ router.post("/login", (req, res) => {
         if (err) return res.send(err);
         //io.emit("userSet", { msg: "email is registered", email: req.body.email });
 
-
-        return res.cookie("w_auth", user.token)
-          .status(200)
+        res.setHeader('Cache-Control', 'private')
+        return res.cookie("w_auth", user.token).status(200)
           .json({
             status: 200, message: "Login successfully", data: { userId: user._id, token: user.token, email: user.email }
           });
@@ -134,8 +132,8 @@ router.post("/login", (req, res) => {
 
 router.get("/logout", auth, (req, res) => {
   User.updateOne({ _id: req.user._id }, { token: "", tokenExp: "" }, (err, doc) => {
-    if (err) return res.json({ success: false, err });
-    return res.status(200).json({
+    if (err) return res.json({ success: false, status: 400, err });
+    return res.clearCookie('w_auth').status(200).json({
       success: true, status: 200, message: "logout successfully", data: {}
     });
   });
@@ -144,88 +142,17 @@ router.get("/logout", auth, (req, res) => {
 
 router.post("/forgetpassword", UserController.forgotPassword);
 router.get('/isForgotTokenActive', UserController.isForgotTokenActive);
-router.post('/resetForgotPassword', UserController.resetForgotPassword);
+router.post('/resetForgotPassword/:token', UserController.resetForgotPassword);
 
 
 
 router.post('/force_verify', (req, res, next) => {
-  User.updateOne({email: req.body.email} , {$set: {verified: true}}).then(result => {
+  User.updateOne({ email: req.body.email }, { $set: { verified: true } }).then(result => {
     return res.status(200).json({
       success: true, status: 200, message: "Verified successfully", data: {}
     });
   })
 })
-
-// router.get('/forgetpassword/:token', (req, res) => {
-//   User.findOne({
-//     resetToken: req.params.token
-//   }).then((data) => {
-//     return res.status(200).json({
-//       status: 200, message: 'reset token is valid', data: data
-//     })
-//   }
-//   ).catch((err) => {
-//     return res.json({
-//       status: 400, message: 'Password reset token is invalid or has expired.', data: err
-//     })
-//   }
-//   )
-// })
-
-// router.post('/forgetpassword/:token', async (req, res) => {
-//   User.findOne({
-//     resetToken: req.params.token
-//     //resetToken_expires: {
-//     //  $gte: Date.now()
-//     //}
-//   }).exec(async function (err, user) {
-//     if (!err && user) {
-//       if (!user.active) {
-//         return res.send({
-//           status: 400, message: 'Please activate your account first', data: {}
-//         });
-//       }
-
-//       if (!req.body.password || !req.body.password2) {
-//         return res.send({
-//           status: 400, message: 'Please fill password fields', data: {}
-//         });
-//       }
-
-//       if (req.body.password === req.body.password2) {
-
-//         var password = await bcrypt_password(req.body.password)
-//         user.password = password
-//         user.resetToken = "";
-//         user.resetTokenExp = "";
-//         await user.save(function (err) {
-//           if (err) {
-//             return res.status(422).send({
-//               message: err
-//             });
-//           } else {
-
-//             let html = passwordchangedemail()
-//             mailer.sendEmail(config.mailthrough, user.email, 'Password reset successfully', html);
-
-//             return res.status(200).json({
-//               status: 200, message: 'Password reset succeesfully', data: {}
-//             });
-//           }
-//         });
-//       } else {
-//         return res.status(422).json({
-//           status: 422, message: 'Password fileld not match', data: {}
-//         });
-//       }
-//     } else {
-//       return res.json({
-//         status: 400, message: 'Password reset token is invalid or has expired.', data: {}
-//       });
-//     }
-//   });
-// })
-
 
 function bcrypt_password(password) {
   bcrypt.genSalt(10, function (err, salt) {
