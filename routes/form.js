@@ -11,4 +11,8 @@ router.get('/:categoryId', FormController.getFormByCategory)
     .put('/:id', auth, FormController.modifyForm)
     .delete('/category/:id', FormController.deleteFormByCategory);
 
+
+
+router.put('/modify/values', FormController.modifyValues);
+
 module.exports = router;

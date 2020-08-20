@@ -59,6 +59,7 @@ function validateLoginInput(data) {
   // Convert empty fields to an empty string so we can use validator functions
   data.email = !isEmpty(data.email) ? data.email : "";
   data.password = !isEmpty(data.password) ? data.password : "";
+  data.role = !isEmpty(data.role) ? data.role: "" ;
 
   // Email checks
   if (Validator.isEmpty(data.email)) {
@@ -66,9 +67,15 @@ function validateLoginInput(data) {
   } else if (!Validator.isEmail(data.email)) {
     errors.email = "Email is invalid";
   }
+
   // Password checks
   if (Validator.isEmpty(data.password)) {
     errors.password = "Password field is required";
+  }
+
+  // Role checks
+  if (Validator.isEmpty(data.role)) {
+    errors.role = "Role field is required";
   }
 
   return {

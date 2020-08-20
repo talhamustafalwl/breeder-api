@@ -34,15 +34,22 @@ router.patch("/isblocked/:id",adminauth, UserController.isblocked);
 
 // Employees ---------------------------------------------------------------------------
 router.get('/employees/all', auth, allowAdmin, allowBreeder, authenticateRole, UserController.getAllEmployees);
+
+
 // Register Employee only .. By Breeder..
 // employeesubscriber //// Will manage subscribe later.. 
 router.post("/employee/register", auth, allowAdmin, allowBreeder, authenticateRole, UserController.registerEmployees);
+
+
 // -------------------------------------------------------------------------------------
 router.put("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, UserController.editEmployee);
+
 
 // Breeders ----------------------------------------------------------------------------
 // Register Breeder only .. Using portal
 router.post("/breeder/register", UserController.registerBreeder);
+
+
 
 router.post("/emailCheck", (req, res) => {
   console.log("emailCheck called",req.body)
@@ -87,7 +94,7 @@ router.get('/verify/:id', async (req, res, next) => {
 })
 
 router.post("/login", (req, res) => {
-  //console.log("login called")
+
   const { errors, isValid } = validateLoginInput(req.body);
 
   // Check validation

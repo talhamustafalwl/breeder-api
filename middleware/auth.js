@@ -55,7 +55,7 @@ let auth = (req, res, next) => {
 
 
 let allowAdmin = (req, res, next) => {
-  if(req.user.role === 'admin') {
+  if(req.user.role.includes('admin')) {
     req.isAuthenticate = true;
     next();
   } else {
@@ -65,7 +65,7 @@ let allowAdmin = (req, res, next) => {
 let allowBreeder = (req, res, next) => {
   console.log(req.isAuthenticate)
   console.log(req.user);
-  if(req.user.role === 'breeder') {
+  if(req.user.role.includes('breeder')) {
     req.isAuthenticate = true;
     next();
   } else {
@@ -74,7 +74,7 @@ let allowBreeder = (req, res, next) => {
 }
 
 let allowEmployee = (req, res, next) => {
-  if(req.user.role === 'employee') {
+  if(req.user.role.includes('employee')) {
     req.isAuthenticate = true;
     next();
   } else {

@@ -18,8 +18,7 @@ const userSchema = mongoose.Schema({
         type: String, minglength: 6
     },
     role: {
-        type: String,
-        enum: ["admin", "breeder","employee"]
+        type: [{type: String,  enum: ["admin", "breeder","employee"] }],
     },
     isAdmin: { type: Boolean, default: false },
     image: String,
@@ -69,7 +68,9 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },//belongs to which breeder
-    
+    uid: {
+        type: Number
+    },
     farmId: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Farm',

@@ -73,11 +73,13 @@ class FormController {
                             console.log(err.message);
                             return res.json({ status: 400, message: err.message ? err.message : "Error Creating form", err, data: {} });
                         })
-                    }).catch(error => {
-                        console.log(error)
+                    }).catch(err => {
+                        console.log(err)
+                        return res.json({ status: 400, message: err.message ? err.message : "Internal Server Error", err, data: {} });
                     })
-                  
                 })
+            }).catch(err  => {
+                return res.json({ status: 400, message: err.message ? err.message : "Internal Server Error", err, data: {} });
             });
 
 
@@ -117,6 +119,32 @@ class FormController {
             return res.status(200).json({ status: 200, message: "Form modified successfully", data: form });
         } catch (err) {
             return next(err);
+        }
+    }
+
+    async modifyValues(req, res, next) {
+        try {
+            
+            Form.findById('5eeca31ebf349f21688d3c63').then(resultForm => {
+                var individualForm = resultForm.formStructure.id('5eeca31ebf349f21688d3c64')
+                individualForm.modifiedValuesRequest.push({name: 'Others', value: 'others', status: 'pending', modifiedBy: "5eb01d527f460917dee8b5ab", modifiedAt: new Date()})
+                resultForm.save();
+
+                
+                // resultForm.formStructure.modifiedValidationRequest.push({   name: 'Blue',
+                //     value: String,
+                //     modifiedBy: {
+                //       type: mongoose.Schema.Types.ObjectId,
+                //       required: true,
+                //       ref: "User",
+                //     },
+                //     status: { type: String, enum: ["approved", "rejected"] },
+                //     modifiedAt: Date,})
+                return res.status(200).send({status: 200, user: resultForm});
+            });
+            // console.log('working');
+        } catch(error) {
+            console.log(error);
         }
     }
 
