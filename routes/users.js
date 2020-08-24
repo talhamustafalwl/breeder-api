@@ -16,6 +16,7 @@ const SubscriberController = require('../controller/subscriber.controller');
 
 // Load input validation
 const { validateLoginInput, validateRegisterInput, validateRegisterInputEmp } = require("../validation/users");
+const { registerUserWithRole } = require('../controller/user.controller');
 
 
 
@@ -26,6 +27,9 @@ router.get('/allusers', (req, res) => {
   });
 });
 
+
+router.get('/', auth, allowBreeder, allowAdmin, authenticateRole, UserController.getUserDetail);
+router.put('/', auth, allowBreeder, allowAdmin, authenticateRole, UserController.updateUser);
 
 //auth route check
 router.get("/auth", auth, UserController.authentication);
@@ -93,7 +97,7 @@ router.get('/verify/:id', async (req, res, next) => {
 })
 
 router.post("/login", (req, res) => {
-
+  console.log('calling login');
   const { errors, isValid } = validateLoginInput(req.body);
 
   // Check validation
@@ -119,8 +123,8 @@ router.post("/login", (req, res) => {
         if (err) return res.send(err);
         //io.emit("userSet", { msg: "email is registered", email: req.body.email });
 
-        res.setHeader('Cache-Control', 'private')
-        return res.cookie("w_auth", user.token).status(200)
+       
+        return res.setHeader('Cache-Control', 'private').cookie("w_auth", user.token).status(200)
           .json({
             status: 200, message: "Login successfully", data: { userId: user._id, token: user.token, email: user.email }
           });

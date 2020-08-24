@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const FormController = require('../controller/form.controller');
 const { adminauth } = require('../middleware/adminauth');
-const { auth } = require('../middleware/auth');
+const { auth, allowBreeder, authenticateRole } = require('../middleware/auth');
 const formController = require('../controller/form.controller');
 
 router.get('/:categoryId', FormController.getFormByCategory)
@@ -13,6 +13,6 @@ router.get('/:categoryId', FormController.getFormByCategory)
 
 
 
-router.put('/modify/values', FormController.modifyValues);
+router.put('/modify/values', auth, allowBreeder, authenticateRole, FormController.modifyValuesRequest);
 
 module.exports = router;

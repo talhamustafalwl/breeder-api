@@ -122,31 +122,42 @@ class FormController {
         }
     }
 
-    async modifyValues(req, res, next) {
-        try {
-            
-            Form.findById('5eeca31ebf349f21688d3c63').then(resultForm => {
-                var individualForm = resultForm.formStructure.id('5eeca31ebf349f21688d3c64')
-                individualForm.modifiedValuesRequest.push({name: 'Others', value: 'others', status: 'pending', modifiedBy: "5eb01d527f460917dee8b5ab", modifiedAt: new Date()})
-                resultForm.save();
 
-                
-                // resultForm.formStructure.modifiedValidationRequest.push({   name: 'Blue',
-                //     value: String,
-                //     modifiedBy: {
-                //       type: mongoose.Schema.Types.ObjectId,
-                //       required: true,
-                //       ref: "User",
-                //     },
-                //     status: { type: String, enum: ["approved", "rejected"] },
-                //     modifiedAt: Date,})
-                return res.status(200).send({status: 200, user: resultForm});
+    // Only breeder can modify values of any fields here ..
+    async modifyValuesRequest(req, res, next) {
+        try {
+            const { formId, formStructureId, data } = req.body;
+            Form.findById(formId).then(resultForm => {
+                var individualForm = resultForm.formStructure.id(formStructureId)
+                if(individualForm.values.map(e => (e.value === data.value))[0]) return res.json({ status: 400, message: "Value already exist" });
+                if(individualForm.modifiedValuesRequest.map(e => (e.value === data.value))[0]) return res.json({ status: 400, message: "Value already exist in request" });
+                individualForm.modifiedValuesRequest.push({...data, ...{status: 'pending', modifiedBy: req.user._id, modifiedAt: new Date()}})
+                resultForm.save().then(_ => {
+                    return res.status(200).send({status: 200, user: resultForm});
+                });               
             });
-            // console.log('working');
         } catch(error) {
             console.log(error);
         }
     }
+
+
+    async getAllModifiedValuesRequest() {
+        try {
+            // Form.find({})
+        } catch(error) {
+            console.log(error);
+        }
+    }
+
+    async acceptModifyValuesRequest() {
+        try  {
+             
+        } catch(error) {
+
+        }
+    }
+
 
     async deleteFormByCategory(req, res, next) {
         try { 

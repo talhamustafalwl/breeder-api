@@ -14,6 +14,9 @@ const userSchema = mongoose.Schema({
     email: {
         type: String, trim: true, unique: 1
     },
+    website: {
+        type: String
+    },
     password: {
         type: String, minglength: 6
     },
@@ -46,7 +49,9 @@ const userSchema = mongoose.Schema({
         type: Date
     },
 
-
+    description: {
+        type: String,
+    },
     city: String, state: String, zipcode: Number,
     address: String,
     
@@ -59,7 +64,8 @@ const userSchema = mongoose.Schema({
     // For employees need to enter business name.. 
     businessName: String,
     noOfEmployees: Number,
-
+    noOfAnimals: Number,
+    founded: Number,
     ////extra must fields for Employee
     appointmentDate: {
         type: Date

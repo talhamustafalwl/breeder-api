@@ -274,8 +274,8 @@ class UserController {
                 //user.resetToken_expires=Date.now();
                 user.save()
                 //email send
-                let html = forgetpasswordemail(req.body.email, config.Server, token)
-                mailer.sendEmail(config.mailthrough, req.body.email, 'Password reset instructions', html);
+                // let html = forgetpasswordemail(req.body.email, config.Server, token)
+                // mailer.sendEmail(config.mailthrough, req.body.email, 'Password reset instructions', html);
 
 
                 res.status(200).json({ status: 200, message: "email is send to recover password", data: { id: user._id, resettoken: user.resetToken } });
@@ -316,6 +316,31 @@ class UserController {
                 });
             })
         } catch (error) {
+            return next(error);
+        }
+    }
+
+    async getUserDetail(req, res, next) {
+        try  {
+            User.findById(req.user._id).then(resultUser => {
+                return res.status(200).send({status: 200, data: resultUser});
+            }).catch(error => {
+                return res.status(400).json({ status: 400, message: "Internal Server Error", data: {} });
+            });
+        }  catch(error) {
+            return next(error);
+        }
+    }
+
+    async updateUser(req, res, next) {
+        try {
+            User.updateOne({_id: req.user._id}, {$set: req.body}).then(resultUser => {
+                return res.send({status: 200, message: 'User updated successfully'});
+            }).catch(error => {
+                return res.json({ status: 400, message: error.message ? error.message : 'Internal Server Error', data: {}, error });
+            });
+
+        } catch(error) {
             return next(error);
         }
     }
