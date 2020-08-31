@@ -39,6 +39,7 @@ router.patch("/isblocked/:id", adminauth, UserController.isblocked);
 
 // Employees ---------------------------------------------------------------------------
 router.get('/employees/all', auth, allowAdmin, allowBreeder, authenticateRole, UserController.getAllEmployees);
+router.get('/employees/:id', auth, allowAdmin, allowBreeder, authenticateRole, UserController.getEmployeeById);
 
 
 // Register Employee only .. By Breeder..
