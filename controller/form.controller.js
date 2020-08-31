@@ -37,7 +37,7 @@ class FormController {
                 .exec(function (error, result ) {
                     // console.log(result);
                     // const finalRes = result.map(e => {return {e, ...{categoryId: {...e.categoryId, ...{icon: `${config.imageURL}${e.categoryId.icon}` }}}}});
-                    const finalRes = result.map(e => ({...e.toObject(), ...{categoryId: {...e.categoryId.toObject(), ...{icon: `${config.baseImageURL}${e.categoryId.toObject().icon}` }}}}));
+                    const finalRes = result.map(e => ({...e.toObject(), ...{categoryId: {...e.categoryId.toObject(), ...{icon: `${config.imageURL}${e.categoryId.toObject().icon}` }}}}));
                     return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data:  finalRes});
                 });  
             } else  {
