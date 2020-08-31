@@ -170,7 +170,7 @@ function validateRegisterInputEmp(data) {
   // data.password2 = !isEmpty(data.password2) ? data.password2 : "";
 
   // data.appointmentDate = !isEmpty(data.appointmentDate) ? data.appointmentDate : "";
-  data.breederId = !isEmpty(data.breederId) ? data.breederId : "";
+  // data.breederId = !isEmpty(data.breederId) ? data.breederId : "";
   // data.farmId = !isEmpty(data.farmId) ? data.farmId : "";
   // data.designationName = !isEmpty(data.designationName) ? data.designationName : "";
 
@@ -222,9 +222,9 @@ function validateRegisterInputEmp(data) {
   // }
 
   // breederId 
-  if (Validator.isEmpty(data.breederId)) {
-    errors.breederId = "breederId field is required";
-  }
+  // if (Validator.isEmpty(data.breederId)) {
+  //   errors.breederId = "breederId field is required";
+  // }
 
   // // farmId 
   // if (Validator.isEmpty(data.farmId)) {

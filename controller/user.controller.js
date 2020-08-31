@@ -23,7 +23,7 @@ class UserController {
                 data: {
                     _id: req.user._id,
                     email: req.user.email,
-                    name: req.user.name
+                    name: req.user.name,
                 }
             });
         } catch (err) {
@@ -60,6 +60,12 @@ class UserController {
 
     async registerEmployees(req, res, next) {
         try {
+            console.log('In register employee');
+            console.log(req.body);
+            console.log(req.files);
+            console.log(req.file);
+
+
             const { errors, isValid } = validateRegisterInputEmp(req.body);
             // Check validation
             if (!isValid) {
@@ -89,6 +95,8 @@ class UserController {
                 if(!resultUser) {
                     req.body.uid = randomstring.generate({length: 8, charset: 'numeric'});
                     // Register user... 
+                    req.body.breederId = req.user._id;
+                    req.body.image = req.file.filename;
                     this.registerUserWithRole(req.body, 'employee', false).then(success => {
                         console.log(success);
                         return res.status(200).send({status: 200, message: 'Employee Registered Successfully', data: success});
@@ -168,6 +176,7 @@ class UserController {
                 console.log(resultUser + ' user');
                 if(!resultUser) { 
                     // Register user... 
+                    
                     this.registerUserWithRole(req.body, 'breeder', true).then(success => {
                         console.log(success);
                         return res.status(200).send({status: 200, message: 'Breeder Registered Successfully', data: success});
@@ -347,7 +356,7 @@ class UserController {
 
 
     async resetPassword() {
-        
+
     }
 
     async getAllBreedersId() {
