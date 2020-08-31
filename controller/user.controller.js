@@ -48,7 +48,7 @@ class UserController {
     async getAllEmployees(req, res) {
         try {
             User.find({ ...{ role: 'employee' }, ...req.user.isAdmin ? {} : { breederId: req.user._id } }).then(result => {
-                return res.status(200).json({ status: 200, message: "Employee found successfully", data: result });
+                return res.status(200).json({ status: 200, message: "Employee found successfully", data: result.map(e => ({...e.toObject(), ...{image:  e.toObject().image ? `${config.imageURL}${e.toObject().image}`: null}})) });
             }).catch(error => {
                 return res.json({ status: 400, message: "Error fetching employees", errors: error, data: {} });
             });
