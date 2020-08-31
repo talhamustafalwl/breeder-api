@@ -60,12 +60,6 @@ class UserController {
 
     async registerEmployees(req, res, next) {
         try {
-            console.log('In register employee');
-            console.log(req.body);
-            console.log(req.files);
-            console.log(req.file);
-
-
             const { errors, isValid } = validateRegisterInputEmp(req.body);
             // Check validation
             if (!isValid) {
