@@ -124,7 +124,7 @@ router.post("/login", (req, res) => {
         //io.emit("userSet", { msg: "email is registered", email: req.body.email });
 
        
-        return res.setHeader('Cache-Control', 'private').cookie("w_auth", user.token).status(200)
+        return res.status(200)
           .json({
             status: 200, message: "Login successfully", data: { userId: user._id, token: user.token, email: user.email }
           });

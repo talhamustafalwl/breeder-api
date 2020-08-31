@@ -4,8 +4,10 @@ const { roleValues } = require('../config/roles');
 const { getCategoryByIdAndFindParent } = require('./category.controller');
 const {getAllBreedersId} = require('./user.controller');
 const { validateAddForm } = require('../validation/form');
-const { Mongoose } = require("mongoose");
+const { Mongoose, Document } = require("mongoose");
+const config  = require('../config/key');
 const { Animal } = require("../models/Animal/Animal");
+const { serverURL } = require("../config/dev");
 class FormController {
     constructor() {
         this.addForm = this.addForm.bind(this);
@@ -28,9 +30,21 @@ class FormController {
 
     getAllForms(req, res, next) {
         try {
-            Form.find().then(result => {
-                return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data: result });
-            });
+            
+            if(req.user.role.includes('breeder')) {
+                console.log('calling breeder form')
+                Form.find({breedersId: req.user._id}).populate('categoryId')               
+                .exec(function (error, result ) {
+                    // console.log(result);
+                    // const finalRes = result.map(e => {return {e, ...{categoryId: {...e.categoryId, ...{icon: `${config.imageURL}${e.categoryId.icon}` }}}}});
+                    const finalRes = result.map(e => ({...e.toObject(), ...{categoryId: {...e.categoryId.toObject(), ...{icon: `${config.imageURL}${e.categoryId.toObject().icon}` }}}}));
+                    return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data:  finalRes});
+                });  
+            } else  {
+                Form.find().populate('Category').exec().then(result => {
+                    return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data: result });
+                });
+            }
         } catch (err) {
             return next(err);
         }

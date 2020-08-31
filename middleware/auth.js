@@ -3,10 +3,13 @@ const { Subscriber } = require('../models/Subscription/Subscriber');
 
 let auth = (req, res, next) => {
   //console.log("auth")
+  console.log('auth called');
   let token = req.headers['auth'];
   if(!token){
     token=req.cookies['w_auth'];
   }
+
+  console.log(token);
   
   if (!token)
     {return res.status(205).send({ status: 400, message: 'No token provided header(auth).',data:{} });}

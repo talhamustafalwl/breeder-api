@@ -322,6 +322,7 @@ class UserController {
 
     async getUserDetail(req, res, next) {
         try  {
+            console.log('user detail called');
             User.findById(req.user._id).then(resultUser => {
                 return res.status(200).send({status: 200, data: resultUser});
             }).catch(error => {
@@ -339,7 +340,6 @@ class UserController {
             }).catch(error => {
                 return res.json({ status: 400, message: error.message ? error.message : 'Internal Server Error', data: {}, error });
             });
-
         } catch(error) {
             return next(error);
         }
@@ -347,7 +347,7 @@ class UserController {
 
 
     async resetPassword() {
-
+        
     }
 
     async getAllBreedersId() {

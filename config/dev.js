@@ -4,6 +4,8 @@ module.exports = {
     , //Server: 'http://localhost:5000',
     // Server: 'http://localhost:3000',
     Server: 'https://breeder-api.herokuapp.com',
+    serverURL: 'http://localhost:5000',
+    imageURL: 'http://localhost:5000/uploads/images/form/',
     mailthrough: 'admin@breeder.com',
 
     //stripe
