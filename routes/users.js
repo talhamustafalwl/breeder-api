@@ -45,7 +45,7 @@ router.get('/employee/:id', auth, allowAdmin, allowBreeder, authenticateRole, Us
 // Register Employee only .. By Breeder..
 // employeesubscriber //// Will manage subscribe later.. 
 router.post("/employee/register", auth, allowAdmin, allowBreeder, authenticateRole, multer.single('file'), UserController.registerEmployees);
-
+router.delete("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, UserController.deleteEmployee);
 
 // -------------------------------------------------------------------------------------
 router.put("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, multer.single('file'), UserController.editEmployee);

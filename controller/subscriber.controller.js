@@ -262,6 +262,17 @@ class SubscriberController {
   }
 
 
+  async subscribeUser(req, res) {
+    try {
+
+      const feed = await Subscriber.create(req.body);
+
+      return res.status(200).json({ status: 200, message: "Subscriber created successfully", data: feed });
+    } catch (err) {
+      return res.json({ status: 400, message: "Error in updating Subscriber", errors: err, data: {} });
+    }
+  }
+
 }
 
 module.exports = new SubscriberController();

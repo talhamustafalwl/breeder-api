@@ -147,10 +147,24 @@ class UserController {
 
     async editEmployee(req, res, next) {
         try {
-            User.findByIdAndUpdate(req.params.id, req.body, { new: true }).then(result => {
+            console.log(req.body);
+            User.findByIdAndUpdate(req.params.id, {...req.body, ...req.file ? {image: req.file.filename} : {}} , { new: true }).then(result => {
                 return res.status(200).json({ status: 200, message: "Employee updated successfully", data: result });
             }).catch(error => {
                 return res.json({ status: 400, message: "Error updating employees", errors: error, data: {} });
+            });
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async deleteEmployee(req, res, next) {
+        try {
+            console.log(req.params);
+            User.deleteOne({_id: req.params.id}).then(result => {
+                return res.status(200).json({ status: 200, message: "Employee deleted successfully"});
+            }).catch(error => {
+                return res.json({ status: 400, message: "Error deleting employees", errors: error, data: {} });
             });
         } catch (error) {
             return next(error);
@@ -197,14 +211,12 @@ class UserController {
                     return  res.json({ status: 400, message: "Email is already registered as breeder" });
                 } else {
                     // Modify user to register breeder..
-
                     this.modifyUserWithRole(req.body.email, req.body, 'breeder').then(resultUser => {
                         return res.status(200).send(resultUser);
                     }).catch(error => {
                         console.log(error);
                         return res.status(400).json({ status: 400, message: "Internal Server Error" });
-                    })
-
+                    });
                 }
             });
             
