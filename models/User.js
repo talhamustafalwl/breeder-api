@@ -35,7 +35,7 @@ const userSchema = mongoose.Schema({
 
 
     active: {
-        type: Number, default: 1 //0 for not active,1 for active
+        type: Boolean, default: true //0 for not active,1 for active
     },
 
     secretToken: String,//for email confirmation
