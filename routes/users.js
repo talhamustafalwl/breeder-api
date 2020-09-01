@@ -48,7 +48,7 @@ router.post("/employee/register", auth, allowAdmin, allowBreeder, authenticateRo
 
 
 // -------------------------------------------------------------------------------------
-router.put("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, UserController.editEmployee);
+router.put("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, multer.single('file'), UserController.editEmployee);
 
 
 // Breeders ----------------------------------------------------------------------------

@@ -59,6 +59,7 @@ class UserController {
 
 
     async getEmployeeById(req, res) {
+        console.log("called",req.params.id)
         try {
             User.findOne({ role: 'employee', _id: req.params.id }).then(result => {
                 return res.status(200).json({ status: 200, message: "Employee found successfully", data: {...result.toObject(), ...{image:  result.toObject().image ? `${config.baseImageURL}${result.toObject().image}`: null}}});
