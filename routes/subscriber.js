@@ -11,7 +11,7 @@ router.route('/stripe').post(auth,SubscriberController.createstripe)
 router.route('/paypal').post(auth,SubscriberController.createpaypal)
 
 
-router.post('/', SubscriberController.subscribeUser);
+router.route('/').post(auth,SubscriberController.subscribeUser)
 
 //for new breeder (default package)
 router.route('/default').post(auth,SubscriberController.createdefault)

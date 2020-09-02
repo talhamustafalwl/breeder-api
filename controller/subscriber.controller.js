@@ -263,12 +263,26 @@ class SubscriberController {
 
 
   async subscribeUser(req, res) {
+    console.log("breeder --->",req.user._id)
+    const { errors, isValid } = validateSubscriberInput(req.body);
+    if (!isValid) {
+      return res.json({ status: 400, message: "errors present", errors: errors, data: {} });
+    }
+
     try {
-
-      const feed = await Subscriber.create(req.body);
-
-      return res.status(200).json({ status: 200, message: "Subscriber created successfully", data: feed });
-    } catch (err) {
+      
+      const breederpresent = await Subscriber.find({ breederId: req.user._id});
+      //console.log("breederpresent --->",breederpresent)
+      if (breederpresent == '') {
+        req.body.breederId = req.user._id;
+        const subscriberData = await Subscriber.create(req.body);
+        return res.status(200).json({ status: 200, message: "Subscriber created successfully", data: subscriberData });
+      }
+      else{
+        const subscriberUpdate = await Subscriber.findOneAndUpdate({ breederId: req.user._id},req.body, { new: true });
+        return res.status(200).json({ status: 200, message: "Subscriber updated successfully", data: subscriberUpdate });
+      }
+        } catch (err) {
       return res.json({ status: 400, message: "Error in updating Subscriber", errors: err, data: {} });
     }
   }

@@ -5,6 +5,7 @@ function validateSubscriptionInput(data) {
   let errors = {};
   // Convert empty fields to an empty string so we can use validator functions
   data.name = !isEmpty(data.name) ? data.name : "";
+  data.description = !isEmpty(data.description) ? data.description : "";
   data.allowedAnimal = !isEmpty(data.allowedAnimal) ? data.allowedAnimal : "";
   data.allowedEmp = !isEmpty(data.allowedEmp) ? data.allowedEmp : "";
   data.period = !isEmpty(data.period) ? data.period : "";
@@ -14,6 +15,10 @@ function validateSubscriptionInput(data) {
  // name checks
   if (Validator.isEmpty(data.name)) {
     errors.name = "name field is required";
+  }
+   // description
+   if (Validator.isEmpty(data.description)) {
+    errors.description = "description field is required";
   }
 
    // allowedAnimal checks
