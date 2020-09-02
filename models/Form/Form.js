@@ -44,6 +44,7 @@ const formStructureSchema = mongoose.Schema({
     shouldAtLeastOneNumber: { type: Boolean },
     required: { type: Boolean },
   },
+  breedersId: [{_id: Object, index: Number}],
   values: [mongoose.Schema({ name: String, value: String })],
   // Breeder can modify values of any attribute...
   modifiedValuesRequest: [

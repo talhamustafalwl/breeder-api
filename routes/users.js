@@ -98,6 +98,14 @@ router.get('/verify/:id', async (req, res, next) => {
   }
 })
 
+
+router.post('/testLogin', (req, res) => {
+  console.log('test login called');
+  return res.status(200).json({
+            status: 200, message: "Login successfully"});
+});
+
+
 router.post("/login", (req, res) => {
   console.log('calling login');
   const { errors, isValid } = validateLoginInput(req.body);
