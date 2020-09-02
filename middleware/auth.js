@@ -14,7 +14,9 @@ let auth = (req, res, next) => {
   if (!token)
     {return res.status(205).send({ status: 400, message: 'No token provided header(auth).',data:{} });}
 
-  User.findByToken(token, async (err, user) => {
+  User.findOne({token}, async (err, user) => {
+    console.log('auth');
+    console.log(user);
     if (err) throw err;
     if (!user)
       return res.json({

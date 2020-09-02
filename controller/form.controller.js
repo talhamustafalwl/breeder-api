@@ -28,20 +28,34 @@ class FormController {
         }
     }
 
+    getForms(req, res, next) {
+        try {
+            console.log('get form called');
+            Form.find().populate('categoryId').exec(function (error, result ) {
+                console.log(result);
+                // const finalRes = result.map(e => {return {e, ...{categoryId: {...e.categoryId, ...{icon: `${config.imageURL}${e.categoryId.icon}` }}}}});
+                const finalRes = result.map(e => ({...e.toObject(), ...{categoryId: {...e.categoryId.toObject(), ...{icon: `${config.imageURL}${e.categoryId.toObject().icon}` }}}}));
+                return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data:  finalRes});
+            });
+        } catch (err) {
+            return next(err);
+        }
+    }
+
     getAllForms(req, res, next) {
         try {
-            
+            console.log(req.user.role);
             if(req.user.role.includes('breeder')) {
                 console.log('calling breeder form')
                 Form.find({breedersId: req.user._id}).populate('categoryId')               
                 .exec(function (error, result ) {
-                    // console.log(result);
+                    console.log(result);
                     // const finalRes = result.map(e => {return {e, ...{categoryId: {...e.categoryId, ...{icon: `${config.imageURL}${e.categoryId.icon}` }}}}});
                     const finalRes = result.map(e => ({...e.toObject(), ...{categoryId: {...e.categoryId.toObject(), ...{icon: `${config.imageURL}${e.categoryId.toObject().icon}` }}}}));
                     return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data:  finalRes});
                 });  
             } else  {
-                Form.find().populate('Category').exec().then(result => {
+                Form.find().populate('categoryId').exec().then(result => {
                     return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data: result });
                 });
             }
