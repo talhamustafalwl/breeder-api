@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 //define subscription by admin
 const SubscriptionSchema = mongoose.Schema({
     name: {type: String},
-    type: {type: Number},
+    description: {type: String},
+    type: {type: String},
     allowedAnimal: {type: Number,required:true},//quantity of allowed animals
     allowedEmp: {type: Number,required:true},//quantity of allowed employees
     isActive: {type: Boolean,default:true},//false hide this
