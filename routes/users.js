@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { User } = require("../models/User");
-const { auth, allowAdmin, allowBreeder, authenticateRole } = require("../middleware/auth");
+const { auth, allowAdmin, allowBreeder, authenticateRole, allowEmployee } = require("../middleware/auth");
 const { adminauth } = require("../middleware/adminauth");
 const { employeesubscriber } = require("../middleware/empsubscriber");
 const mailer = require('../misc/mailer');
@@ -40,6 +40,7 @@ router.patch("/isblocked/:id", adminauth, UserController.isblocked);
 // Employees ---------------------------------------------------------------------------
 router.get('/employees/all', auth, allowAdmin, allowBreeder, authenticateRole, UserController.getAllEmployees);
 router.get('/employee/:id', auth, allowAdmin, allowBreeder, authenticateRole, UserController.getEmployeeById);
+router.get('/breeder/employees', auth, allowBreeder, authenticateRole, UserController.getEmployeeByBreeder);
 
 
 // Register Employee only .. By Breeder..
@@ -106,15 +107,19 @@ router.post('/testLogin', (req, res) => {
 });
 
 
+
+router.post('/employee/login', UserController.employeeLogin);
+
+
 router.post("/login", (req, res) => {
-  console.log('calling login');
+  console.log('calling login',req.body);
   const { errors, isValid } = validateLoginInput(req.body);
 
   // Check validation
   if (!isValid) {
     return res.json({ status: 400, message: "Please fill all the required fields", errors: errors, data: {} });
   }
-  User.findOne({ email: req.body.email }, (err, user) => {
+  User.findOne({ email: req.body.email, role: req.body.role }, (err, user) => {
     if (!user)
       return res.json({
         status: 400, message: "Auth failed, email not found", data: {}
@@ -144,7 +149,8 @@ router.post("/login", (req, res) => {
 });
 
 
-router.get("/logout", auth, (req, res) => {
+router.get("/logout", auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, (req, res) => {
+  console.log('logout called');
   User.updateOne({ _id: req.user._id }, { token: "", tokenExp: "" }, (err, doc) => {
     if (err) return res.json({ success: false, status: 400, err });
     return res.clearCookie('w_auth').status(200).json({

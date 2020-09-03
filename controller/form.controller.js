@@ -203,6 +203,28 @@ class FormController {
             return next(error);
         }
     }
+
+    // async excludeBreederForm(req, res, next)
+    //  {
+    //     try { 
+    //         const {id, breederId} = req.params;
+    //         Form.findById(id).then(formResult => {
+    //             if(!formResult) return res.json({ status: 400, message: "Form is not available", errors: err, data: {} });
+    //             const newForm = formResult.map(e => ({...e, ...{breedersId: e.breedersId.filter(bf => !(bf._id===breederId)), formStructure: }}))
+    //         });
+    //         Animal.findById(categoryId).then(result => {
+    //             console.log(result);
+    //             if(result) {
+    //                 return res.json({ status: 400, message: "Can not remove category because animal is added on this category", errors: err, data: {} });
+    //             }
+    //             Form.deleteOne({categoryId}).then(resForm => {
+    //                 return res.status(200).json({ status: 200, message: "Form removed successfully" });
+    //             })
+    //         })
+    //     } catch(error) {
+    //         return next(error);
+    //     }
+    //  }
 }
 
 

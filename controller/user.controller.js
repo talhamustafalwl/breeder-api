@@ -14,6 +14,10 @@ class UserController {
         this.registerBreeder = this.registerBreeder.bind(this);
         this.registerEmployees = this.registerEmployees.bind(this);
     }
+
+
+
+
     
     authentication(req, res, next) {
         try {
@@ -31,6 +35,41 @@ class UserController {
         }
     }
 
+
+    async employeeLogin(req, res, next) {
+        try {
+            const { errors, isValid } = validateLoginInput(req.body);
+            console.log(req.body);
+            // Check validation
+            if (!isValid) {
+              return res.json({ status: 400, message: "Please fill all the required fields", errors: errors, data: {} });
+            }
+            User.findOne({ email: req.body.email, role: req.body.role, uid: req.body.uid }, (err, user) => {
+              if (!user)
+                return res.json({
+                  status: 400, message: "Auth failed, email not found", data: {}
+                });
+          
+              user.comparePassword(req.body.password, (err, isMatch) => {
+                if (!isMatch)
+                  return res.json({ status: 400, message: "Incorrect password", errors: errors, data: {} });
+          
+                user.generateToken((err, user) => {
+                  if (err) return res.send(err);
+                  //io.emit("userSet", { msg: "email is registered", email: req.body.email });
+          
+                 
+                  return res.status(200)
+                    .json({
+                      status: 200, message: "Login successfully", data: { userId: user._id, token: user.token, email: user.email }
+                    });
+                });
+              });
+            });
+        } catch(err) {
+            return next(err);
+        }
+    }
 
     async isblocked(req, res) {
         if (!req.body.isblocked) {
@@ -58,7 +97,7 @@ class UserController {
     }
 
 
-    async getEmployeeById(req, res) {
+    async getEmployeeById(req, res, next) {
         console.log("called",req.params.id)
         try {
             User.findOne({ role: 'employee', _id: req.params.id }).then(result => {
@@ -70,6 +109,38 @@ class UserController {
             return next(err);
         }
     }
+
+
+
+    async getEmployeeByBreeder(req, res, next) {
+        console.log('breeder employee called');
+        console.log(req.user._id);
+        try {
+            User.find({ role: 'employee', breederId: req.user._id, isEmployeeActive: true, }).then(result => {
+                console.log(result);
+                return res.status(200).json({ status: 200, message: "Employee found successfully", data: result.map(e => ({...e.toObject(), ...{image:  e.toObject().image ? `${config.baseImageURL}${e.toObject().image}`: null}})) });
+            }).catch(error => {
+                return res.json({ status: 400, message: "Error fetching employees", errors: error, data: {} });
+            });
+        } catch (err) {
+            return next(err);
+        }
+    }
+
+
+    // async removeEmployee(req, res, next) {
+    //     try {
+    //         User.updateOne({email: req.body.email}, {$set: {isEmployeeActive: true}}).then(updatedUser => {
+    //             console.log(updatedUser);
+    //             return resolve({status: 200, message: "Registered Successfully"});
+    //         }).catch(error => {
+    //             return reject(error);
+    //         });
+    //     } catch(err) {
+    //         return next(err);
+    //     }
+    // }
+
 
     async registerEmployees(req, res, next) {
         try {
@@ -114,10 +185,21 @@ class UserController {
                 } else if(resultUser.role.includes('admin')) {
                     return res.json({ status: 400, message: "Wrorng Email" });
                 } else if(resultUser.role.includes('employee')) {
-                    return res.json({ status: 400, message: "Email is already registered as employee" });
+                    if(resultUser.isEmployeeActive === false) {
+                        User.updateOne({email: req.body.email}, {$set: {isEmployeeActive: true}}).then(updatedUser => {
+                            console.log(updatedUser);
+                            return res.status(200).send({status: 200, message: "Registered Successfully"});
+                        }).catch(error => {
+                            return res.status(400).json({status: 400, message: "Internal Server Error"});
+                        })
+                    } else {
+                        return res.json({ status: 400, message: "Email is already registered as employee" });
+                    }
                 } else {
                     console.log('Updating user');
                     req.body.uid = randomstring.generate({length: 8, charset: 'numeric'});
+                    req.body.breederId = req.user._id;
+                    req.body.isEmployeeActive = true;
                     // Modify user to register breeder..
                     this.modifyUserWithRole(req.body.email, req.body, 'employee').then(resultUser => {
                         return res.status(200).send(resultUser);
@@ -147,6 +229,7 @@ class UserController {
 
     async editEmployee(req, res, next) {
         try {
+            console.log('edit employee called');
             console.log(req.body);
             User.findByIdAndUpdate(req.params.id, {...req.body, ...req.file ? {image: req.file.filename} : {}} , { new: true }).then(result => {
                 return res.status(200).json({ status: 200, message: "Employee updated successfully", data: result });
@@ -160,15 +243,36 @@ class UserController {
 
     async deleteEmployee(req, res, next) {
         try {
-            console.log(req.params);
-            User.deleteOne({_id: req.params.id}).then(result => {
-                return res.status(200).json({ status: 200, message: "Employee deleted successfully"});
+            // console.log(req.params);
+            // User.findOne({_id: req.params.id}).then(userRes => {
+            //     if(!userRes) res.json({ status: 400, message: "Employee is not available", data: {} });
+            //     if(userRes.role.includes('breeder')) {
+
+            //     }
+            // })
+            // User.deleteOne({_id: req.params.id}).then(result => {
+            //     return res.status(200).json({ status: 200, message: "Employee deleted successfully"});
+            // }).catch(error => {
+            //     return res.json({ status: 400, message: "Error deleting employees", errors: error, data: {} });
+            // });
+            User.updateOne({_id: req.params.id}, {$set: {isEmployeeActive: false}}).then(updatedUser => {
+                console.log(updatedUser);
+                return res.status(200).send({status: 200, message: "Employee Removed Successfully"});
             }).catch(error => {
-                return res.json({ status: 400, message: "Error deleting employees", errors: error, data: {} });
-            });
+                return res.status(400).json({status: 400, message: "Internal Server Error"});
+            })
         } catch (error) {
             return next(error);
         }
+    }
+
+
+    async isEmployeeEligibleForRemove(employeeId) {
+        return new Promise((resolve, reject) => {
+            User.findById(employeeId).then(userResult => {
+                if(!userResult) reject({message: 'Email not registered'});
+            });
+        }); 
     }
 
     async registerBreeder(req, res, next) {

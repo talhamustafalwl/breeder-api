@@ -15,6 +15,7 @@ router.get('/:categoryId', FormController.getFormByCategory)
     .delete('/category/:id', FormController.deleteFormByCategory);
 
 
+// router.delete('/:id/breeder/:breederId', FormController.excludeBreederForm)
 
 router.put('/modify/values', auth, allowBreeder, authenticateRole, FormController.modifyValuesRequest);
 

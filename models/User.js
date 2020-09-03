@@ -66,6 +66,9 @@ const userSchema = mongoose.Schema({
     noOfEmployees: Number,
     noOfAnimals: Number,
     founded: Number,
+    isEmployeeActive: {
+        type: Boolean, default: true
+    },
     ////extra must fields for Employee
     appointmentDate: {
         type: Date
