@@ -41,7 +41,7 @@ router.patch("/isblocked/:id", adminauth, UserController.isblocked);
 router.get('/employees/all', auth, allowAdmin, allowBreeder, authenticateRole, UserController.getAllEmployees);
 router.get('/employee/:id', auth, allowAdmin, allowBreeder, authenticateRole, UserController.getEmployeeById);
 router.get('/breeder/employees', auth, allowBreeder, authenticateRole, UserController.getEmployeeByBreeder);
-
+router.post('/employee/changePassword', auth , UserController.changePasswordEmp);
 
 // Register Employee only .. By Breeder..
 // employeesubscriber //// Will manage subscribe later.. 

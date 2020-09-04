@@ -39,7 +39,7 @@ class UserController {
     async employeeLogin(req, res, next) {
         try {
             const { errors, isValid } = validateLoginInput(req.body);
-            console.log(req.body);
+            //console.log(req.body);
             // Check validation
             if (!isValid) {
               return res.json({ status: 400, message: "Please fill all the required fields", errors: errors, data: {} });
@@ -127,6 +127,34 @@ class UserController {
         }
     }
 
+   
+    async changePasswordEmp(req, res, next) {
+        console.log('changePasswordEmp employee',req.body);
+        console.log(req.user._id);
+        try {
+            User.findById(req.user._id).then(result => {
+                if(result){
+                     result.comparePassword(req.body.password, (err, isMatch) => {
+                        if (!isMatch){
+                          return res.json({ status: 400, message: "Incorrect password", data: {} })
+                        }
+                        else{
+                            result.password = req.body.changePassword;
+                            result.save().then(resultSaved => {
+                                res.status(200).json({ status: 200, message: "Password changed successfully", data: {  } });
+                            });
+                        }
+                })}
+                else{
+                return res.status(200).json({ status: 200, message: "Employee not found", data:{} });
+                }
+            }).catch(error => {
+                return res.json({ status: 400, message: "Error in Password Changed", errors: error, data: {} });
+            });
+        } catch (err) {
+            return next(err);
+        }
+    }
 
     // async removeEmployee(req, res, next) {
     //     try {
