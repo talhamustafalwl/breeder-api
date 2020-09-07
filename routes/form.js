@@ -8,7 +8,7 @@ const FormController = require('../controller/form.controller');
 router.get('/all/forms', auth, allowBreeder, allowAdmin, authenticateRole, FormController.getForms);
 
 
-router.get('/:categoryId', FormController.getFormByCategory)
+router.get('/category/:categoryId', FormController.getFormByCategory)
 .get('/', auth, allowBreeder, authenticateRole, FormController.getAllForms)
     .post('/', adminauth, FormController.addForm)
     .put('/:id', auth, FormController.modifyForm)

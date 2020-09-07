@@ -1,5 +1,6 @@
 const { Category } = require("../models/Animal/Category");
 const { restart } = require("nodemon");
+const { imageURL, baseImageURL } = require("../config/dev");
 class CategoryController {
   constructor() { }
 
@@ -22,8 +23,9 @@ class CategoryController {
 
   async getall(req, res) {
     try {
+      console.log('getting categories');
       const category = await Category.find({}).populate('parentId');
-      return res.status(200).json({ status: 200, message: "All Categories", data: category });
+      return res.status(200).json({ status: 200, message: "All Categories", data: category.map(e => ({...e.toObject(), ...{icon: `${baseImageURL}form/${e.toObject().icon}`}})) });
     } catch (err) {
       return res.json({ status: 400, message: "Error in get Categories", errors: err, data: {} });
     }

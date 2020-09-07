@@ -109,20 +109,21 @@ class AnimalController {
   }
 
   async addBreederAnimals(req, res) {
-    const { errors, isValid } = validateAnimalInput(req.body);
-     if (!isValid) {
-       return res.json({status:400,message:"errors present", errors:errors,data:{}});
-     }
+    console.log('add breeder animal works');
+    // const { errors, isValid } = validateAnimalInput(req.body);
+    //  if (!isValid) {
+    //    return res.json({status:400,message:"errors present", errors:errors,data:{}});
+    //  }
 
-    try {
-      req.body.breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
-      req.body.addedBy=req.user._id
-      const animal = await new Animal(req.body)
-      const doc = await animal.save()
-      return res.status(200).json({ status: 200, message: "Animals created successfully", data: doc });
-    } catch (err) {
-      return res.json({ status: 400, message: "Error in creating Animal", errors: err, data: {} });
-    }
+    // try {
+    //   req.body.breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
+    //   req.body.addedBy=req.user._id
+    //   const animal = await new Animal(req.body)
+    //   const doc = await animal.save()
+    //   return res.status(200).json({ status: 200, message: "Animals created successfully", data: doc });
+    // } catch (err) {
+    //   return res.json({ status: 400, message: "Error in creating Animal", errors: err, data: {} });
+    // }
   }
 
 

@@ -104,14 +104,14 @@ const userSchema = mongoose.Schema({
 userSchema.pre('save', function (next) {
     var user = this;
     // downcase email
-    user.email = this.email.toLowerCase()
+    user.email = this.email.toLowerCase();
     if (user.isModified('password')) {
         bcrypt.genSalt(saltRounds, function (err, salt) {
             if (err) return next(err);
             bcrypt.hash(user.password, salt, function (err, hash) {
                 if (err) return next(err);
                 user.password = hash
-                next()
+                next();
             });
         });
     } else {
