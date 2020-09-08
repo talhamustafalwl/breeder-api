@@ -1,34 +1,47 @@
 const { Product } = require("../models/Product");
 const { validateProductInput } = require("../validation/product");
+const configKey = require("../config/key");
+
 class ProductController {
     constructor() { }
 
-    //breeder create products
-    async create(req,res){
-      const { errors, isValid } = validateProductInput(req.body);
-      // Check validation
-      if (!isValid) {
-        return res.json({ status: 400, message: "errors present", errors: errors, data: {} });
-      }
-      req.body.breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
-      req.body.addedBy=req.user._id
-        try {      
-            const products= await new Product(req.body)
-            const doc=await products.save()
-            //await Product.updateOne({ _id: doc._id }, { $set : { animalId: ["5eb110b3480eee32c2c368b2","5eb110a9480eee32c2c368b1"] }})
 
-            return res.status(200).json({ status: 200, message: "Product of animal created successfully", data: doc });
-        } catch (err) {
-            return res.json({ status: 400, message: "Error in creating Product of animal", errors: err, data: {} });
-        }
+    async create(req, res, next) {
+      console.log( req.body)
+       const { errors, isValid } = validateProductInput(req.body);
+       if (!isValid) {
+         console.log(errors)
+         return res.json({ status: 400, message: "errors present", errors: errors, data: {} });
+       }
+        let Images=[];
+        await req.files.map((f)=>{
+          Images.push(f.filename)
+        })
+       
+      //req.body.breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
+      req.body.breederId="5f3ba1f7a989412710841d5a"
+      req.body.addedBy=req.user._id
+      req.body.Images=Images
+      try { 
+        const products= await new Product(req.body)
+        const doc=await products.save()
+        return res.status(200).json({ status: 200, message: "Product created successfully", data: doc });
+    } catch (err) {
+        return res.json({ status: 400, message: "Error in creating Product", errors: err, data: {} });
+    }
     }
 
 
     async getallbreeder(req, res) {
-        const breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
+      console.log(req.user._id)
+        //const breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
+        const breederId="5f3ba1f7a989412710841d5a"
         try {
-          const products= await Product.find({breederId});
-          return res.status(200).json({ status: 200, message: "All Product ",data: products});
+          const products= await Product.find({breederId}).populate('addedBy',"name")
+          .then(result => {
+            console.log(result);
+            return res.status(200).json({ status: 200, message: "All Products", data: result.map(e=> ({...e.toObject(), ...{Images: e.toObject().Images.map(eimg => `${configKey.baseImageURL}${eimg}`)} }))})
+        })
         } catch (err) {
           return res.json({ status: 400, message: "Error in get Product ", errors: err, data: {} });
         }
