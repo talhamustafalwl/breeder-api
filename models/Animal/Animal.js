@@ -18,7 +18,6 @@ const AnimalSchema = mongoose.Schema({
     farmId: {
         type: Schema.Types.ObjectId,
         ref: 'Farm',
-        required: true,
     }, // in which farm this animal belongs to ..
 
     categoryId: {
@@ -28,10 +27,10 @@ const AnimalSchema = mongoose.Schema({
     categoryName: {
         type: String, required: true
     },
-    name: {
-        type: String, minglength: 3,
-        maxlength: 20, required: true
-    },
+    // name: {
+    //     type: String, minglength: 3,
+    //     maxlength: 20, required: true
+    // },
     data: Object,
     age: Number,
     gender: {
@@ -39,15 +38,15 @@ const AnimalSchema = mongoose.Schema({
         enum: ["male", "female"]
     },
 
-    color: {
-        type: String, minglength: 3,
-        maxlength: 20, required: true
-    },
+    // color: {
+    //     type: String, minglength: 3,
+    //     maxlength: 20, required: true
+    // },
     birthDate: Date,
-    acquired: {
-        type: String, required: true,
-        enum: ['purchased', 'raised', 'borrowed']
-    },
+    // acquired: {
+    //     type: String, required: true,
+    //     enum: ['purchased', 'raised', 'borrowed']
+    // },
     tag: {
         type: String,
         enum: ['metal', 'plastic', 'brisket']
@@ -76,6 +75,7 @@ const AnimalSchema = mongoose.Schema({
     country: String,
     breed: String,
     isPrivate: { type: Boolean, default: false },
+    image: String,
     //images:[{type:Schema.Types.ObjectId,ref: 'Image'}],
     //videos:[{type:Schema.Types.ObjectId,ref: 'Video'}],
 
