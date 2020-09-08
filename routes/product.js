@@ -3,10 +3,10 @@ const router = express.Router();
 const { auth } = require("../middleware/auth");
 //const { adminauth } = require("../middleware/adminauth");
 const ProductController = require('../controller/product.controller');
-
+const multer = require('../middleware/multerimage');
 
 router.route('/')
-  .post(auth,ProductController.create)
+  .post(auth ,multer.array('file', 10),ProductController.create)
   .delete(auth,ProductController.deleteallbreeder)
   .get(auth,ProductController.getallbreeder)
 
