@@ -1,95 +1,207 @@
 const { Animal } = require("../models/Animal/Animal");
 const { validateAnimalInput } = require("../validation/animal");
-const LogicController = require('../controller/logic.controller');
+const LogicController = require("../controller/logic.controller");
 const { JSONCookie } = require("cookie-parser");
-const config = require('../config/key');
+const config = require("../config/key");
 
 class AnimalController {
-  constructor() { 
-  }
+  constructor() {}
 
   //admin get delete all animals
   async getall(req, res) {
     try {
-      const animals = await Animal.find({})
-      return res.status(200).json({ status: 200, message: "All Animals", data: animals });
+      const animals = await Animal.find({});
+      return res
+        .status(200)
+        .json({ status: 200, message: "All Animals", data: animals });
     } catch (err) {
-      return res.json({ status: 400, message: "Error in get animals", errors: err, data: {} });
+      return res.json({
+        status: 400,
+        message: "Error in get animals",
+        errors: err,
+        data: {},
+      });
     }
   }
   async deleteall(req, res) {
     try {
       const messages = await Animal.deleteMany({});
-      LogicController.deleteallqr()
-      return res.status(200).json({ status: 200, message: "All Animals deleted successfully", data: messages });
+      LogicController.deleteallqr();
+      return res
+        .status(200)
+        .json({
+          status: 200,
+          message: "All Animals deleted successfully",
+          data: messages,
+        });
     } catch (err) {
-      return res.json({ status: 400, message: "Error in deleted Animals", errors: err, data: {} });
+      return res.json({
+        status: 400,
+        message: "Error in deleted Animals",
+        errors: err,
+        data: {},
+      });
     }
   }
 
- 
   //get specific animal  by id
   async getanimal(req, res) {
     try {
-      const e = await Animal.findOne({ _id: req.params.id });
-      if (e == '') {
-        return res.json({ status: 400, message: "Invalid animal Id", data: {} });
+      const e = await Animal.findOne({ _id: req.params.id })
+        .populate("family.parent1")
+        .populate("family.parent2");
+      if (e == "") {
+        return res.json({
+          status: 400,
+          message: "Invalid animal Id",
+          data: {},
+        });
       }
-      return res.status(200).json({ status: 200, message: "Animal data", data: {...e.toObject(), ...{image: e.toObject().image ? `${config.baseImageURL}${e.toObject().image}`: null }, ...{qrcodepath: e.toObject().qrcodepath ? `${config.Server}/${e.toObject().qrcodepath}` : null}} });
+      return res
+        .status(200)
+        .json({
+          status: 200,
+          message: "Animal data",
+          data: {
+            ...e.toObject(),
+            ...{
+              image: e.toObject().image
+                ? `${config.baseImageURL}${e.toObject().image}`
+                : null,
+            },
+            ...{
+              qrcodepath: e.toObject().qrcodepath
+                ? `${config.Server}/${e.toObject().qrcodepath}`
+                : null,
+            },
+          },
+        });
     } catch (err) {
-      return res.json({ status: 400, message: "Error in get animal", errors: err, data: {} });
+      return res.json({
+        status: 400,
+        message: "Error in get animal",
+        errors: err,
+        data: {},
+      });
     }
   }
 
   //only breeder owner and admin can delete animal
   async deleteanimal(req, res) {
     try {
-      const data = await Animal.findOne({ _id: req.params.id })
-      await LogicController.deleteqr(data)
+      const data = await Animal.findOne({ _id: req.params.id });
+      await LogicController.deleteqr(data);
       // await LogicController.delete
-      const animal = await Animal.deleteOne({ _id: req.params.id, breederId: req.user._id })
-      return res.status(200).json({ status: 200, message: "Animal deleted successfully", data: animal });
+      const animal = await Animal.deleteOne({
+        _id: req.params.id,
+        breederId: req.user._id,
+      });
+      return res
+        .status(200)
+        .json({
+          status: 200,
+          message: "Animal deleted successfully",
+          data: animal,
+        });
     } catch (err) {
       console.log(err);
-      return res.json({ status: 400, message: "Error in delete Animal", errors: err, data: {} });
+      return res.json({
+        status: 400,
+        message: "Error in delete Animal",
+        errors: err,
+        data: {},
+      });
     }
   }
   //only breeder owner and admin can update animal
   async updateanimal(req, res) {
     try {
       const messages = await Animal.updateOne({ _id: req.params.id }, req.body);
-      return res.status(200).json({ status: 200, message: "Animals updated successfully", data: messages });
+      return res
+        .status(200)
+        .json({
+          status: 200,
+          message: "Animals updated successfully",
+          data: messages,
+        });
     } catch (err) {
-      return res.json({ status: 400, message: "Error in updated Animal", errors: err, data: {} });
+      return res.json({
+        status: 400,
+        message: "Error in updated Animal",
+        errors: err,
+        data: {},
+      });
     }
   }
 
-
-
   async getBreederAnimals(req, res) {
-    
     var query = {};
-    const breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
-    query.breederId = { "$in": breederId};
-   //console.log(query)
-   try {
-     //const animals = await Animal.find({ breederId });
-     if(req.user.role == 'employee') {
-       const animals = await Animal.find({...query, ...{farmId: {"$in": req.user.farmId}}});
-       return res.status(200).json({ status: 200, message: "Animal data", data: animals.map(e => ({...e.toObject(), ...{image: e.toObject().image ? `${config.baseImageURL}${e.toObject().image}`: null }, ...{qrcodepath: e.toObject().qrcodepath ? `${config.Server}/${e.toObject().qrcodepath}` : null}})) });  
-     } else {
-       const animals = await Animal.find(query).populate('addedBy');
-       return res.status(200).json({ status: 200, message: "Animal data", data: animals.map(e => ({...e.toObject(), ...{image: e.toObject().image ? `${config.baseImageURL}${e.toObject().image}`: null }, ...{qrcodepath: e.toObject().qrcodepath ? `${config.Server}/${e.toObject().qrcodepath}` : null}})) });  
-     }
-   } catch (err) {
-     return res.json({ status: 400, message: "Error in get animal", errors: err, data: {} });
-   }
- }
-03
+    const breederId =
+      req.user.role == "employee" ? req.user.breederId : req.user._id;
+    query.breederId = { $in: breederId };
+    //console.log(query)
+    try {
+      //const animals = await Animal.find({ breederId });
+      if (req.user.role == "employee") {
+        const animals = await Animal.find({
+          ...query,
+          ...{ farmId: { $in: req.user.farmId } },
+        });
+        return res
+          .status(200)
+          .json({
+            status: 200,
+            message: "Animal data",
+            data: animals.map((e) => ({
+              ...e.toObject(),
+              ...{
+                image: e.toObject().image
+                  ? `${config.baseImageURL}${e.toObject().image}`
+                  : null,
+              },
+              ...{
+                qrcodepath: e.toObject().qrcodepath
+                  ? `${config.Server}/${e.toObject().qrcodepath}`
+                  : null,
+              },
+            })),
+          });
+      } else {
+        const animals = await Animal.find(query).populate("addedBy");
+        return res
+          .status(200)
+          .json({
+            status: 200,
+            message: "Animal data",
+            data: animals.map((e) => ({
+              ...e.toObject(),
+              ...{
+                image: e.toObject().image
+                  ? `${config.baseImageURL}${e.toObject().image}`
+                  : null,
+              },
+              ...{
+                qrcodepath: e.toObject().qrcodepath
+                  ? `${config.Server}/${e.toObject().qrcodepath}`
+                  : null,
+              },
+            })),
+          });
+      }
+    } catch (err) {
+      return res.json({
+        status: 400,
+        message: "Error in get animal",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+  03;
 
   //get delete animal of specific breeder
   // async getBreederAnimals(req, res) {
-    
+
   //    ///////filters
   //    let {name,date,categoryName,status,price}=req.query
   //    var query = {};
@@ -113,10 +225,10 @@ class AnimalController {
   //     //const animals = await Animal.find({ breederId });
   //     if(req.user.role == 'employee') {
   //       const animals = await Animal.find({...query, ...{farmId: {"$in": req.user.farmId}}});
-  //       return res.status(200).json({ status: 200, message: "Animal data", data: animals });  
+  //       return res.status(200).json({ status: 200, message: "Animal data", data: animals });
   //     } else {
   //       const animals = await Animal.find(query)
-  //       return res.status(200).json({ status: 200, message: "Animal data", data: animals });  
+  //       return res.status(200).json({ status: 200, message: "Animal data", data: animals });
   //     }
   //   } catch (err) {
   //     return res.json({ status: 400, message: "Error in get animal", errors: err, data: {} });
@@ -124,64 +236,103 @@ class AnimalController {
   // }
 
   async deleteBreederAnimals(req, res) {
-    const breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
+    const breederId =
+      req.user.role == "employee" ? req.user.breederId : req.user._id;
     try {
-      const messages = await Animal.deleteMany({ breederId});
-      return res.status(200).json({ status: 200, message: "All breeder Animals deleted successfully", data: messages });
+      const messages = await Animal.deleteMany({ breederId });
+      return res
+        .status(200)
+        .json({
+          status: 200,
+          message: "All breeder Animals deleted successfully",
+          data: messages,
+        });
     } catch (err) {
-      return res.json({ status: 400, message: "Error in deleted Animals", errors: err, data: {} });
+      return res.json({
+        status: 400,
+        message: "Error in deleted Animals",
+        errors: err,
+        data: {},
+      });
     }
   }
 
   async deleteAnimal(req, res, next) {
     const breederId = req.user._id;
     try {
-      Animal.deleteOne({_id: req.params.id, breederId}).then(deleteResult => {
-        return res.status(200).json({ status: 200, message: "Animal deleted successfully"});
-      }).catch(error => {
-        return res.json({ status: 400, message: "Error in deleting Animal", errors: err, data: {} });
-      });
-    } catch(err) {
+      Animal.deleteOne({ _id: req.params.id, breederId })
+        .then((deleteResult) => {
+          return res
+            .status(200)
+            .json({ status: 200, message: "Animal deleted successfully" });
+        })
+        .catch((error) => {
+          return res.json({
+            status: 400,
+            message: "Error in deleting Animal",
+            errors: err,
+            data: {},
+          });
+        });
+    } catch (err) {
       return next(err);
     }
   }
 
   async addBreederAnimals(req, res) {
-    console.log('add breeder animal works');
+    console.log("add breeder animal works");
     console.log(req.body);
     const { errors, isValid } = validateAnimalInput(req.body);
-     if (!isValid) {
-       return res.json({status:400,message:"errors present", errors:errors,data:{}});
-     }
+    if (!isValid) {
+      return res.json({
+        status: 400,
+        message: "errors present",
+        errors: errors,
+        data: {},
+      });
+    }
 
     try {
-      req.body.breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
-      req.body.addedBy=req.user._id;
+      req.body.breederId =
+        req.user.role == "employee" ? req.user.breederId : req.user._id;
+      req.body.addedBy = req.user._id;
       req.body.image = req.file.filename;
       req.body.data = JSON.parse(req.body.data);
       req.body.family = JSON.parse(req.body.family);
       console.log(req.body);
-      const animal = await new Animal(req.body)
-      const doc = await animal.save()
-      return res.status(200).json({ status: 200, message: "Animals created successfully", data: doc });
+      const animal = await new Animal(req.body);
+      const doc = await animal.save();
+      return res
+        .status(200)
+        .json({
+          status: 200,
+          message: "Animals created successfully",
+          data: doc,
+        });
     } catch (err) {
-      return res.json({ status: 400, message: "Error in creating Animal", errors: err, data: {} });
+      return res.json({
+        status: 400,
+        message: "Error in creating Animal",
+        errors: err,
+        data: {},
+      });
     }
   }
 
-
   async updateAnimalAfterSale(animalArr, buyer, seller) {
     return new Promise((resolve, reject) => {
-      console.log('Updating animal ', animalArr.map(e => e.animalId));
-      Animal.updateMany({_id: {$in: animalArr.map(e => e.animalId)}}, {$set: {status: 'sold', buyer, seller}}).then(result => {
+      console.log(
+        "Updating animal ",
+        animalArr.map((e) => e.animalId)
+      );
+      Animal.updateMany(
+        { _id: { $in: animalArr.map((e) => e.animalId) } },
+        { $set: { status: "sold", buyer, seller } }
+      ).then((result) => {
         resolve(result);
       });
     });
   }
 }
-
-
-
-
 
 module.exports = new AnimalController();
