@@ -5,20 +5,45 @@ class ContactController {
 
     }
 
+
     // breeder and employee both can add contact ... 
     async addContact(req, res, next) {
+        //req.body.breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
+        req.body.breederId="5f3ba1f7a989412710841d5a"
         try {
             const {errors, isValid} = await validateContact(req.body);
             console.log(errors);
             console.log(isValid);
             if(!isValid) return res.status(400).send({status: 400, message: "errors present", errors});
-            const contact = await new Contact({...req.body, ... {createdBy: req.user._id , lastEditBy: req.user._id}});
+            const contact = await new Contact({...req.body, ... {addedBy: req.user._id }});
             contact.save().then(result => {
-                return res.status(200).json({ status: 200, message: "contacts created successfully", data: result });
+                return res.status(200).json({ status: 200, message: "Contact created successfully", data: result });
 
             }).catch(err => {
-                return res.json({ status: 400, message: "Error in creating contacts ", errors: err, data: {} });
+                return res.json({ status: 400, message: "Error in creating Contact ", errors: err, data: {} });
             });
+        } catch(error) {
+            return next(error);
+        }
+    }
+
+    getContacts(req, res, next) {
+        //const breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
+        console.log(req.user._id)
+        const breederId="5f3ba1f7a989412710841d5a"
+        try {
+            Contact.aggregate( [
+                {$group:{_id:{$substr: ['$name', 0, 1]}, detail:{$push:"$$ROOT"}}},
+                { $sort: { _id : 1 } }
+            ])
+            //Contact.find(req.user.role === 'admin' ?  {} :{addedBy:req.user._id})
+            .then(result => {
+                let header=result.map(e=> e._id)
+                let detail=result.map(e=> {return {[e._id]:e.detail}}) 
+                return res.status(200).json({ status: 200, message: "contacts fetched successfully", data: detail})
+            }).catch(error => {
+                return res.json({ status: 400, message: "Error in fetching contacts ", errors: error, data: {} });
+            })
         } catch(error) {
             return next(error);
         }
@@ -26,11 +51,25 @@ class ContactController {
 
     getContact(req, res, next) {
         try {
-
-            Contact.find(req.user.role === 'admin' ?  {} :{createdBy: req.user.id}).then(result => {
-                return res.status(200).json({ status: 200, message: "contacts fetched successfully", data: result });
+            Contact.findById(req.params.id).then(result => {
+                return res.status(200).json({ status: 200, message: "contact find successfully", data: result });
             }).catch(error => {
-                return res.json({ status: 400, message: "Error in fetching contacts ", errors: error, data: {} });
+                return res.json({ status: 400, message: "Error in fetching contact ", errors: error, data: {} });
+            })
+        } catch(error) {
+            return next(error);
+        }
+    }
+
+
+    UpdateContact(req, res, next) {
+        //const breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
+        const breederId="5f3ba1f7a989412710841d5a"
+        try {
+            Contact.findOneAndUpdate({_id:req.params.id}, {$set: req.body}, { new: true }).then(result => {
+                return res.status(200).json({ status: 200, message: "contacts updated successfully", data: result });
+            }).catch(error => {
+                return res.json({ status: 400, message: "Error in updateding contacts ", errors: error, data: {} });
             })
         } catch(error) {
             return next(error);
