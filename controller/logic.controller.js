@@ -71,13 +71,29 @@ class LogicController {
     //delete 1 qrcode images
     deleteqr(req, res, next) {
         //console.log("qrcode",req.qrcodepath)
-        const path = req.qrcodepath
+        const dir = req.qrcodepath
+        console.log(dir);
         try {
-            fs.unlinkSync(path)
+            fs.unlinkSync( path.join(__dirname, '../' + dir))
         } catch (err) {
+            console.log(err);
             return next(err);
         }
     }
+
+        //delete 1 qrcode images
+        deleteImg(req, res, next) {
+            //console.log("qrcode",req.qrcodepath)
+            const dir = req.qrcodepath
+            console.log(dir);
+            try {
+                fs.unlinkSync( path.join(__dirname, '../' + dir))
+            } catch (err) {
+                console.log(err);
+                return next(err);
+            }
+        }
+    
 
 
 

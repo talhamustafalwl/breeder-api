@@ -32,6 +32,22 @@ const AnimalSchema = mongoose.Schema({
     //     maxlength: 20, required: true
     // },
     data: Object,
+    family: {parent1: {id: {type: Schema.Types.ObjectId, ref: 'Animal'}}, parent2: {id:{type: Schema.Types.ObjectId, ref: 'Animal'}}},
+    status: {
+        type: String,
+        enum: ['Sold', 'Alive'],
+        default: 'Alive'
+    },
+    healthStatus:  {
+        type: String,
+        enum: ['Sick', 'Died', 'Healthy', 'Pregnant'],
+        default: 'Healthy',
+    },
+    inventoryStatus: {
+        type: String,
+        enum: ['In stock', 'Out of stock'],
+        default: 'In stock',  
+    },
     age: Number,
     gender: {
         type: String,
@@ -62,10 +78,7 @@ const AnimalSchema = mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'User',
     },
-    status: {
-        type: String,
-        enum: ['sold', 'died', 'sick', 'healthy']
-    },
+
     description: {
         type: String, minglength: 5,
         maxlength: 300
@@ -98,14 +111,16 @@ const AnimalSchema = mongoose.Schema({
 const QRCode = require('qrcode')
 AnimalSchema.pre('save', function (next) {
     const animal = this;
+    console.log(this);
     const dat = Date.now()
-    QRCode.toFile(`uploads/qrcode/${this._id}-${dat}.png`, (this._id).toString(), {
+    QRCode.toFile(`uploads/qrcode/${this._id}-${dat}.png`, [{data: (this._id).toString(), mode: 'byte'}], {
     }, function (err) {
         if (err) return next(err);
-        //console.log('qrcode done')
+        console.log('qrcode done')
+        animal.qrcodepath = `uploads/qrcode/${animal._id}-${dat}.png`
+        return next()
     })
-    animal.qrcodepath = `uploads/qrcode/${this._id}-${dat}.png`
-    next()
+    
 });
 
 

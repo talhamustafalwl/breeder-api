@@ -1,6 +1,8 @@
 const { Animal } = require("../models/Animal/Animal");
 const { validateAnimalInput } = require("../validation/animal");
 const LogicController = require('../controller/logic.controller');
+const { JSONCookie } = require("cookie-parser");
+const config = require('../config/key');
 
 class AnimalController {
   constructor() { 
@@ -29,11 +31,11 @@ class AnimalController {
   //get specific animal  by id
   async getanimal(req, res) {
     try {
-      const animals = await Animal.find({ _id: req.params.id });
-      if (animals == '') {
+      const e = await Animal.findOne({ _id: req.params.id });
+      if (e == '') {
         return res.json({ status: 400, message: "Invalid animal Id", data: {} });
       }
-      return res.status(200).json({ status: 200, message: "Animal data", data: animals });
+      return res.status(200).json({ status: 200, message: "Animal data", data: {...e.toObject(), ...{image: e.toObject().image ? `${config.baseImageURL}${e.toObject().image}`: null }, ...{qrcodepath: e.toObject().qrcodepath ? `${config.Server}/${e.toObject().qrcodepath}` : null}} });
     } catch (err) {
       return res.json({ status: 400, message: "Error in get animal", errors: err, data: {} });
     }
@@ -44,9 +46,11 @@ class AnimalController {
     try {
       const data = await Animal.findOne({ _id: req.params.id })
       await LogicController.deleteqr(data)
-      const animal = await Animal.deleteOne({ _id: req.params.id })
+      // await LogicController.delete
+      const animal = await Animal.deleteOne({ _id: req.params.id, breederId: req.user._id })
       return res.status(200).json({ status: 200, message: "Animal deleted successfully", data: animal });
     } catch (err) {
+      console.log(err);
       return res.json({ status: 400, message: "Error in delete Animal", errors: err, data: {} });
     }
   }
@@ -72,10 +76,10 @@ class AnimalController {
      //const animals = await Animal.find({ breederId });
      if(req.user.role == 'employee') {
        const animals = await Animal.find({...query, ...{farmId: {"$in": req.user.farmId}}});
-       return res.status(200).json({ status: 200, message: "Animal data", data: animals });  
+       return res.status(200).json({ status: 200, message: "Animal data", data: animals.map(e => ({...e.toObject(), ...{image: e.toObject().image ? `${config.baseImageURL}${e.toObject().image}`: null }, ...{qrcodepath: e.toObject().qrcodepath ? `${config.Server}/${e.toObject().qrcodepath}` : null}})) });  
      } else {
-       const animals = await Animal.find(query)
-       return res.status(200).json({ status: 200, message: "Animal data", data: animals });  
+       const animals = await Animal.find(query).populate('addedBy');
+       return res.status(200).json({ status: 200, message: "Animal data", data: animals.map(e => ({...e.toObject(), ...{image: e.toObject().image ? `${config.baseImageURL}${e.toObject().image}`: null }, ...{qrcodepath: e.toObject().qrcodepath ? `${config.Server}/${e.toObject().qrcodepath}` : null}})) });  
      }
    } catch (err) {
      return res.json({ status: 400, message: "Error in get animal", errors: err, data: {} });
@@ -129,8 +133,22 @@ class AnimalController {
     }
   }
 
+  async deleteAnimal(req, res, next) {
+    const breederId = req.user._id;
+    try {
+      Animal.deleteOne({_id: req.params.id, breederId}).then(deleteResult => {
+        return res.status(200).json({ status: 200, message: "Animal deleted successfully"});
+      }).catch(error => {
+        return res.json({ status: 400, message: "Error in deleting Animal", errors: err, data: {} });
+      });
+    } catch(err) {
+      return next(err);
+    }
+  }
+
   async addBreederAnimals(req, res) {
     console.log('add breeder animal works');
+    console.log(req.body);
     const { errors, isValid } = validateAnimalInput(req.body);
      if (!isValid) {
        return res.json({status:400,message:"errors present", errors:errors,data:{}});
@@ -138,7 +156,11 @@ class AnimalController {
 
     try {
       req.body.breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
-      req.body.addedBy=req.user._id
+      req.body.addedBy=req.user._id;
+      req.body.image = req.file.filename;
+      req.body.data = JSON.parse(req.body.data);
+      req.body.family = JSON.parse(req.body.family);
+      console.log(req.body);
       const animal = await new Animal(req.body)
       const doc = await animal.save()
       return res.status(200).json({ status: 200, message: "Animals created successfully", data: doc });
