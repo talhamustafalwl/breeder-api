@@ -27,7 +27,11 @@ class ContactController {
         }
     }
 
-    getContacts(req, res, next) {
+
+
+
+
+    async getContacts(req, res, next) {
         //const breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
         console.log(req.user._id)
         const breederId="5f3ba1f7a989412710841d5a"
@@ -38,9 +42,10 @@ class ContactController {
             ])
             //Contact.find(req.user.role === 'admin' ?  {} :{addedBy:req.user._id})
             .then(result => {
-                let header=result.map(e=> e._id)
                 let detail=result.map(e=> {return {[e._id]:e.detail}}) 
-                return res.status(200).json({ status: 200, message: "contacts fetched successfully", data: detail})
+                let object = Object.assign({}, ...detail);
+
+                 return res.status(200).json({ status: 200, message: "contacts fetched successfully", data: object})
             }).catch(error => {
                 return res.json({ status: 400, message: "Error in fetching contacts ", errors: error, data: {} });
             })
