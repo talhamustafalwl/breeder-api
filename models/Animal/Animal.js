@@ -3,6 +3,24 @@ var idvalidator = require('mongoose-id-validator');
 
 const Schema = mongoose.Schema;
 //these are master fields(will change strick to false for more fields add dynamically from formElements)
+const healthRecordSchema  = mongoose.Schema({
+    filename: String, 
+    size: String, 
+    addedBy:  {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+}, {timestamps: true});
+
+const gallerySchema = mongoose.Schema({
+    filename: String,
+    size: String,
+    addedBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    title: String,
+},  {timestamps: true})
 const AnimalSchema = mongoose.Schema({
     breederId: {
         type: Schema.Types.ObjectId,
@@ -33,6 +51,8 @@ const AnimalSchema = mongoose.Schema({
     // },
     data: Object,
     family: {parent1: {id: {type: Schema.Types.ObjectId, ref: 'Animal'}}, parent2: {id:{type: Schema.Types.ObjectId, ref: 'Animal'}}},
+    healthRecord: [healthRecordSchema],
+    gallery: [gallerySchema],
     status: {
         type: String,
         enum: ['Sold', 'Alive'],

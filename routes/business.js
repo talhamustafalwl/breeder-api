@@ -3,7 +3,7 @@ const router = express.Router();
 const { auth } = require("../middleware/auth");
 const { adminauth } = require("../middleware/adminauth");
 const BusinessController = require('../controller/business.controller');
-const upload=require("../middleware/multerimage")
+const {upload}=require("../middleware/multerimage")
 
 router.route('/').post(auth,upload.single('file'),BusinessController.create)
   .delete(auth,BusinessController.deleteallbreeder)
