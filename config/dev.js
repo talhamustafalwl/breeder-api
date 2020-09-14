@@ -7,7 +7,7 @@ module.exports = {
     serverURL: 'http://localhost:5000',
     imageURL: 'http://localhost:5000/uploads/images/form/',
     mailthrough: 'admin@breeder.com',
-    baseImageURL: 'http://localhost:5000/uploads/images/',
+    baseImageURL: 'http://192.168.88.129:5000/uploads/images/',
 
     //stripe
     stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",

@@ -135,6 +135,7 @@ class AnimalController {
   }
 
   async getBreederAnimals(req, res) {
+    console.log("====>>",req.user.role=== "employee" )
     var query = {};
     const breederId =
       req.user.role == "employee" ? req.user.breederId : req.user._id;
@@ -143,10 +144,12 @@ class AnimalController {
     try {
       //const animals = await Animal.find({ breederId });
       if (req.user.role == "employee") {
+        //console.log("====>>here",req.user.breederId )
         const animals = await Animal.find({
           ...query,
-          ...{ farmId: { $in: req.user.farmId } },
-        });
+          ...{breederId:req.user.breederId }
+         // ...{ farmId: { $in: req.user.farmId } },
+        }).populate("addedBy","name")
         return res
           .status(200)
           .json({
