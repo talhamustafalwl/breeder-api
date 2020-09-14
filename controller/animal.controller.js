@@ -3,6 +3,8 @@ const { validateAnimalInput } = require("../validation/animal");
 const LogicController = require("../controller/logic.controller");
 const { JSONCookie } = require("cookie-parser");
 const config = require("../config/key");
+const { baseDocumentURL } = require("../config/dev");
+const { baseImageURL } = require("../config/key");
 
 class AnimalController {
   constructor() {}
@@ -27,13 +29,11 @@ class AnimalController {
     try {
       const messages = await Animal.deleteMany({});
       LogicController.deleteallqr();
-      return res
-        .status(200)
-        .json({
-          status: 200,
-          message: "All Animals deleted successfully",
-          data: messages,
-        });
+      return res.status(200).json({
+        status: 200,
+        message: "All Animals deleted successfully",
+        data: messages,
+      });
     } catch (err) {
       return res.json({
         status: 400,
@@ -49,7 +49,8 @@ class AnimalController {
     try {
       const e = await Animal.findOne({ _id: req.params.id })
         .populate("family.parent1")
-        .populate("family.parent2");
+        .populate("family.parent2")
+        .populate("healthRecord.addedBy");
       if (e == "") {
         return res.json({
           status: 400,
@@ -57,25 +58,39 @@ class AnimalController {
           data: {},
         });
       }
-      return res
-        .status(200)
-        .json({
-          status: 200,
-          message: "Animal data",
-          data: {
-            ...e.toObject(),
-            ...{
-              image: e.toObject().image
-                ? `${config.baseImageURL}${e.toObject().image}`
-                : null,
-            },
-            ...{
-              qrcodepath: e.toObject().qrcodepath
-                ? `${config.Server}/${e.toObject().qrcodepath}`
-                : null,
-            },
+      return res.status(200).json({
+        status: 200,
+        message: "Animal data",
+        data: {
+          ...e.toObject(),
+          ...{
+            image: e.toObject().image
+              ? `${config.baseImageURL}${e.toObject().image}`
+              : null,
           },
-        });
+          ...{
+            qrcodepath: e.toObject().qrcodepath
+              ? `${config.Server}/${e.toObject().qrcodepath}`
+              : null,
+          },
+          ...{
+            healthRecord: e
+              .toObject()
+              .healthRecord.map((hr) => ({
+                ...hr,
+                ...{ filename: `${baseDocumentURL}${hr.filename}` },
+              })),
+          },
+          ...{
+            gallery: e
+              .toObject()
+              .gallery.map((img) => ({
+                ...img,
+                ...{ filename: `${baseImageURL}${img.filename}` },
+              })),
+          },
+        },
+      });
     } catch (err) {
       return res.json({
         status: 400,
@@ -96,13 +111,11 @@ class AnimalController {
         _id: req.params.id,
         breederId: req.user._id,
       });
-      return res
-        .status(200)
-        .json({
-          status: 200,
-          message: "Animal deleted successfully",
-          data: animal,
-        });
+      return res.status(200).json({
+        status: 200,
+        message: "Animal deleted successfully",
+        data: animal,
+      });
     } catch (err) {
       console.log(err);
       return res.json({
@@ -117,17 +130,102 @@ class AnimalController {
   async updateanimal(req, res) {
     try {
       const messages = await Animal.updateOne({ _id: req.params.id }, req.body);
-      return res
-        .status(200)
-        .json({
-          status: 200,
-          message: "Animals updated successfully",
-          data: messages,
-        });
+      return res.status(200).json({
+        status: 200,
+        message: "Animals updated successfully",
+        data: messages,
+      });
     } catch (err) {
       return res.json({
         status: 400,
         message: "Error in updated Animal",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
+  async uploadHealthRecord(req, res) {
+    try {
+      console.log("uploadhealth record");
+      console.log(req.body.id);
+      console.log(req.file);
+      const messages = await Animal.updateOne(
+        { _id: req.body.id },
+        {
+          $push: {
+            healthRecord: {
+              filename: req.file.filename,
+              size: req.file.size,
+              addedBy: req.user._id,
+            },
+          },
+        }
+      );
+      console.log(messages);
+      return res.status(200).json({
+        status: 200,
+        message: "Animals Health record uploaded successfully",
+        data: "",
+      });
+    } catch (error) {
+      console.log(error);
+      return res.json({
+        status: 400,
+        message: "Error in uploading health record",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
+  async getHealthRecord(req, res, next) {
+    try {
+      Animal.findById(req.params.id).then((resultAnimal) => {
+        return res.status(200).json({
+          status: 200,
+          message: "Animals Health record fetched successfully",
+          data: resultAnimal.healthRecord,
+        });
+      });
+    } catch (err) {
+      console.log(error);
+      return res.json({
+        status: 400,
+        message: "Error in fetching health record",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
+  // async downloadFile(req, res ) {
+
+  // }
+
+  async uploadGalleryImage(req, res, next) {
+    try {
+      console.log(req.files);
+      console.log(req.body.id);
+
+      Animal.updateOne({_id: req.body.id}, {$push: {gallery: {$each: req.files.map(file => ({filename: file.filename, size: file.size, addedBy: req.user._id}))} }}).then(animalResult => {
+        return res.status(200).json({
+          status: 200,
+          message: "Animals gallery uploaded successfully",
+        });
+      }).catch(error => {
+        return res.json({
+          status: 400,
+          message: "Error in upload gallary image record",
+          errors: err,
+          data: {},
+        });
+      });
+    } catch (error) {
+      console.log(error);
+      return res.json({
+        status: 400,
+        message: "Error in upload gallary image record",
         errors: err,
         data: {},
       });
@@ -150,46 +248,42 @@ class AnimalController {
           ...{breederId:req.user.breederId }
          // ...{ farmId: { $in: req.user.farmId } },
         }).populate("addedBy","name")
-        return res
-          .status(200)
-          .json({
-            status: 200,
-            message: "Animal data",
-            data: animals.map((e) => ({
-              ...e.toObject(),
-              ...{
-                image: e.toObject().image
-                  ? `${config.baseImageURL}${e.toObject().image}`
-                  : null,
-              },
-              ...{
-                qrcodepath: e.toObject().qrcodepath
-                  ? `${config.Server}/${e.toObject().qrcodepath}`
-                  : null,
-              },
-            })),
-          });
+        return res.status(200).json({
+          status: 200,
+          message: "Animal data",
+          data: animals.map((e) => ({
+            ...e.toObject(),
+            ...{
+              image: e.toObject().image
+                ? `${config.baseImageURL}${e.toObject().image}`
+                : null,
+            },
+            ...{
+              qrcodepath: e.toObject().qrcodepath
+                ? `${config.Server}/${e.toObject().qrcodepath}`
+                : null,
+            },
+          })),
+        });
       } else {
         const animals = await Animal.find(query).populate("addedBy");
-        return res
-          .status(200)
-          .json({
-            status: 200,
-            message: "Animal data",
-            data: animals.map((e) => ({
-              ...e.toObject(),
-              ...{
-                image: e.toObject().image
-                  ? `${config.baseImageURL}${e.toObject().image}`
-                  : null,
-              },
-              ...{
-                qrcodepath: e.toObject().qrcodepath
-                  ? `${config.Server}/${e.toObject().qrcodepath}`
-                  : null,
-              },
-            })),
-          });
+        return res.status(200).json({
+          status: 200,
+          message: "Animal data",
+          data: animals.map((e) => ({
+            ...e.toObject(),
+            ...{
+              image: e.toObject().image
+                ? `${config.baseImageURL}${e.toObject().image}`
+                : null,
+            },
+            ...{
+              qrcodepath: e.toObject().qrcodepath
+                ? `${config.Server}/${e.toObject().qrcodepath}`
+                : null,
+            },
+          })),
+        });
       }
     } catch (err) {
       return res.json({
@@ -200,7 +294,7 @@ class AnimalController {
       });
     }
   }
-  03;
+  
 
   //get delete animal of specific breeder
   // async getBreederAnimals(req, res) {
@@ -243,13 +337,11 @@ class AnimalController {
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     try {
       const messages = await Animal.deleteMany({ breederId });
-      return res
-        .status(200)
-        .json({
-          status: 200,
-          message: "All breeder Animals deleted successfully",
-          data: messages,
-        });
+      return res.status(200).json({
+        status: 200,
+        message: "All breeder Animals deleted successfully",
+        data: messages,
+      });
     } catch (err) {
       return res.json({
         status: 400,
@@ -305,13 +397,11 @@ class AnimalController {
       console.log(req.body);
       const animal = await new Animal(req.body);
       const doc = await animal.save();
-      return res
-        .status(200)
-        .json({
-          status: 200,
-          message: "Animals created successfully",
-          data: doc,
-        });
+      return res.status(200).json({
+        status: 200,
+        message: "Animals created successfully",
+        data: doc,
+      });
     } catch (err) {
       return res.json({
         status: 400,

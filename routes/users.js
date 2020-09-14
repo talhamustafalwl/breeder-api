@@ -13,7 +13,7 @@ const forgetpasswordemail = require('../emails/forgetpassword');
 const passwordchangedemail = require('../emails/passwordchanged');
 const UserController = require('../controller/user.controller');
 const SubscriberController = require('../controller/subscriber.controller');
-const multer = require('../middleware/multerimage');
+const {upload} = require('../middleware/multerimage');
 
 // Load input validation
 const { validateLoginInput, validateRegisterInput, validateRegisterInputEmp } = require("../validation/users");
@@ -45,11 +45,11 @@ router.post('/employee/changePassword', auth , UserController.changePasswordEmp)
 
 // Register Employee only .. By Breeder..
 // employeesubscriber //// Will manage subscribe later.. 
-router.post("/employee/register", auth, allowAdmin, allowBreeder, authenticateRole, multer.single('file'), UserController.registerEmployees);
+router.post("/employee/register", auth, allowAdmin, allowBreeder, authenticateRole, upload.single('file'), UserController.registerEmployees);
 router.delete("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, UserController.deleteEmployee);
 
 // -------------------------------------------------------------------------------------
-router.put("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, multer.single('file'), UserController.editEmployee);
+router.put("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, upload.single('file'), UserController.editEmployee);
 
 
 // Breeders ----------------------------------------------------------------------------
