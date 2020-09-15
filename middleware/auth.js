@@ -69,7 +69,7 @@ let allowAdmin = (req, res, next) => {
 }
 let allowBreeder = (req, res, next) => {
   console.log(req.isAuthenticate)
-  console.log(req.user);
+  //console.log(req.user);
   if(req.user.role.includes('breeder')) {
     req.isAuthenticate = true;
     next();
@@ -90,8 +90,8 @@ let allowEmployee = (req, res, next) => {
 let authenticateRole = (req, res, next) => {
   console.log(req.isAuthenticate);
   if(req.isAuthenticate) return next();  
-  console.log(req.user);
-  return res.status(400).json({status: 400,message: "Restricted! Unauthorized User", data: {}});
+  //console.log(req.user);
+  return res.json({status: 400,message: "Restricted! Unauthorized User", data: {}});
 }
 
 module.exports = { auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole  };
