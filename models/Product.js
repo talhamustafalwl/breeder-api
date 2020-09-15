@@ -53,7 +53,7 @@ const ProductSchema = mongoose.Schema(
     }, //kis user ne add kiya ha
 
     qrcodepath: { type: String },
-    status: { type: String, required: true },
+    status: { type: String },
   },
   { timestamps: true }
 );
