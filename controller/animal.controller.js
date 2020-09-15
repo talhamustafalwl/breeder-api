@@ -205,7 +205,7 @@ class AnimalController {
 
   async uploadGalleryImage(req, res, next) {
     try {
-      console.log(req.files);
+      console.log("uploadGalleryImage",req.files);
       console.log(req.body.id);
 
       Animal.updateOne({_id: req.body.id}, {$push: {gallery: {$each: req.files.map(file => ({filename: file.filename, size: file.size, addedBy: req.user._id}))} }}).then(animalResult => {
@@ -232,6 +232,32 @@ class AnimalController {
     }
   }
 
+  async deleteGallaryImage(req, res,next) {
+    try {
+      // id, animals, 
+      console.log('delete gallery image');
+      console.log(req.body);
+      Animal.findById(req.body.id).then(animaldata => {
+        animaldata.gallery = animaldata.gallery.filter(e => !req.body.animals.includes(e._id.toString()));
+        console.log(animaldata);
+        animaldata.save().then(_ => {
+          return res.status(200).json({
+            status: 200,
+            message: "Animals gallery images deleted successfully",
+          });
+        });
+      })
+    } catch(error) {
+      console.log(error);
+      return res.json({
+        status: 400,
+        message: "Error in deleting gallary image record",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
   async getBreederAnimals(req, res) {
     var query = {};
     const breederId =
@@ -243,7 +269,8 @@ class AnimalController {
       if (req.user.role == "employee") {
         const animals = await Animal.find({
           ...query,
-          ...{ farmId: { $in: req.user.farmId } },
+          breederId:req.user.breederId
+          //...{ farmId: { $in: req.user.farmId } },
         });
         return res.status(200).json({
           status: 200,

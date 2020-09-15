@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { adminauth } = require("../middleware/adminauth");
-const { auth, allowBreeder, authenticateRole } = require("../middleware/auth");
+const { auth, allowBreeder, authenticateRole, allowEmployee } = require("../middleware/auth");
 const { animalsubscriber } = require("../middleware/animalsubscriber");
 const AnimalController = require('../controller/animal.controller');
 const {upload, uploadDocument} = require('../middleware/multerimage');
@@ -13,8 +13,8 @@ router.get('/test', (req, res) => {
   res.status(200).send('ol')
 })
 
-router.post('/gallery/upload', auth, allowBreeder, authenticateRole, upload.array('file'),  AnimalController.uploadGalleryImage )
-
+router.post('/gallery/upload', auth, allowBreeder, allowEmployee, authenticateRole, upload.array('file', 10),  AnimalController.uploadGalleryImage )
+router.put('/gallery/delete', auth, allowBreeder, allowEmployee, authenticateRole, AnimalController.deleteGallaryImage)
 
 // router.get('/downloadFile', (req, res )=> {
 //   console.log('download file');
@@ -28,9 +28,9 @@ router.route('/all').get(adminauth, AnimalController.getall)
 
 
 //for breeder  animals crud can view/delete all (can only see his animals)
-router.route('/').get(auth, allowBreeder, authenticateRole, AnimalController.getBreederAnimals)
+router.route('/').get(auth, allowBreeder, allowEmployee, authenticateRole, AnimalController.getBreederAnimals)
   .delete(auth, allowBreeder, authenticateRole, AnimalController.deleteBreederAnimals)
-  .post(auth, allowBreeder, authenticateRole, upload.single('file'), AnimalController.addBreederAnimals)
+  .post(auth, allowBreeder, allowEmployee, authenticateRole, upload.single('file'), AnimalController.addBreederAnimals)
 
   // router.delete('/:id', auth, allowBreeder, authenticateRole, AnimalController.deleteAnimal);
 

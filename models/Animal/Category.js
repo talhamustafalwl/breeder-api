@@ -14,7 +14,10 @@ const categorySchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, ref: 'Category'
     },
     type: {
-        type: String, enum: ["animal", "activity"]
+        type: String, enum: ["animal", "activity", "product"]
+    },
+    icon: {
+        type: String,
     }
 }, { timestamps: true })
 

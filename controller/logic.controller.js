@@ -24,6 +24,17 @@ class LogicController {
         }
     }
 
+    deleteImage(file) {
+        const directory = `uploads/images/${file}`;
+        fs.read(directory, (err, files) => {
+            if (err) return false;
+            fs.unlink(directory, err => {
+                if (err) return false;
+                return true;
+            });
+        });
+    }
+
 
     //delete all images
     deleteallimages(req, res, next) {

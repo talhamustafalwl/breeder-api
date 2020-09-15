@@ -6,13 +6,13 @@ class CategoryController {
 
   //only admin
   async create(req, res) {
-    const { name, active, parentId } = req.body
+    const { name, active, parentId, type, icon } = req.body
     console.log(name);
     if (!name) {
       return res.json({ status: 400, message: "Name is required",errors:{name:"Name is required"}, data: {} });
     }
     try {
-      const animal = await new Category({ name, active, parentId });
+      const animal = await new Category({ name, active, type, icon });
       const doc = await animal.save()
       return res.status(200).json({ status: 200, message: "Category of animal created successfully", data: doc });
     } catch (err) {
@@ -24,7 +24,7 @@ class CategoryController {
   async getall(req, res) {
     try {
       console.log('getting categories');
-      const category = await Category.find({}).populate('parentId');
+      const category = await Category.find(req.query.type ?  {type: req.query.type} : {}).populate('parentId');
       return res.status(200).json({ status: 200, message: "All Categories", data: category.map(e => ({...e.toObject(), ...{icon: `${baseImageURL}form/${e.toObject().icon}`}})) });
     } catch (err) {
       return res.json({ status: 400, message: "Error in get Categories", errors: err, data: {} });
