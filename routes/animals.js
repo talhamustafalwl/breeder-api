@@ -1,11 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { adminauth } = require("../middleware/adminauth");
-<<<<<<< HEAD
 const { auth, allowBreeder, authenticateRole, allowEmployee } = require("../middleware/auth");
-=======
-const { auth, allowBreeder, authenticateRole,allowEmployee } = require("../middleware/auth");
->>>>>>> 81969558034cd98d70da6fdcd91bae887ebd5ac1
 const { animalsubscriber } = require("../middleware/animalsubscriber");
 const AnimalController = require('../controller/animal.controller');
 const {upload, uploadDocument} = require('../middleware/multerimage');
@@ -32,11 +28,7 @@ router.route('/all').get(adminauth, AnimalController.getall)
 
 
 //for breeder  animals crud can view/delete all (can only see his animals)
-<<<<<<< HEAD
 router.route('/').get(auth, allowBreeder, allowEmployee, authenticateRole, AnimalController.getBreederAnimals)
-=======
-router.route('/').get(auth, allowBreeder,allowEmployee, authenticateRole, AnimalController.getBreederAnimals)
->>>>>>> 81969558034cd98d70da6fdcd91bae887ebd5ac1
   .delete(auth, allowBreeder, authenticateRole, AnimalController.deleteBreederAnimals)
   .post(auth, allowBreeder, allowEmployee, authenticateRole, upload.single('file'), AnimalController.addBreederAnimals)
 

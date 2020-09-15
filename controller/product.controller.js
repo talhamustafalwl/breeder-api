@@ -13,15 +13,19 @@ class ProductController {
          console.log(errors)
          return res.json({ status: 400, message: "errors present", errors: errors, data: {} });
        }
-        let Images=[];
-        await req.files.map((f)=>{
-          Images.push(f.filename)
-        })
+        // let Images=[];
+        // await req.files.map((f)=>{
+        //   Images.push(f.filename)
+        // })
        
       //req.body.breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
-      req.body.breederId="5f3ba1f7a989412710841d5a"
-      req.body.addedBy=req.user._id
-      req.body.Images=Images
+      req.body.breederId =
+        req.user.role == "employee" ? req.user.breederId : req.user._id;
+      req.body.addedBy = req.user._id;
+      req.body.image = req.file.filename;
+      req.body.data = JSON.parse(req.body.data);
+      req.body.family = JSON.parse(req.body.family);
+      console.log(req.body);
       try { 
         const products= await new Product(req.body)
         const doc=await products.save()

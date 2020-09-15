@@ -15,12 +15,12 @@ let adminauth = (req, res, next) => {
   User.findByToken(token, (err, user) => {
     if (err) throw err;
     if (!user)
-
       return res.json({
         status: 400, isAuth: false,
         message: "auth token is invalid",
         data: {}
       });
+
     if (!user.isAdmin)
 
       return res.json({
@@ -31,7 +31,7 @@ let adminauth = (req, res, next) => {
 
     req.token = token;
     req.user = user;
-
+    
     next();
   });
 };

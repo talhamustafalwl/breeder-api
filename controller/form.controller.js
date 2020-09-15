@@ -86,10 +86,11 @@ class FormController {
 
                 getCategoryByIdAndFindParent(req.body.categoryId).then(categoryResult => {
                     console.log('category res');
+                    console.log(req.user.role);
                     if (categoryResult.error) return res.json({ status: 400, message: categoryResult.message });
                     // getAllBreedersId()
                     getAllBreedersId().then(breedersId => {
-                        const form = new Form({ ...req.body, ...{ userId: req.user._id, userType: req.user.role, breedersId } });
+                        const form = new Form({ ...req.body, ...{ userId: req.user._id, userType: req.user.role[0], breedersId } });
                         form.save().then(async result => {
                             return res.status(200).json({ status: 200, message: "Form Created Successfully", data: result });
                             // await this.cloneFormToBreeder(req.body).then(result => {

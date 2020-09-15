@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { auth } = require("../middleware/auth");
+const { auth, allowBreeder, authenticateRole } = require("../middleware/auth");
 //const { adminauth } = require("../middleware/adminauth");
 const ProductController = require('../controller/product.controller');
 const {upload} = require('../middleware/multerimage');
 
 router.route('/')
-  .post(auth ,upload.array('file', 10),ProductController.create)
+  .post(auth, allowBreeder, authenticateRole , upload.array('file'), ProductController.create)
   .delete(auth,ProductController.deleteallbreeder)
   .get(auth,ProductController.getallbreeder)
 
