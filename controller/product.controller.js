@@ -63,6 +63,9 @@ class ProductController {
             message: "All Products",
             data: result.map((e) => ({
               ...e.toObject(),
+              ...{ image: e.toObject().image
+                  ? `${configKey.baseImageURL}${e.toObject().image}`: null,
+              },
               ...{
                 gallery: e
                   .toObject()
@@ -96,6 +99,36 @@ class ProductController {
       return res.json({
         status: 400,
         message: "Error in deleting Product",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
+
+  async uploadGalleryImage(req, res, next) {
+    try {
+      console.log("uploadGalleryImage",req.files);
+      console.log(req.body.id);
+
+      Product.updateOne({_id: req.body.id}, {$push: {gallery: {$each: req.files.map(file => ({filename: file.filename, size: file.size, addedBy: req.user._id}))} }}).then(animalResult => {
+        return res.status(200).json({
+          status: 200,
+          message: "Product gallery uploaded successfully",
+        });
+      }).catch(error => {
+        return res.json({
+          status: 400,
+          message: "Error in upload gallary image record",
+          errors: err,
+          data: {},
+        });
+      });
+    } catch (error) {
+      console.log(error);
+      return res.json({
+        status: 400,
+        message: "Error in upload gallary image record",
         errors: err,
         data: {},
       });

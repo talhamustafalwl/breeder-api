@@ -50,6 +50,7 @@ class AnimalController {
       const e = await Animal.findOne({ _id: req.params.id })
         .populate("family.parent1")
         .populate("family.parent2")
+        .populate("family.children","_id status data.name data.sex image")
         .populate("healthRecord.addedBy");
       if (e == "") {
         return res.json({
@@ -89,6 +90,30 @@ class AnimalController {
                 ...{ filename: `${baseImageURL}${img.filename}` },
               })),
           },
+
+          ...{
+            family: {
+              ...e.toObject().family,
+              ...{
+                children: e.toObject().family
+                .children.map((img) => ({
+                  ...img,
+                  ...{ image: `${baseImageURL}${img.image}` },
+                }))
+              },
+              // ...{parent2: e.toObject().family.parent2,
+              //    ...{image:  e.toObject().family.parent2 ? `${config.baseImageURL}${e.toObject().family.parent2.image}`: null}
+              //   },
+
+              ...{
+                parent2:{...e.toObject().family.parent2,...{image:e.toObject().family.parent2 && `${config.baseImageURL}${e.toObject().family.parent2.image}`}}
+                },
+                ...{
+                  parent1:{...e.toObject().family.parent1,...{image:e.toObject().family.parent1 && `${config.baseImageURL}${e.toObject().family.parent1.image}`}}
+                  }
+            },   
+          }
+          
         },
       });
     } catch (err) {
@@ -128,13 +153,81 @@ class AnimalController {
   }
   //only breeder owner and admin can update animal
   async updateanimal(req, res) {
+    if(req.file){
+    req.body.image = req.file.filename;
+    }
+    req.body.data = JSON.parse(req.body.data);
     try {
-      const messages = await Animal.updateOne({ _id: req.params.id }, req.body);
-      return res.status(200).json({
-        status: 200,
-        message: "Animals updated successfully",
-        data: messages,
+      await Animal.updateOne({ _id: req.params.id }, req.body);
+      const e = await Animal.findOne({ _id: req.params.id })
+      .populate("family.parent1")
+      .populate("family.parent2")
+      .populate("family.children","_id status data.name data.sex image")
+      .populate("healthRecord.addedBy");
+    if (e == "") {
+      return res.json({
+        status: 400,
+        message: "Invalid animal Id",
+        data: {},
       });
+    }
+    return res.status(200).json({
+      status: 200,
+      message: "Animal data",
+      data: {
+        ...e.toObject(),
+        ...{
+          image: e.toObject().image
+            ? `${config.baseImageURL}${e.toObject().image}`
+            : null,
+        },
+        ...{
+          qrcodepath: e.toObject().qrcodepath
+            ? `${config.Server}/${e.toObject().qrcodepath}`
+            : null,
+        },
+        ...{
+          healthRecord: e
+            .toObject()
+            .healthRecord.map((hr) => ({
+              ...hr,
+              ...{ filename: `${baseDocumentURL}${hr.filename}` },
+            })),
+        },
+        ...{
+          gallery: e
+            .toObject()
+            .gallery.map((img) => ({
+              ...img,
+              ...{ filename: `${baseImageURL}${img.filename}` },
+            })),
+        },
+
+        ...{
+          family: {
+            ...e.toObject().family,
+            ...{
+              children: e.toObject().family
+              .children.map((img) => ({
+                ...img,
+                ...{ image: `${baseImageURL}${img.image}` },
+              }))
+            },
+            // ...{parent2: e.toObject().family.parent2,
+            //    ...{image:  e.toObject().family.parent2 ? `${config.baseImageURL}${e.toObject().family.parent2.image}`: null}
+            //   },
+
+            ...{
+              parent2:{...e.toObject().family.parent2,...{image:e.toObject().family.parent2 && `${config.baseImageURL}${e.toObject().family.parent2.image}`}}
+              },
+              ...{
+                parent1:{...e.toObject().family.parent1,...{image:e.toObject().family.parent1 && `${config.baseImageURL}${e.toObject().family.parent1.image}`}}
+                }
+          },   
+        }
+        
+      },
+    })
     } catch (err) {
       return res.json({
         status: 400,

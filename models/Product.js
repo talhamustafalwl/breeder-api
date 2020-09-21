@@ -46,7 +46,7 @@ const ProductSchema = mongoose.Schema(
       ref: "User",
       required: true,
     },
-
+    image: String,
     addedBy: {
       type: Schema.Types.ObjectId,
       ref: "User",

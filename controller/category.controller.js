@@ -14,7 +14,7 @@ class CategoryController {
     try {
       const animal = await new Category({ name, active, type, icon });
       const doc = await animal.save()
-      return res.status(200).json({ status: 200, message: "Category of animal created successfully", data: doc });
+      return res.status(200).json({ status: 200, message: "Category  created successfully", data: doc });
     } catch (err) {
       return res.json({ status: 400, message: "Error in creating Category of animal", errors: err, data: {} });
     }
