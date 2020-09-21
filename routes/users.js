@@ -122,7 +122,7 @@ router.post("/login", (req, res) => {
   User.findOne({ email: req.body.email, role: req.body.role }, (err, user) => {
     if (!user)
       return res.json({
-        status: 400, message: "Auth failed, email not found", data: {}
+        status: 400, message: "Email not found", data: {}
       });
 
     if (!user.verified)
