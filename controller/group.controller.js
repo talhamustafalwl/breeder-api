@@ -43,7 +43,7 @@ class GroupController {
 
     async getbyId(req, res){
         try {
-          const unit = await Group.find({_id:req.params.id});
+          const unit = await Group.findOne({_id:req.params.id});
           if(unit == ''){
             return res.json({ status: 400, message: "Invalid Id",  data: {} }); 
           }

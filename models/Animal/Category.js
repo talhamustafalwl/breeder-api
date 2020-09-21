@@ -14,7 +14,7 @@ const categorySchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, ref: 'Category'
     },
     type: {
-        type: String, enum: ["animal", "activity", "product"]
+        type: String, enum: ["animal", "activity", "product", "contact"]
     },
     icon: {
         type: String,
@@ -25,7 +25,7 @@ const categorySchema = mongoose.Schema({
 //downcase name
 categorySchema.pre('save', function (next) {
     var category = this;
-    category.name = this.name.toLowerCase();
+    // category.name = this.name.toLowerCase();
     next();
 });
 
