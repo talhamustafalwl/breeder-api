@@ -40,6 +40,7 @@ const cityRoute = require('./cities');
 const zipcodeRoute = require('./zipcodes');
 const locationRoute = require('./locations');
 const notificationRoute = require('./notifications');
+const activityRoute = require('./activity');
 
 app.use('/user', userRoute);
 app.use('/animal', animalRoute);
@@ -83,4 +84,6 @@ app.use('/city', cityRoute);
 app.use('/zipcode', zipcodeRoute);
 app.use('/location', locationRoute);
 app.use('/notification', notificationRoute);
+
+app.use('/activity', activityRoute);
 module.exports = app;

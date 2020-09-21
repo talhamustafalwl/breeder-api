@@ -8,8 +8,8 @@ const {upload, uploadDocument} = require('../middleware/multerimage');
 
 
 
-router.get('/test', (req, res) => {
-  console.log('test route')
+router.post('/test', (req, res) => {
+  console.log('test route',req.body)
   res.status(200).send('ol')
 })
 
@@ -38,10 +38,10 @@ router.route('/').get(auth, allowBreeder,allowEmployee, authenticateRole, Animal
 //for specific animal update/view/delete 
 router.route('/:id').get(auth, allowBreeder, allowEmployee, authenticateRole,AnimalController.getanimal)
   .delete(auth, allowBreeder, allowEmployee, authenticateRole,AnimalController.deleteanimal)
-.patch(auth,AnimalController.updateanimal)
+.patch(auth, allowBreeder, allowEmployee, authenticateRole, upload.single('file'),AnimalController.updateanimal)
 
 
-router.post('/healthrecord/upload',auth, allowBreeder, authenticateRole, uploadDocument.single('file'), AnimalController.uploadHealthRecord)
+router.post('/healthrecord/upload',auth, allowBreeder, allowEmployee, authenticateRole, uploadDocument.single('file'), AnimalController.uploadHealthRecord)
 
 router.get('/healthrecord/:id', AnimalController.getHealthRecord);
 

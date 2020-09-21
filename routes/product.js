@@ -6,10 +6,11 @@ const ProductController = require('../controller/product.controller');
 const {upload} = require('../middleware/multerimage');
 
 router.route('/')
-  .post(auth, allowBreeder, authenticateRole , upload.single('file'), ProductController.create)
+  .post(auth, allowBreeder, allowEmployee, authenticateRole , upload.single('file'), ProductController.create)
   .delete(auth,ProductController.deleteallbreeder)
-  .get(auth, allowBreeder, allowEmployee, authenticateRole,ProductController.getallbreeder)
+  .get(auth, allowBreeder, allowEmployee, allowEmployee, authenticateRole,ProductController.getallbreeder)
 
+  router.post('/gallery/upload', auth, allowBreeder, allowEmployee, authenticateRole, upload.array('file', 10),  ProductController.uploadGalleryImage )
 
 //for see/delete/update product by id
 router.route('/:id').get(auth, allowBreeder, allowEmployee, authenticateRole, ProductController.getbyId)
