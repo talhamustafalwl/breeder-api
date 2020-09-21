@@ -18,7 +18,7 @@ router.put('/gallery/delete', auth, allowBreeder, allowEmployee, authenticateRol
 
 // router.get('/downloadFile', (req, res )=> {
 //   console.log('download file');
-//   return res.sen('http://localhost:5000/uploads/documents/1600069663450-Fullstack Web Developer MEAN Stack.pdf');
+//   return res.sen('https://breeder-api.herokuapp.com/uploads/documents/1600069663450-Fullstack Web Developer MEAN Stack.pdf');
 // })
 
 //for admin crud can view all/delete all

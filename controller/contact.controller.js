@@ -1,5 +1,7 @@
 const {validateContact} = require('../validation/contact');
 const {Contact} = require('../models/Contact/Contact');
+const categoryController = require('./category.controller');
+const contact = require('../validation/contact');
 class ContactController {
     constructor() {
 
@@ -8,8 +10,8 @@ class ContactController {
 
     // breeder and employee both can add contact ... 
     async addContact(req, res, next) {
-        //req.body.breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
-        req.body.breederId="5f3ba1f7a989412710841d5a"
+        req.body.breederId=req.user.role == "employee" ? req.user.breederId : req.user._id;
+        // req.body.breederId="5f3ba1f7a989412710841d5a"
         try {
             const {errors, isValid} = await validateContact(req.body);
             console.log(errors);
@@ -54,6 +56,54 @@ class ContactController {
         }
     }
 
+
+
+    getContactWithCategories( req, res, next) {
+            try {
+                console.log('get contact with categories');
+                console.log (req.user);
+                // categoryController.allCategories().then(categories => {
+                    Contact.find({isRemoved: false, breederId: req.user.role.includes('breeder') ? req.user._id : req.user.breederId}).populate('category').then(contactResult => {
+                        // data = categories.map(e => ({...e, ...{contacts: contactResult.filter(cr => cr.toObject().)}}));
+                        return res.status(200).json({ status: 200, message: "Contacts with categories fetched successfully", data: contactResult})
+                    });
+                // })
+            } catch(error) {
+                return next(error);
+            }
+    }
+
+
+    softRemoveContact(req, res, next) {
+        try {
+            console.log('soft remove called');
+            console.log(req.params.id);
+            Contact.updateOne({_id:req.params.id}, {$set: {isRemoved: true }}, { new: true }).then(result => {
+                return res.status(200).json({ status: 200, message: "contacts updated successfully", data: result });
+            }).catch(error => {
+                console.log(error);
+                return res.json({ status: 400, message: "Error in updateding contacts ", errors: error, data: {} });
+            })
+        } catch(error) {
+            return next(error);
+        }
+    }
+
+    softRemoveContactByCategory(req, res, next) {
+        try {
+            console.log('soft remove called');
+            console.log(req.params.id);
+            Contact.updateMany({category:req.params.category}, {$set: {isRemoved: true }}, { new: true }).then(result => {
+                return res.status(200).json({ status: 200, message: "contacts updated successfully", data: result });
+            }).catch(error => {
+                console.log(error);
+                return res.json({ status: 400, message: "Error in updateding contacts ", errors: error, data: {} });
+            })
+        } catch(error) {
+            return next(error);
+        }
+    }
+
     getContact(req, res, next) {
         try {
             Contact.findById(req.params.id).then(result => {
@@ -68,12 +118,16 @@ class ContactController {
 
 
     UpdateContact(req, res, next) {
-        //const breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
-        const breederId="5f3ba1f7a989412710841d5a"
+        console.log('contact updating')
+        console.log(req.body);
+        console.log(req.params._id);
+        const breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
+        // const breederId="5f3ba1f7a989412710841d5a"
         try {
             Contact.findOneAndUpdate({_id:req.params.id}, {$set: req.body}, { new: true }).then(result => {
                 return res.status(200).json({ status: 200, message: "contacts updated successfully", data: result });
             }).catch(error => {
+                console.log(error);
                 return res.json({ status: 400, message: "Error in updateding contacts ", errors: error, data: {} });
             })
         } catch(error) {

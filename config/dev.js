@@ -1,14 +1,14 @@
 module.exports = {
     mongoURI: 'mongodb+srv://breeder:GtmwECDdd3sL26N3@breederdb-vruiv.mongodb.net/breeder?retryWrites=true&w=majority'
       // mongoURI:'mongodb://localhost:27017/breeder_official'
-    , //Server: 'http://localhost:5000',
+    , //Server: 'https://breeder-api.herokuapp.com',
     // Server: 'http://localhost:3000',
     Server: 'https://breeder-api.herokuapp.com',
-    serverURL: 'http://localhost:5000',
-    imageURL: 'http://localhost:5000/uploads/images/form/',
+    serverURL: 'https://breeder-api.herokuapp.com',
+    imageURL: 'https://breeder-api.herokuapp.com/uploads/images/form/',
     mailthrough: 'admin@breeder.com',
-    baseImageURL: 'http://192.168.88.129:5000/uploads/images/',
-    baseDocumentURL: 'http://192.168.88.129:5000/uploads/documents/',
+    baseImageURL: 'https://breeder-api.herokuapp.com/uploads/images/',
+    baseDocumentURL: 'https://breeder-api.herokuapp.com/uploads/documents/',
 
     //stripe
     stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",

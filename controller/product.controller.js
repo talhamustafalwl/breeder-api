@@ -63,9 +63,7 @@ class ProductController {
             message: "All Products",
             data: result.map((e) => ({
               ...e.toObject(),
-              ...{ image: e.toObject().image
-                  ? `${configKey.baseImageURL}${e.toObject().image}`: null,
-              },
+              ...{image:  `${configKey.baseImageURL}${e.toObject().image}`},
               ...{
                 gallery: e
                   .toObject()
@@ -137,17 +135,55 @@ class ProductController {
 
   async getbyId(req, res) {
     try {
-      const products = await Product.find({ _id: req.params.id });
+      console.log('get product by id');
+      const products = await Product.findById(req.params.id);
       if (products == "") {
         return res.json({ status: 400, message: "Invalid Id", data: {} });
       }
       return res
         .status(200)
-        .json({ status: 200, message: "Product", data: products });
+        .json({ status: 200, message: "Product", data: {
+          ...products.toObject(),
+          image:  `${configKey.baseImageURL}${products.toObject().image}`,
+          
+          gallery: products.toObject().gallery ? products.toObject()
+            .gallery.map((eimg) => ({...eimg, filename: `${configKey.baseImageURL}${eimg.filename}`})) : [],
+          
+        } });
     } catch (err) {
+      console.log(err );
       return res.json({
         status: 400,
         message: "Error in get Product",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
+  async uploadGalleryImage(req, res, next) {
+    try {
+      console.log("uploadGalleryImage",req.files);
+      console.log(req.body.id);
+
+      Product.updateOne({_id: req.body.id}, {$push: {gallery: {$each: req.files.map(file => ({filename: file.filename, size: file.size, addedBy: req.user._id}))} }}).then(animalResult => {
+        return res.status(200).json({
+          status: 200,
+          message: "Product gallery uploaded successfully",
+        });
+      }).catch(error => {
+        return res.json({
+          status: 400,
+          message: "Error in upload product gallery image record",
+          errors: err,
+          data: {},
+        });
+      });
+    } catch(error) {
+      console.log(err );
+      return res.json({
+        status: 400,
+        message: "Error in uploading images",
         errors: err,
         data: {},
       });

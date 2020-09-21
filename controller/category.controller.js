@@ -6,17 +6,17 @@ class CategoryController {
 
   //only admin
   async create(req, res) {
-    const { name, active, parentId, type, icon } = req.body
+    const { name, active, parentId, type   } = req.body
     console.log(name);
     if (!name) {
-      return res.json({ status: 400, message: "Name is required",errors:{name:"Name is required"}, data: {} });
+      return res.json({ status: 400, message: "Name is required", errors: {name:"Name is required"}, data: {} });
     }
     try {
-      const animal = await new Category({ name, active, type, icon });
+      const animal = await new Category({ name, active, type, parentId: parentId ? parentId : null  });
       const doc = await animal.save()
-      return res.status(200).json({ status: 200, message: "Category  created successfully", data: doc });
+      return res.status(200).json({ status: 200, message: "Category created successfully", data: doc });
     } catch (err) {
-      return res.json({ status: 400, message: "Error in creating Category of animal", errors: err, data: {} });
+      return res.json({ status: 400, message: "Error in creating Category", errors: err, data: {} });
     }
   }
 
@@ -29,6 +29,12 @@ class CategoryController {
     } catch (err) {
       return res.json({ status: 400, message: "Error in get Categories", errors: err, data: {} });
     }
+  }
+
+  async allCategories(type) {
+    return new Promise((resolve, reject) => {
+      Category.find(req.query.type ?  {type} : {}).then(response => resolve(response)).catch(error => reject(error));
+    });
   }
 
   async deleteall(req, res) {

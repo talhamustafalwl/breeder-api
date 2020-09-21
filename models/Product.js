@@ -51,6 +51,7 @@ const ProductSchema = mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
     }, //kis user ne add kiya ha
+    image: String,
 
     qrcodepath: { type: String },
     status: { type: String },

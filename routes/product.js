@@ -13,8 +13,9 @@ router.route('/')
   router.post('/gallery/upload', auth, allowBreeder, allowEmployee, authenticateRole, upload.array('file', 10),  ProductController.uploadGalleryImage )
 
 //for see/delete/update product by id
-router.route('/:id').get(auth,ProductController.getbyId)
+router.route('/:id').get(auth, allowBreeder, allowEmployee, authenticateRole, ProductController.getbyId)
   .delete(auth, allowBreeder, allowEmployee, authenticateRole,ProductController.deletebyId)
 .patch(auth,ProductController.updatebyId)
+router.post('/gallery/upload', auth, allowBreeder, allowEmployee, authenticateRole, upload.array('file', 10),  ProductController.uploadGalleryImage )
 
 module.exports=router

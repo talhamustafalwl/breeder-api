@@ -8,12 +8,20 @@ const ContactSchema = mongoose.Schema({
     address: {type: String},
     email: {type: Array},
     phone: {type: Array},
-    category: {type: String},
+    state: {type: String},
+    city: {type: String},
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+    },
     addedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         require: true,
     },
+    isActive:{ type : Boolean, default: true},
+    isRemoved:{ type : Boolean, default: false},
+
     address:{type:String},
     description:{type:String},
     breederId: {

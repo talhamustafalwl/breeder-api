@@ -30,6 +30,7 @@ const formStructureSchema = mongoose.Schema({
   displayName: { type: String },
   name: { type: String },
   type: { type: String },
+  prefix: {type: String},
   validation: {
     minLength: { type: Number },
     maxLength: { type: Number },
