@@ -332,6 +332,12 @@ class UserController {
                     
                     this.registerUserWithRole(req.body, 'breeder', true).then(success => {
                         console.log(success);
+
+
+                        // Send email to breeder..
+                        // Email is pending for later use.. 
+                        // const html = registeremail(doc.secretToken, config.Server, 'breeder');
+                        // mailer.sendEmail(config.mailthrough, req.body.email, 'Please verify your email!', html);
                         return res.status(200).send({status: 200, message: 'Breeder Registered Successfully', data: success});
                     }).catch(error => {
                         console.log(error);
@@ -391,8 +397,8 @@ class UserController {
                 // Send email to breeder..
                 // Email is pending for later use.. 
                 if(token) {
-                    // const html = registeremail(doc.secretToken, config.Server, role);
-                    // mailer.sendEmail(config.mailthrough, doc.email, 'Please verify your email!', html);
+                    const html = registeremail(doc.secretToken, config.Server, role);
+                    mailer.sendEmail(config.mailthrough, doc.email, 'Please verify your email!', html);
                     console.log('sending email');
                     return resolve({ status: 200, message: "Verification email is send", data: doc });
                 } else {

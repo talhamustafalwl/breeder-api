@@ -130,16 +130,22 @@ const AnimalSchema = mongoose.Schema({
 //qrcode of animal save
 const QRCode = require('qrcode')
 AnimalSchema.pre('save', function (next) {
+    console.log('on pre save');
     const animal = this;
     console.log(this);
     const dat = Date.now()
-    QRCode.toFile(`uploads/qrcode/${this._id}-${dat}.png`, [{data: (this._id).toString(), mode: 'byte'}], {
-    }, function (err) {
-        if (err) return next(err);
-        console.log('qrcode done')
-        animal.qrcodepath = `uploads/qrcode/${animal._id}-${dat}.png`
-        return next()
-    })
+    if(!animal.qrcodepath) {
+        QRCode.toFile(`uploads/qrcode/${this._id}-${dat}.png`, [{data: (this._id).toString(), mode: 'byte'}], {
+        }, function (err) {
+            if (err) return next(err);
+            console.log('qrcode done')
+            animal.qrcodepath = `uploads/qrcode/${animal._id}-${dat}.png`
+            return next()
+        })
+    } else {
+        return next();
+    }
+  
     
 });
 

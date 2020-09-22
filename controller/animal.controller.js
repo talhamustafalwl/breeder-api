@@ -238,6 +238,28 @@ class AnimalController {
     }
   }
 
+  async updateAnimalData(req, res, next) {
+    try {
+      Animal.updateOne({ _id: req.params.id }, req.body).then(responseAnimal  => {
+        return res.status(200).json({
+          status: 200,
+          message: "Animals updated successfully",
+          data: "",
+        });
+      }).catch(error => {
+        return res.json({
+          status: 400,
+          message: "Error in updating animal",
+          errors: error,
+          data: {},
+        });
+      });
+
+    } catch(error ) {
+      return next(error);
+    }
+  }
+
   async uploadHealthRecord(req, res) {
     try {
       console.log("uploadhealth record");

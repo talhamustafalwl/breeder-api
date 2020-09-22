@@ -26,7 +26,6 @@ router.route('/all').get(adminauth, AnimalController.getall)
   .delete(adminauth,AnimalController.deleteall)
 
 
-
 //for breeder  animals crud can view/delete all (can only see his animals)
 router.route('/').get(auth, allowBreeder,allowEmployee, authenticateRole, AnimalController.getBreederAnimals)
   .delete(auth, allowBreeder, authenticateRole, AnimalController.deleteBreederAnimals)
@@ -34,6 +33,8 @@ router.route('/').get(auth, allowBreeder,allowEmployee, authenticateRole, Animal
 
   // router.delete('/:id', auth, allowBreeder, authenticateRole, AnimalController.deleteAnimal);
 
+
+router.put('/update/:id', auth, allowBreeder, allowEmployee, authenticateRole, AnimalController.updateAnimalData); 
 
 //for specific animal update/view/delete 
 router.route('/:id').get(auth, allowBreeder, allowEmployee, authenticateRole,AnimalController.getanimal)
