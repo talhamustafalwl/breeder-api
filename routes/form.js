@@ -6,7 +6,7 @@ const FormController = require('../controller/form.controller');
 
 
 router.get('/all/forms', auth, allowBreeder, allowAdmin, authenticateRole, FormController.getForms);
-
+router.get('/byBreeder', auth, allowBreeder, authenticateRole, FormController.getRegisteredFormsOfBreeder);
 
 router.get('/category/:categoryId', FormController.getFormByCategory)
 .get('/', auth, allowBreeder, authenticateRole, FormController.getAllForms)
