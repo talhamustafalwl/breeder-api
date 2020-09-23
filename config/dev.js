@@ -6,7 +6,9 @@ module.exports = {
     Server: 'https://breeder-api.herokuapp.com',
     // webServer: 'http://localhost:3000',
     webServer: 'https://breeder-dev.herokuapp.com',
-    
+    // baseAPIUrl: 'http://localhost:3000/',
+    baseAPIUrl: 'https://breeder-api.herokuapp.com/',
+
     serverURL: 'https://breeder-api.herokuapp.com',
     imageURL: 'https://breeder-api.herokuapp.com/uploads/images/form/',
     mailthrough: 'admin@breeder.com',

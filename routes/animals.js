@@ -15,7 +15,7 @@ router.post('/test', (req, res) => {
 
 router.post('/gallery/upload', auth, allowBreeder, allowEmployee, authenticateRole, upload.array('file', 10),  AnimalController.uploadGalleryImage )
 router.put('/gallery/delete', auth, allowBreeder, allowEmployee, authenticateRole, AnimalController.deleteGallaryImage)
-
+router.get('/qrcode/:id', AnimalController.getQRCodeOfAnimal);
 // router.get('/downloadFile', (req, res )=> {
 //   console.log('download file');
 //   return res.sen('https://breeder-api.herokuapp.com/uploads/documents/1600069663450-Fullstack Web Developer MEAN Stack.pdf');
@@ -45,6 +45,6 @@ router.route('/:id').get(auth, allowBreeder, allowEmployee, authenticateRole,Ani
 router.post('/healthrecord/upload',auth, allowBreeder, allowEmployee, authenticateRole, uploadDocument.single('file'), AnimalController.uploadHealthRecord)
 
 router.get('/healthrecord/:id', AnimalController.getHealthRecord);
-
+router.delete('/:animalId/healthrecord/:id', AnimalController.deleteAnimalHealthRecord)
 
 module.exports=router

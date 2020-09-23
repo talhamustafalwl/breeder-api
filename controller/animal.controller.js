@@ -4,7 +4,7 @@ const LogicController = require("../controller/logic.controller");
 const { JSONCookie } = require("cookie-parser");
 const config = require("../config/key");
 const { baseDocumentURL } = require("../config/dev");
-const { baseImageURL } = require("../config/key");
+const { baseImageURL, baseAPIUrl } = require("../config/key");
 
 class AnimalController {
   constructor() {}
@@ -38,6 +38,31 @@ class AnimalController {
       return res.json({
         status: 400,
         message: "Error in deleted Animals",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
+
+  async getQRCodeOfAnimal(req, res, next) {
+    try {
+      Animal.findById(req.params.id).then(resultAnimal => {
+        return res.status(200).json({
+          status: 200,
+          message: "All Animals deleted successfully",
+          data: {...resultAnimal.toObject(), ...{qrcodepath: `${baseAPIUrl}${resultAnimal.toObject().qrcodepath}` }},
+        });
+      }).catch(error=> {
+        return res.json({
+          status: 400,
+          message: "Error occurs"
+        });
+      });
+    } catch(error) {
+      return res.json({
+        status: 400,
+        message: "Error in Finding QR Code",
         errors: err,
         data: {},
       });
@@ -512,6 +537,36 @@ class AnimalController {
         });
     } catch (err) {
       return next(err);
+    }
+  }
+
+  async deleteAnimalHealthRecord(req, res, next) {
+    try {
+      Animal.findById(req.params.animalId).then(resultAnimal => {
+        resultAnimal.healthRecord = resultAnimal.healthRecord.filter(e => !(e._id==req.params.id));
+        console.log(req.params.id);
+        console.log('delete animal update');
+        console.log(resultAnimal.healthRecord.filter(e => !(e._id==req.params.id)));
+        resultAnimal.save().then(_ => {
+          return res
+          .status(200)
+          .json({ status: 200, message: "Animal health record deleted successfully" });
+        });
+      }).catch(error => {
+        return res.json({
+          status: 400,
+          message: "Error in deleting health record",
+          errors: err,
+          data: {},
+        });
+      }); 
+    } catch(error) {
+      return res.json({
+        status: 400,
+        message: "Error in deleting health record",
+        errors: err,
+        data: {},
+      });
     }
   }
 
