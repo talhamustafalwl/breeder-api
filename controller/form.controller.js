@@ -153,7 +153,7 @@ class FormController {
                 console.log(err);
                 return res.json({ status: 400, message: "Error in modifying form", errors: err, data: {} });
             });
-            return res.status(200).json({ status: 200, message: "Form modified successfully", data: form });
+            return res.status(200).json({ status: 200, message: "Form created successfully", removeMessage: "Form removed successfully" , editMessage: 'Form updated Successfully', data: form });
         } catch (err) {
             return next(err);
         }
