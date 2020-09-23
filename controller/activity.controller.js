@@ -1,5 +1,7 @@
 const { Activity } = require("../models/Activity/Activity");
 const { validateActivity } = require("../validation/activity");
+const mongoose = require('mongoose');
+
 class ActivityController {
     constructor() { }
 
@@ -25,11 +27,28 @@ class ActivityController {
 
 
     async getall(req, res) {
+        //console.log(req.query)
+        var conditions = Object.keys(req.query).map(function(key) {
+            var obj = {},newKey = "";
+            if ( key == "groupId" || key == "categoryId" ) {
+                newKey =  key;
+            } 
+            else { newKey = key;}
+            obj[newKey] = mongoose.Types.ObjectId(req.query[key])
+            return obj;
+        })
+        conditions=Object.assign({},...conditions)
+        console.log(conditions)
         try {
-          const cleaning = await Activity.find({});
-          return res.status(200).json({ status: 200, message: "All Activitys", data: cleaning });
+          const cleaning = await Activity.aggregate([ {$match:   conditions}
+            ,{$lookup:{from: "groups",localField: "groupId",foreignField: "_id",as: "groupId"}},
+            
+            {$group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" }} ,detail:{$push:"$$ROOT"}} },
+    ])
+
+          return res.status(200).json({ status: 200, message: "All Activities", data: cleaning });
         } catch (err) {
-          return res.json({ status: 400, message: "Error in get Activitys", errors: err, data: {} });
+          return res.json({ status: 400, message: "Error in get Activities", errors: err, data: {} });
         }
       }
 

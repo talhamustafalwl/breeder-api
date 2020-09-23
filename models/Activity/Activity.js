@@ -9,7 +9,7 @@ const ActivitySchema = mongoose.Schema({
     addedBy: {
         type: mongoose.Schema.Types.ObjectId,ref: 'User',require: true,
     },
-    group: {
+    groupId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Group',require: true
     },
