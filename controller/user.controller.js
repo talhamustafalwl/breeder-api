@@ -53,7 +53,7 @@ class UserController {
           
               user.comparePassword(req.body.password, (err, isMatch) => {
                 if (!isMatch)
-                  return res.json({ status: 400, message: "Incorrect password", errors: errors, data: {} });
+                  return res.json({ status: 400, message: "Incorrect email id or password", errors: errors, data: {} });
           
                 user.generateToken((err, user) => {
                   if (err) return res.send(err);
@@ -436,7 +436,7 @@ class UserController {
 
             User.findOne({ email: req.body.email }).then(user => {
                 if (!user) {
-                    return res.json({ status: 400, message: "Email do not exists", data: {} });
+                    return res.json({ status: 400, message: "Email does not exist", data: {} });
                 }
                 //check for active user
                 if (user.active == 0)

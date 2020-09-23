@@ -134,7 +134,7 @@ router.post("/login", (req, res) => {
 
     user.comparePassword(req.body.password, (err, isMatch) => {
       if (!isMatch)
-        return res.json({ status: 400, message: "Incorrect password", errors: errors, data: {} });
+        return res.json({ status: 400, message: "Incorrect email id or password", errors: errors, data: {} });
 
       user.generateToken((err, user) => {
         if (err) return res.send(err);
