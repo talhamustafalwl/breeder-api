@@ -5,6 +5,7 @@ const randomstring = require('randomstring');
 
 const config = require("../config/key");
 const registeremail = require('../emails/register');
+const forgetpasswordemail = require('../emails/forgetpassword');
 // const formController = require("./form.controller");
 const {removeQuote} = require('../middleware/constant');
 
@@ -386,6 +387,7 @@ class UserController {
 
     async registerUserWithRole(body, role, token=false)  {
         return new Promise((resolve, reject) => {
+            console.log(token);
             const user = new User({...body,  ...{role: [role]}});
             if(token) user.secretToken = randomstring.generate();
             user.save((err, doc) => {
@@ -406,6 +408,13 @@ class UserController {
                 }
             });    
         });
+    }
+
+    async testSendMail(req, res, next) {
+        const html = registeremail('token', config.Server, 'breeder');
+        mailer.sendEmail(config.mailthrough, 'bilal@livewirelabs.co', 'Please verify your email!', html);
+        console.log('sending email');
+        res.status(200).json({ status: 200, message: "email is send"});
     }
 
     async modifyUserWithRole(email, data, role) {
@@ -440,10 +449,8 @@ class UserController {
                 //user.resetToken_expires=Date.now();
                 user.save()
                 //email send
-                // let html = forgetpasswordemail(req.body.email, config.Server, token)
-                // mailer.sendEmail(config.mailthrough, req.body.email, 'Password reset instructions', html);
-
-
+                let html = forgetpasswordemail(req.body.email, config.webServer, token)
+                mailer.sendEmail(config.mailthrough, req.body.email, 'Password reset instructions', html);
                 res.status(200).json({ status: 200, message: "email is send to recover password", data: { id: user._id, resettoken: user.resetToken } });
 
             })

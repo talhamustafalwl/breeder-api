@@ -33,7 +33,7 @@ router.get('/', auth, allowBreeder, allowAdmin, authenticateRole, UserController
 router.put('/', auth, allowBreeder, allowAdmin, authenticateRole, UserController.updateUser);
 
 //auth route check
-router.get("/auth", auth, UserController.authentication);
+router.get("/auth", auth, allowBreeder, allowAdmin, authenticateRole, UserController.authentication);
 router.patch("/isblocked/:id", adminauth, UserController.isblocked);
 
 
@@ -106,6 +106,8 @@ router.post('/testLogin', (req, res) => {
             status: 200, message: "Login successfully"});
 });
 
+
+router.get('/testMail' , UserController.testSendMail);
 
 
 router.post('/employee/login', UserController.employeeLogin);

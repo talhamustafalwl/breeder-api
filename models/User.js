@@ -63,7 +63,7 @@ const userSchema = mongoose.Schema({
 
     // For employees need to enter business name.. 
     businessName: String,
-    noOfEmployees: Number,
+    noOfEmployees: String,
     noOfAnimals: Number,
     founded: Number,
     isEmployeeActive: {
