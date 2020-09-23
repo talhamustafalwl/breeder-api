@@ -399,7 +399,7 @@ class UserController {
                 // Send email to breeder..
                 // Email is pending for later use.. 
                 if(token) {
-                    const html = registeremail(doc.secretToken, config.Server, role);
+                    const html = registeremail(doc.secretToken, config.webServer, role);
                     mailer.sendEmail(config.mailthrough, doc.email, 'Please verify your email!', html);
                     console.log('sending email');
                     return resolve({ status: 200, message: "Verification email is send", data: doc });
