@@ -97,23 +97,32 @@ class FormController {
                     console.log(req.user.role);
                     if (categoryResult.error) return res.json({ status: 400, message: categoryResult.message });
                     // getAllBreedersId()
-                    getAllBreedersId().then(breedersId => {
-                        const form = new Form({ ...req.body, ...{ userId: req.user._id, userType: req.user.role[0], breedersId } });
-                        form.save().then(async result => {
-                            return res.status(200).json({ status: 200, message: "Form Created Successfully", data: result });
-                            // await this.cloneFormToBreeder(req.body).then(result => {
-                            //     console.log(result);
-                            // }).catch(err => {
-                            //     return res.json({ status: 400, message: "Form created but error cloning to breeder", errors: err, data: {} });
-                            // });
-                        }).catch(err => {
-                            console.log(err.message);
-                            return res.json({ status: 400, message: err.message ? err.message : "Error Creating form", err, data: {} });
-                        })
+
+                    // Remove all the breeders to add when from create.... 
+                    // Can be undo by uncomment the code down..
+                    // ####################################################
+                    const form = new Form({ ...req.body, ...{ userId: req.user._id, userType: req.user.role[0], breedersId: [] } });
+                    form.save().then(async result => {
+                        return res.status(200).json({ status: 200, message: "Form Created Successfully", data: result });
+                        // await this.cloneFormToBreeder(req.body).then(result => {
+                        //     console.log(result);
+                        // }).catch(err => {
+                        //     return res.json({ status: 400, message: "Form created but error cloning to breeder", errors: err, data: {} });
+                        // });
                     }).catch(err => {
-                        console.log(err)
-                        return res.json({ status: 400, message: err.message ? err.message : "Internal Server Error", err, data: {} });
+                        console.log(err.message);
+                        return res.json({ status: 400, message: err.message ? err.message : "Error Creating form", err, data: {} });
                     })
+
+                    // This is the line that add all breeders in form..
+                    // ##################################################
+                    // getAllBreedersId().then(breedersId => {
+                        
+                       
+                    // }).catch(err => {
+                    //     console.log(err)
+                    //     return res.json({ status: 400, message: err.message ? err.message : "Internal Server Error", err, data: {} });
+                    // })
                 })
             }).catch(err  => {
                 return res.json({ status: 400, message: err.message ? err.message : "Internal Server Error", err, data: {} });

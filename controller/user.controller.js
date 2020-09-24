@@ -8,6 +8,7 @@ const registeremail = require('../emails/register');
 const forgetpasswordemail = require('../emails/forgetpassword');
 // const formController = require("./form.controller");
 const {removeQuote} = require('../middleware/constant');
+const { Types } = require("mongoose");
 
 class UserController {
     constructor() { 
@@ -101,9 +102,21 @@ class UserController {
     async getEmployeeById(req, res, next) {
         console.log("called",req.params.id)
         try {
-            User.findOne({ role: 'employee', _id: req.params.id }).then(result => {
-                return res.status(200).json({ status: 200, message: "Employee found successfully", data: {...result.toObject(), ...{image:  result.toObject().image ? `${config.baseImageURL}${result.toObject().image}`: null}}});
+            // User.findOne({ role: 'employee', _id: req.params.id }).then(result => {
+            //     return res.status(200).json({ status: 200, message: "Employee found successfully", data: {...result.toObject(), ...{image:  result.toObject().image ? `${config.baseImageURL}${result.toObject().image}`: null}}});
+            // }).catch(error => {
+            //     return res.json({ status: 400, message: "Error fetching employees", errors: error, data: {} });
+            // });
+            User.aggregate([ {$match: { role: 'employee', _id:  Types.ObjectId(req.params.id) }}, {$lookup: {
+                from: 'animals',
+                localField: "breederId",
+                foreignField: "breederId",
+                as: "animalData"
+            }}]).exec().then(result => {
+                console.log(result);
+                return res.status(200).json({ status: 200, message: "Employee found successfully", data: {...result[0], ...{image:  result[0].image ? `${config.baseImageURL}${result[0].image}`: null}}});
             }).catch(error => {
+                console.log(error);
                 return res.json({ status: 400, message: "Error fetching employees", errors: error, data: {} });
             });
         } catch (err) {

@@ -460,6 +460,20 @@ class AnimalController {
       });
     }
   }
+
+
+
+
+  // For Inventory
+  async getAnimalForInventory(breederId) {
+    return new Promise(async (resolve, reject) => {
+     await Animal.find({breederId}).then(resolve).catch(reject);
+    });
+  }
+
+
+
+
   
 
   //get delete animal of specific breeder
