@@ -20,7 +20,7 @@ return `
             <br/>
             Breeder Id: <b>${breederId}</b>
             <br/>
-            Token: <b>${username}</b>
+            User Id: <b>${username}</b>
             <br/>
             Password: <b>${password}</b>
             <br/><br/>

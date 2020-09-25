@@ -422,7 +422,7 @@ class UserController {
                 } else {
 
                     if(role === 'employee') {
-                        const html = employeeEmail(body.uid, body.name, body.password);
+                        const html = employeeEmail(body.uid, body.email, body.password);
                         mailer.sendEmail(config.mailthrough, doc.email, 'Email for logly employee', html);
                         console.log('sending email');
                     }
