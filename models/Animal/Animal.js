@@ -50,7 +50,7 @@ const AnimalSchema = mongoose.Schema({
     //     maxlength: 20, required: true
     // },
     data: Object,
-    family: {parent1: {type: Schema.Types.ObjectId, ref: 'Animal'}, parent2: {type: Schema.Types.ObjectId, ref: 'Animal'},children:[{type: Schema.Types.ObjectId, ref: 'Animal'}]},
+    family: {parent1: {id : {type: Schema.Types.ObjectId, ref: 'Animal'} }, parent2: {id :  {type: Schema.Types.ObjectId, ref: 'Animal'} },children:[{type: Schema.Types.ObjectId, ref: 'Animal'}]},
     healthRecord: [healthRecordSchema],
     gallery: [gallerySchema],
     status: {

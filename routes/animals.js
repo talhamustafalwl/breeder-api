@@ -45,6 +45,10 @@ router.route('/:id').get(auth, allowBreeder, allowEmployee, authenticateRole,Ani
 router.post('/healthrecord/upload',auth, allowBreeder, allowEmployee, authenticateRole, uploadDocument.single('file'), AnimalController.uploadHealthRecord)
 
 router.get('/healthrecord/:id', AnimalController.getHealthRecord);
-router.delete('/:animalId/healthrecord/:id', AnimalController.deleteAnimalHealthRecord)
+router.delete('/:animalId/healthrecord/:id', AnimalController.deleteAnimalHealthRecord);
+
+router.delete('/:id/parent/:parentName', AnimalController.removeAnimalParent)
+router.put('/addasparentchild', AnimalController.addAnimalAsParentChild)
+
 
 module.exports=router

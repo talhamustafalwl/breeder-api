@@ -5,6 +5,8 @@ const randomstring = require('randomstring');
 
 const config = require("../config/key");
 const registeremail = require('../emails/register');
+const employeeEmail = require('../emails/employeeRegister');
+
 const forgetpasswordemail = require('../emails/forgetpassword');
 // const formController = require("./form.controller");
 const {removeQuote} = require('../middleware/constant');
@@ -216,7 +218,8 @@ class UserController {
                     req.body.uid = randomstring.generate({length: 8, charset: 'numeric'});
                     // Register user... 
                     req.body.breederId = req.user._id;
-                    req.body.image = req.file.filename;
+
+                    req.body.image = req.file ? req.file.filename : null;
                     this.registerUserWithRole(req.body, 'employee', false).then(success => {
                         console.log(success);
                         return res.status(200).send({status: 200, message: 'Employee Registered Successfully', data: success});
@@ -417,6 +420,12 @@ class UserController {
                     console.log('sending email');
                     return resolve({ status: 200, message: "Verification email is send", data: doc });
                 } else {
+
+                    if(role === 'employee') {
+                        const html = employeeEmail(body.uid, body.name, body.password);
+                        mailer.sendEmail(config.mailthrough, doc.email, 'Email for logly employee', html);
+                        console.log('sending email');
+                    }
                     return resolve({ status: 200, message: "Registered Successfully", data: doc });
                 }
             });    

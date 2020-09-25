@@ -143,7 +143,7 @@ router.post("/login", (req, res) => {
        
         return res.status(200)
           .json({
-            status: 200, message: "Login successfully", data: { userId: user._id, token: user.token, email: user.email }
+            status: 200, message: "Login successfully", data: { userId: user._id, token: user.token, email: user.email, user }
           });
       });
     });

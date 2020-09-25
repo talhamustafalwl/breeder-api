@@ -2,6 +2,7 @@ const { Category } = require("../models/Animal/Category");
 const { restart } = require("nodemon");
 const { imageURL, baseImageURL } = require("../config/dev");
 const animalController = require("./animal.controller");
+const productController = require("./product.controller");
 class CategoryController {
   constructor() {}
 
@@ -186,31 +187,94 @@ class CategoryController {
 
   async getInventoryByBreeder(req, res, next) {
     try {
+      console.log ('inventory breeder');
       const { breederId } = req.params;
       const {type} = req.query;
       let match;
+     
       if(type === 'animal') {
         match = await animalController.getAnimalForInventory(breederId);
         // console.log(animalResult.map(e => e.categoryId));
+      } else {
+        match = await productController.getProductForInventory(breederId);
       }
 
+      const categoryReducer  = (acc, currValue) => {
+        currValue.items = currValue.items.map(e => {
+          const status = {
+            alive: match.reduce((a, cv)=> (cv.status==='Alive') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+            sold: match.reduce((a, cv)=> (cv.status==='Sold') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+            died: match.reduce((a, cv)=> (cv.healthStatus==='Died') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+            pregnant: match.reduce((a, cv)=> (cv.healthStatus==='Pregnant') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+          }
+          return {
+          ...e,
+          ...status,
+          total: status.alive + status.sold
+        }
+        })
+
+        return [...acc, 
+          {
+            ...currValue, 
+            total: currValue.items.reduce((a, cv) => a+cv.total,0),
+            alive: currValue.items.reduce((a, cv) => a+cv.alive, 0),
+            sold: currValue.items.reduce((a, cv) => a+cv.sold, 0),
+            died: currValue.items.reduce((a, cv) => a+cv.died, 0),
+            pregnant: currValue.items.reduce((a, cv) => a+cv.pregnant, 0),
+            
+          }];
+      } 
+
+
+
+      const productReducer = (acc, currValue) => {
+        currValue.items = currValue.items.map(e => {
+          const status = {
+            alive: match.reduce((a, cv)=> (cv.status==='Alive') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+            sold: match.reduce((a, cv)=> (cv.status==='Sold') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+            died: match.reduce((a, cv)=> (cv.healthStatus==='Died') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+            pregnant: match.reduce((a, cv)=> (cv.healthStatus==='Pregnant') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+          }
+          return {
+          ...e,
+          ...status,
+          total: status.alive + status.sold
+        }
+        })
+
+        return [...acc, 
+          {
+            ...currValue, 
+            total: currValue.items.reduce((a, cv) => a+cv.total,0),
+            alive: currValue.items.reduce((a, cv) => a+cv.alive, 0),
+            sold: currValue.items.reduce((a, cv) => a+cv.sold, 0),
+            died: currValue.items.reduce((a, cv) => a+cv.died, 0),
+            pregnant: currValue.items.reduce((a, cv) => a+cv.pregnant, 0),
+            
+          }];
+      }
+// subCategories: {$addToSet: { id: '$_id', name: '$name', type: '$type', icon: '$icon' }}
       Category.aggregate(
         [
           {$match: {
             _id: {$in: match.map(e => e.categoryId) } 
           }},
-          { $group: { _id: "$parentId",  subCategories: { $sum: 1 }, subCategoriesData: {$addToSet: { id: '$_id', name: '$name', type: '$type', icon: '$icon' }} } }
-
+          { $group: { _id: "$parentId", category: {$first: '$parentId'}, items: {$push : '$$ROOT'} } },
         ])
         .exec()
         .then((result) => {
-          return res
-            .status(200)
-            .json({
-              status: 200,
-              message: "Result found successfully",
-              data: result,
-            });
+          Category.populate(result, {path: "category"}, (err, categoryDoc) => {
+            const finalRes = categoryDoc.reduce((type==='animal') ? categoryReducer : productReducer, [])
+            console.log(finalRes);
+            return res
+              .status(200)
+              .json({
+                status: 200,
+                message: "Result found successfully",
+                data: finalRes,
+              });
+          })
         })
         .catch((error) => {
           console.log(error);
@@ -220,6 +284,8 @@ class CategoryController {
       return next(error);
     }
   }
+
+
 }
 
 module.exports = new CategoryController();

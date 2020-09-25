@@ -72,75 +72,80 @@ class AnimalController {
   //get specific animal  by id
   async getanimal(req, res) {
     try {
-      const e = await Animal.findOne({ _id: req.params.id })
+      const ea = await Animal.findOne({ _id: req.params.id })
         .populate("family.parent1")
         .populate("family.parent2")
         .populate("family.children","_id status data.name data.sex image")
-        .populate("healthRecord.addedBy");
-      if (e == "") {
-        return res.json({
-          status: 400,
-          message: "Invalid animal Id",
-          data: {},
-        });
-      }
-      return res.status(200).json({
-        status: 200,
-        message: "Animal data",
-        data: {
-          ...e.toObject(),
-          ...{
-            image: e.toObject().image
-              ? `${config.baseImageURL}${e.toObject().image}`
-              : null,
-          },
-          ...{
-            qrcodepath: e.toObject().qrcodepath
-              ? `${config.Server}/${e.toObject().qrcodepath}`
-              : null,
-          },
-          ...{
-            healthRecord: e
-              .toObject()
-              .healthRecord.map((hr) => ({
-                ...hr,
-                ...{ filename: `${baseDocumentURL}${hr.filename}` },
-              })),
-          },
-          ...{
-            gallery: e
-              .toObject()
-              .gallery.map((img) => ({
-                ...img,
-                ...{ filename: `${baseImageURL}${img.filename}` },
-              })),
-          },
+        .populate("healthRecord.addedBy")
+        .populate("categoryId");
 
-          ...{
-            family: {
-              ...e.toObject().family,
-              ...{
-                children: e.toObject().family
-                .children.map((img) => ({
+      Animal.populate(ea, {path: "categoryId.parentId"}, (err, e) => {
+        if (e == "") {
+          return res.json({
+            status: 400,
+            message: "Invalid animal Id",
+            data: {},
+          });
+        }
+        return res.status(200).json({
+          status: 200,
+          message: "Animal data",
+          data: {
+            ...e.toObject(),
+            ...{
+              image: e.toObject().image
+                ? `${config.baseImageURL}${e.toObject().image}`
+                : null,
+            },
+            ...{
+              qrcodepath: e.toObject().qrcodepath
+                ? `${config.Server}/${e.toObject().qrcodepath}`
+                : null,
+            },
+            ...{
+              healthRecord: e
+                .toObject()
+                .healthRecord.map((hr) => ({
+                  ...hr,
+                  ...{ filename: `${baseDocumentURL}${hr.filename}` },
+                })),
+            },
+            ...{
+              gallery: e
+                .toObject()
+                .gallery.map((img) => ({
                   ...img,
-                  ...{ image: `${baseImageURL}${img.image}` },
-                }))
-              },
-              // ...{parent2: e.toObject().family.parent2,
-              //    ...{image:  e.toObject().family.parent2 ? `${config.baseImageURL}${e.toObject().family.parent2.image}`: null}
-              //   },
-
-              ...{
-                parent2:{...e.toObject().family.parent2,...{image:e.toObject().family.parent2 && `${config.baseImageURL}${e.toObject().family.parent2.image}`}}
-                },
+                  ...{ filename: `${baseImageURL}${img.filename}` },
+                })),
+            },
+  
+            ...{
+              family: {
+                ...e.toObject().family,
                 ...{
-                  parent1:{...e.toObject().family.parent1,...{image:e.toObject().family.parent1 && `${config.baseImageURL}${e.toObject().family.parent1.image}`}}
-                  }
-            },   
-          }
-          
-        },
-      });
+                  children: e.toObject().family
+                  .children.map((img) => ({
+                    ...img,
+                    ...{ image: `${baseImageURL}${img.image}` },
+                  }))
+                },
+                // ...{parent2: e.toObject().family.parent2,
+                //    ...{image:  e.toObject().family.parent2 ? `${config.baseImageURL}${e.toObject().family.parent2.image}`: null}
+                //   },
+  
+                ...{
+                  parent2:{...e.toObject().family.parent2,...{image:e.toObject().family.parent2 && `${config.baseImageURL}${e.toObject().family.parent2.image}`}}
+                  },
+                  ...{
+                    parent1:{...e.toObject().family.parent1,...{image:e.toObject().family.parent1 && `${config.baseImageURL}${e.toObject().family.parent1.image}`}}
+                    }
+              },   
+            }
+            
+          },
+        });
+  
+      })
     } catch (err) {
       return res.json({
         status: 400,
@@ -432,24 +437,27 @@ class AnimalController {
           })),
         });
       } else {
-        const animals = await Animal.find(query).populate("addedBy");
-        return res.status(200).json({
-          status: 200,
-          message: "Animal data",
-          data: animals.map((e) => ({
-            ...e.toObject(),
-            ...{
-              image: e.toObject().image
-                ? `${config.baseImageURL}${e.toObject().image}`
-                : null,
-            },
-            ...{
-              qrcodepath: e.toObject().qrcodepath
-                ? `${config.Server}/${e.toObject().qrcodepath}`
-                : null,
-            },
-          })),
-        });
+        const animals = await Animal.find(query).populate("addedBy").populate('categoryId');
+        Animal.populate(animals, {path: 'categoryId.parentId'}, (err, resultAnimal) => {
+          return res.status(200).json({
+            status: 200,
+            message: "Animal data",
+            data: resultAnimal.map((e) => ({
+              ...e.toObject(),
+              ...{
+                image: e.toObject().image
+                  ? `${config.baseImageURL}${e.toObject().image}`
+                  : null,
+              },
+              ...{
+                qrcodepath: e.toObject().qrcodepath
+                  ? `${config.Server}/${e.toObject().qrcodepath}`
+                  : null,
+              },
+            })),
+          });
+        })
+      
       }
     } catch (err) {
       return res.json({
@@ -601,7 +609,8 @@ class AnimalController {
       req.body.breederId =
         req.user.role == "employee" ? req.user.breederId : req.user._id;
       req.body.addedBy = req.user._id;
-      req.body.image = req.file.filename;
+
+      req.body.image = req.file ? req.file.filename : null;
       req.body.data = JSON.parse(req.body.data);
       req.body.family = JSON.parse(req.body.family);
       console.log(req.body);
@@ -613,6 +622,7 @@ class AnimalController {
         data: doc,
       });
     } catch (err) {
+      console.log(err);
       return res.json({
         status: 400,
         message: "Error in creating Animal",
@@ -636,6 +646,69 @@ class AnimalController {
       });
     });
   }
+
+
+
+
+  async removeAnimalParent(req, res) {
+
+    try {
+      console.log(req.params.id);
+      console.log(req.params.parentName);
+      Animal.findById(req.params.id).then(animalResult => {
+        console.log
+        animalResult.family[req.params.parentName] = {};
+        animalResult.save();
+        return res.status(200).json({
+          status: 200,
+          message: "Parent Deleted successfully",
+        });
+      })
+    } catch (err) {
+      return res.json({
+        status: 400,
+        message: "Error in deleting Animal",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
+
+  async addAnimalAsParentChild(req, res) {
+
+    try {
+      const {type} = req.body;
+      console.log(req.body.type);
+      console.log(req.body.id);
+      console.log(req.body.animalId);
+      Animal.findById(req.body.id).then(animalResult => {
+        if(type === 'parent1') {
+          animalResult.family['parent1'] = {id: req.body.animalId};
+        } else if(type === 'parent2') {
+          animalResult.family['parent2'] = {id: req.body.animalId};
+        } else {
+          animalResult.family.children = [...animalResult.family.children, ...{id: req.body.animalId}]
+        }
+        animalResult.save();
+        return res.status(200).json({
+          status: 200,
+          message: "Animal added successfully",
+        });
+      })
+    } catch (err) {
+      return res.json({
+        status: 400,
+        message: "Error in adding Animal",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
+  
+
+  
 }
 
 module.exports = new AnimalController();
