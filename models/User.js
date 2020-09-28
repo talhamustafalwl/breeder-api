@@ -73,13 +73,21 @@ const userSchema = mongoose.Schema({
     appointmentDate: {
         type: Date
     },
+
+    // For Employee...
     breederId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },//belongs to which breeder
+    breederUniqueId:  {
+        type: Number,
+    },
+
+    // For Breeder
     uid: {
         type: Number
     },
+
     farmId: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Farm',

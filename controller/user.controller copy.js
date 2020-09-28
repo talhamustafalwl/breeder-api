@@ -48,11 +48,10 @@ class UserController {
             if (!isValid) {
               return res.json({ status: 400, message: "Please fill all the required fields", errors: errors, data: {} });
             }
-            // req.body.role
-            User.findOne({ email: req.body.email, role: 'employee', breederUniqueId: req.body.uid }, (err, user) => {
+            User.findOne({ email: req.body.email, role: req.body.role, uid: req.body.uid }, (err, user) => {
               if (!user)
                 return res.json({
-                  status: 400, message: "Email not found", data: {}
+                  status: 400, message: "Auth failed, email not found", data: {}
                 });
           
               user.comparePassword(req.body.password, (err, isMatch) => {
@@ -211,73 +210,63 @@ class UserController {
             // if email exist then add role
 
             // if email donot exist then create user.
-            console.log('Inside register employeeee');
-            console.log(req.body.email===req.user.email);
-            if(!(req.body.email===req.user.email)) {
-                User.findOne({email: req.body.email, role: 'employee', breederId: req.user._id }).then(resultUser => {
-                    console.log(resultUser + ' user');
-                    if(!resultUser) {
-                        req.body.breederUniqueId = req.user.uid;
-                        // Register user... 
-                        req.body.breederId = req.user._id;
-    
-                        req.body.image = req.file ? req.file.filename : null;
-                        this.registerUserWithRole(req.body, 'employee', false).then(success => {
-                            console.log(success);
-                            return res.status(200).send({status: 200, message: 'Employee Registered Successfully', data: success});
+
+
+            User.findOne({email: req.body.email}).then(resultUser => {
+                console.log(resultUser + ' user');
+                if(!resultUser) {
+                    // req.body.uid = randomstring.generate({length: 8, charset: 'numeric'});
+                    // Register user... 
+                    req.body.breederId = req.user._id;
+
+                    req.body.image = req.file ? req.file.filename : null;
+                    this.registerUserWithRole(req.body, 'employee', false, req.user.uid).then(success => {
+                        console.log(success);
+                        return res.status(200).send({status: 200, message: 'Employee Registered Successfully', data: success});
+                    }).catch(error => {
+                        console.log(error);
+                        return res.json({ status: 400, message: "Something wents wrong" });
+                    })
+                } else if(resultUser.role.includes('admin')) {
+                    return res.json({ status: 400, message: "Wrorng Email" });
+                } else if(resultUser.role.includes('employee')) {
+                    if(resultUser.isEmployeeActive === false) {
+                        User.updateOne({email: req.body.email}, {$set: {isEmployeeActive: true}}).then(updatedUser => {
+                            console.log(updatedUser);
+                            return res.status(200).send({status: 200, message: "Registered Successfully"});
                         }).catch(error => {
-                            console.log(error);
-                            return res.json({ status: 400, message: "Something wents wrong" });
+                            return res.status(400).json({status: 400, message: "Internal Server Error"});
                         })
                     } else {
-                        return res.status(400).json({ status: 400, message: "Employee is already registered" });
+                        return res.json({ status: 400, message: "Email is already registered as employee" });
                     }
-                    
-                    // else if(resultUser.role.includes('admin')) {
-                    //     return res.json({ status: 400, message: "Wrorng Email" });
-                    // } else if(resultUser.role.includes('employee')) {
-                    //     if(resultUser.isEmployeeActive === false) {
-                    //         User.updateOne({email: req.body.email}, {$set: {isEmployeeActive: true}}).then(updatedUser => {
-                    //             console.log(updatedUser);
-                    //             return res.status(200).send({status: 200, message: "Registered Successfully"});
-                    //         }).catch(error => {
-                    //             return res.status(400).json({status: 400, message: "Internal Server Error"});
-                    //         })
-                    //     } else {
-                    //         return res.json({ status: 400, message: "Email is already registered as employee" });
-                    //     }
-                    // } else {
-                    //     console.log('Updating user');
-                    //     req.body.uid = randomstring.generate({length: 8, charset: 'numeric'});
-                    //     req.body.breederId = req.user._id;
-                    //     req.body.isEmployeeActive = true;
-                    //     // Modify user to register breeder..
-                    //     this.modifyUserWithRole(req.body.email, req.body, 'employee').then(resultUser => {
-                    //         return res.status(200).send(resultUser);
-                    //     }).catch(error => {
-                    //         console.log(error);
-                    //         return res.status(400).json({ status: 400, message: "Internal Server Error" });
-                    //     })
-                    // }
-                });
-    
-    
-                                    // const user = new User({...req.body, ...{role: 'employee'}});
-                                    // user.secretToken = randomstring.generate();
-                                    // user.save((err, doc) => {
-                                    //     if (err) return res.status(201).json({ status: 400, message: "Email is already registered", errors: err, data: {} });
-    
-                                    //     // Email is pending for later use..
-                                    //     const html = registeremail(doc.secretToken, config.Server)
-                                    //     mailer.sendEmail(config.mailthrough, doc.email, 'Please verify your email!', html);
-                                    //     return res.status(200).json({ status: 200, message: "Verification email is send", data: doc });
-                                    // });
-            } else  {
-                return res.status(200).json({ status: 400, message: "You are not allowed to register yourself as employee" });
-            }
-         
+                } else {
+                    console.log('Updating user');
+                    req.body.uid = randomstring.generate({length: 8, charset: 'numeric'});
+                    req.body.breederId = req.user._id;
+                    req.body.isEmployeeActive = true;
+                    // Modify user to register breeder..
+                    this.modifyUserWithRole(req.body.email, req.body, 'employee').then(resultUser => {
+                        return res.status(200).send(resultUser);
+                    }).catch(error => {
+                        console.log(error);
+                        return res.status(400).json({ status: 400, message: "Internal Server Error" });
+                    })
+                }
+            });
+
+
+                                // const user = new User({...req.body, ...{role: 'employee'}});
+                                // user.secretToken = randomstring.generate();
+                                // user.save((err, doc) => {
+                                //     if (err) return res.status(201).json({ status: 400, message: "Email is already registered", errors: err, data: {} });
+
+                                //     // Email is pending for later use..
+                                //     const html = registeremail(doc.secretToken, config.Server)
+                                //     mailer.sendEmail(config.mailthrough, doc.email, 'Please verify your email!', html);
+                                //     return res.status(200).json({ status: 200, message: "Verification email is send", data: doc });
+                                // });
         } catch (err) {
-            console.log(err);
             return next(err);
         }
     }
@@ -353,11 +342,12 @@ class UserController {
 
             // check is breeder available and email registered or admin email
             // user.findByEmailAndRoleNotAdmin(req.body.email, 'breeder', )
-            User.findOne({email: req.body.email, role: 'breeder'}).then(resultUser => {
+            User.findOne({email: req.body.email}).then(resultUser => {
                 console.log(resultUser + ' user');
                 if(!resultUser) { 
                     // Register user... 
-                    
+                    req.body.uid = randomstring.generate({length: 8, charset: 'numeric'});
+
                     this.registerUserWithRole(req.body, 'breeder', true).then(success => {
                         console.log(success);
 
@@ -371,20 +361,21 @@ class UserController {
                         console.log(error);
                         return res.json({ status: 400, message: "Something wents wrong" });
                     })
-                } else if(resultUser.role.includes('admin')) {
+                } else if(resultUser.role.map(e => e.type).includes('admin')) {
                     return  res.json({ status: 400, message: "Wrorng Email" });
-                } else if(resultUser.role.includes('breeder')) {
+                } 
+                else if(resultUser.role.map(e => e.type).includes('breeder')) {
                     return  res.json({ status: 400, message: "Email is already registered as breeder" });
                 } 
-                // else {
-                //     // Modify user to register breeder..
-                //     this.modifyUserWithRole(req.body.email, req.body, 'breeder').then(resultUser => {
-                //         return res.status(200).send(resultUser);
-                //     }).catch(error => {
-                //         console.log(error);
-                //         return res.status(400).json({ status: 400, message: "Internal Server Error" });
-                //     });
-                // }
+                else {
+                    // Modify user to register breeder..
+                    this.modifyUserWithRole(req.body.email, req.body, 'breeder', resultUser).then(resultUser => {
+                        return res.status(200).send(resultUser);
+                    }).catch(error => {
+                        console.log(error);
+                        return res.status(400).json({ status: 400, message: "Internal Server Error" });
+                    });
+                }
             });
             
 
@@ -413,10 +404,10 @@ class UserController {
     }
 
 
-    async registerUserWithRole(body, role, token=false)  {
+    async registerUserWithRole(body, role, token=false, uid)  {
         return new Promise((resolve, reject) => {
             console.log(token);
-            const user = new User({...body,  ...{role: role}});
+            const user = new User({...body,  ...{role: [{...{type: role, date: new Date(), password: body.password}, ...(role==='employee') ? {breederUid: uid} : {}}]}});
             if(token) user.secretToken = randomstring.generate();
             user.save((err, doc) => {
                 console.log(err);
@@ -451,18 +442,22 @@ class UserController {
         res.status(200).json({ status: 200, message: "email is send"});
     }
 
-
-
-
-    // Not in use..
-    async modifyUserWithRole(email, data, role) {
+    async modifyUserWithRole(email, data, role, user) {
         return new Promise((resolve, reject) => {
-            User.updateOne({email}, {$set: {...data}, $push: {role}}).then(updatedUser => {
+            Object.keys(data).forEach(e => user[e]=data[e]);
+            user.role = [...user.role, ...[{type: role, date: new Date(), password: data.password}]]
+            user.save().then(updatedUser => {
                 console.log(updatedUser);
                 return resolve({status: 200, message: "Registered Successfully"});
             }).catch(error => {
                 return reject(error);
-            })
+            });
+            // User.updateOne({email}, {$set: {...data}, $push: {role: {type: role, date: new Date()}}}).then(updatedUser => {
+            //     console.log(updatedUser);
+            //     return resolve({status: 200, message: "Registered Successfully"});
+            // }).catch(error => {
+            //     return reject(error);
+            // })
         });
     }
 
