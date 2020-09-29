@@ -18,8 +18,6 @@ return `
             <br/><br/>
             Please verify your email:
             <br/>
-            Token: <b>${secretToken}</b>
-            <br/>
             <a href="${Servername}/user/verify/${secretToken}">verify</a>
             <br/><br/>
             Have a pleasant day.

@@ -12,7 +12,7 @@ const userSchema = mongoose.Schema({
         type: String, minglength: 10, maxlength: 15
     },
     email: {
-        type: String, trim: true, unique: 1
+        type: String, trim: true,
     },
     website: {
         type: String

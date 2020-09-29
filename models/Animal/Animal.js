@@ -55,12 +55,12 @@ const AnimalSchema = mongoose.Schema({
     gallery: [gallerySchema],
     status: {
         type: String,
-        enum: ['Sold', 'Alive'],
+        enum: ['Sold', 'Alive', 'Dead'],
         default: 'Alive'
     },
     healthStatus:  {
         type: String,
-        enum: ['Sick', 'Died', 'Healthy', 'Pregnant'],
+        enum: ['Sick', 'Healthy', 'Pregnant'],
         default: 'Healthy',
     },
     inventoryStatus: {

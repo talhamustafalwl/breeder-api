@@ -214,7 +214,7 @@ class UserController {
             console.log('Inside register employeeee');
             console.log(req.body.email===req.user.email);
             if(!(req.body.email===req.user.email)) {
-                User.findOne({email: req.body.email, role: 'employee', breederId: req.user._id }).then(resultUser => {
+                User.findOne({email: req.body.email, role: 'employee', breederId: req.user._id, isEmployeeActive: true }).then(resultUser => {
                     console.log(resultUser + ' user');
                     if(!resultUser) {
                         req.body.breederUniqueId = req.user.uid;
@@ -230,7 +230,7 @@ class UserController {
                             return res.json({ status: 400, message: "Something wents wrong" });
                         })
                     } else {
-                        return res.status(400).json({ status: 400, message: "Employee is already registered" });
+                        return res.status(200).json({ status: 400, message: "Employee is already registered" });
                     }
                     
                     // else if(resultUser.role.includes('admin')) {
@@ -434,7 +434,7 @@ class UserController {
                 } else {
 
                     if(role === 'employee') {
-                        const html = employeeEmail(body.uid, body.email, body.password);
+                        const html = employeeEmail(body.breederUniqueId, body.email, body.password);
                         mailer.sendEmail(config.mailthrough, doc.email, 'Email for logly employee', html);
                         console.log('sending email');
                     }
