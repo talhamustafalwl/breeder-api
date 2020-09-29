@@ -199,13 +199,41 @@ class CategoryController {
         match = await productController.getProductForInventory(breederId);
       }
 
+      // const categoryReducer  = (acc, currValue) => {
+      //   currValue.items = currValue.items.map(e => {
+      //     const status = {
+      //       alive: match.reduce((a, cv)=> (cv.status==='Alive') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+      //       sold: match.reduce((a, cv)=> (cv.status==='Sold') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+      //       died: match.reduce((a, cv)=> (cv.healthStatus==='Died') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+      //       pregnant: match.reduce((a, cv)=> (cv.healthStatus==='Pregnant') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+      //     }
+      //     return {
+      //     ...e,
+      //     ...status,
+      //     total: status.alive + status.sold
+      //   }
+      //   })
+
+      //   return [...acc, 
+      //     {
+      //       ...currValue, 
+      //       total: currValue.items.reduce((a, cv) => a+cv.total,0),
+      //       alive: currValue.items.reduce((a, cv) => a+cv.alive, 0),
+      //       sold: currValue.items.reduce((a, cv) => a+cv.sold, 0),
+      //       died: currValue.items.reduce((a, cv) => a+cv.died, 0),
+      //       pregnant: currValue.items.reduce((a, cv) => a+cv.pregnant, 0),
+            
+      //     }];
+      // } 
+
+
       const categoryReducer  = (acc, currValue) => {
         currValue.items = currValue.items.map(e => {
           const status = {
-            alive: match.reduce((a, cv)=> (cv.status==='Alive') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
-            sold: match.reduce((a, cv)=> (cv.status==='Sold') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
-            died: match.reduce((a, cv)=> (cv.healthStatus==='Died') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
-            pregnant: match.reduce((a, cv)=> (cv.healthStatus==='Pregnant') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+            alive: match.reduce((a, cv)=> (cv.categoryId.toString()===e._id.toString()) ? a+cv.aliveQuantity : a ,0),
+            sold: match.reduce((a, cv)=> (cv.categoryId.toString()===e._id.toString()) ? a+cv.soldQuantity : a ,0),
+            died: match.reduce((a, cv)=> (cv.categoryId.toString()===e._id.toString()) ? a+cv.deadQuantity : a ,0),
+            pregnant: match.reduce((a, cv)=> (cv.categoryId.toString()===e._id.toString()) ? a+cv.pregnantQuantity : a ,0),
           }
           return {
           ...e,
@@ -225,7 +253,6 @@ class CategoryController {
             
           }];
       } 
-
 
 
       const productReducer = (acc, currValue) => {

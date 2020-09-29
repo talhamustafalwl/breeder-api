@@ -611,9 +611,13 @@ class AnimalController {
       req.body.breederId =
         req.user.role == "employee" ? req.user.breederId : req.user._id;
       req.body.addedBy = req.user._id;
-
+      const data = JSON.parse(req.body.data);
       req.body.image = req.file ? req.file.filename : null;
       req.body.data = JSON.parse(req.body.data);
+      delete req.body.data.quantity;
+      req.body.quantity = data.quantity;
+      req.body.aliveQuantity = data.quantity;
+      req.body.healthyQuantity = data.quantity;
       req.body.family = JSON.parse(req.body.family);
       console.log(req.body);
       const animal = await new Animal(req.body);

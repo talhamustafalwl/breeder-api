@@ -75,6 +75,35 @@ const AnimalSchema = mongoose.Schema({
         enum: ["male", "female"]
     },
 
+    quantity: {
+        type: Number,
+        default: 0,
+    },
+    aliveQuantity: {
+        type: Number,
+        default: 0,
+    },
+    soldQuantity:  {
+        type: Number,
+        default: 0,
+    },
+    deadQuantity: {
+        type: Number,
+        default: 0,
+    },
+    healthyQuantity: {
+        type: Number,
+        default: 0,
+    },
+    sickQuantity: {
+        type: Number,
+        default: 0,
+    },
+    pregnantQuantity: {
+        type: Number,
+        default: 0,
+    },
+
     // color: {
     //     type: String, minglength: 3,
     //     maxlength: 20, required: true
