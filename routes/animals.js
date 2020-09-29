@@ -48,6 +48,8 @@ router.get('/healthrecord/:id', AnimalController.getHealthRecord);
 router.delete('/:animalId/healthrecord/:id', AnimalController.deleteAnimalHealthRecord);
 
 router.delete('/:id/parent/:parentName', AnimalController.removeAnimalParent)
+router.delete('/:id/child/:childId', AnimalController.removeAnimalChild)
+
 router.put('/addasparentchild', AnimalController.addAnimalAsParentChild)
 
 

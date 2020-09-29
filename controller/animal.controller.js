@@ -5,6 +5,7 @@ const { JSONCookie } = require("cookie-parser");
 const config = require("../config/key");
 const { baseDocumentURL } = require("../config/dev");
 const { baseImageURL, baseAPIUrl } = require("../config/key");
+const animal = require("../validation/animal");
 
 class AnimalController {
   constructor() {}
@@ -75,7 +76,7 @@ class AnimalController {
       const ea = await Animal.findOne({ _id: req.params.id })
         .populate("family.parent1")
         .populate("family.parent2")
-        .populate("family.children","_id status data.name data.sex image")
+        .populate("family.children")
         .populate("healthRecord.addedBy")
         .populate("categoryId");
 
@@ -126,7 +127,7 @@ class AnimalController {
                   children: e.toObject().family
                   .children.map((img) => ({
                     ...img,
-                    ...{ image: `${baseImageURL}${img.image}` },
+                    ...{ image: img.image ? `${baseImageURL}${img.image}` : null },
                   }))
                 },
                 // ...{parent2: e.toObject().family.parent2,
@@ -302,6 +303,7 @@ class AnimalController {
             healthRecord: {
               filename: req.file.filename,
               size: req.file.size,
+              type: req.file.mimetype,
               addedBy: req.user._id,
             },
           },
@@ -653,15 +655,21 @@ class AnimalController {
   async removeAnimalParent(req, res) {
 
     try {
+      let parent = '';
       console.log(req.params.id);
       console.log(req.params.parentName);
       Animal.findById(req.params.id).then(animalResult => {
-        console.log
+        parent = animalResult.family[req.params.parentName].id;
         animalResult.family[req.params.parentName] = {};
-        animalResult.save();
-        return res.status(200).json({
-          status: 200,
-          message: "Parent Deleted successfully",
+        animalResult.save().then(_ => {
+          Animal.findById(parent).then(parentResult => {
+            parentResult.family['children'] = parentResult.family['children'].filter(e => !(e==req.params.id));
+            parentResult.save();
+            return res.status(200).json({
+              status: 200,
+              message: "Parent Deleted successfully",
+            });
+          });
         });
       })
     } catch (err) {
@@ -673,6 +681,46 @@ class AnimalController {
       });
     }
   }
+
+
+
+
+
+  async removeAnimalChild(req, res) {
+
+    try {
+      let child = '';
+      console.log(req.params.id);
+      console.log(req.params.childId);
+      Animal.findById(req.params.id).then(animalResult => {
+        // child = animalResult.family['children'].filter(e => e==req.params.childId);
+        animalResult.family['children'] = animalResult.family['children'].filter(e => !(e==req.params.childId));
+        animalResult.save().then(_ => {
+          Animal.findById(req.params.childId).then(childResult => {
+            if(childResult.family['parent1'].id == req.params.id) {
+              childResult.family['parent1'] = {};
+            } else if(childResult.family['parent2'].id == req.params.id) {
+              childResult.family['parent2'] = {};
+            }
+            console.log(childResult.family);
+            childResult.save();
+            return res.status(200).json({
+              status: 200,
+              message: "Parent Deleted successfully",
+            });
+          });
+        });
+      })
+    } catch (err) {
+      return res.json({
+        status: 400,
+        message: "Error in deleting Animal",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
 
 
   async addAnimalAsParentChild(req, res) {
@@ -688,13 +736,52 @@ class AnimalController {
         } else if(type === 'parent2') {
           animalResult.family['parent2'] = {id: req.body.animalId};
         } else {
-          animalResult.family.children = [...animalResult.family.children, ...{id: req.body.animalId}]
+          animalResult.family.children = [...animalResult.family.children, ...[req.body.animalId]]
         }
-        animalResult.save();
-        return res.status(200).json({
-          status: 200,
-          message: "Animal added successfully",
-        });
+        Animal.findById(req.body.animalId).then(parentChildAnimal => {
+          if(type === 'parent1' || type === 'parent2') { 
+            parentChildAnimal.family['children'] = [...parentChildAnimal.family['children'], ...[req.body.id]];
+            console.log(parentChildAnimal.family['children']);
+            animalResult.save().then(_ => {
+              parentChildAnimal.save().then(_ => {
+                return res.status(200).json({
+                  status: 200,
+                  message: "Animal added successfully",
+                });
+              });
+            });
+           
+          } else { 
+            if(parentChildAnimal.family['parent1'].id && parentChildAnimal.family['parent2'].id) {
+              console.log('in if condition');
+              console.log(parentChildAnimal.family['parent1'])
+              return res.json({
+                status: 400,
+                message: "You can not be the parent of this animal.",
+                // errors: err,
+                data: {},
+              });
+            } else {
+              if(!parentChildAnimal.family['parent1'].id) {
+                parentChildAnimal.family['parent1'] = {id: req.body.id};
+              } else {
+                parentChildAnimal.family['parent2'] = {id: req.body.id};
+              }
+              animalResult.save().then(_ => {
+                parentChildAnimal.save().then(_ => {
+                  return res.status(200).json({
+                    status: 200,
+                    message: "Animal added successfully",
+                  });
+                });
+              });
+            }
+          
+          }
+          
+         
+        })
+       
       })
     } catch (err) {
       return res.json({

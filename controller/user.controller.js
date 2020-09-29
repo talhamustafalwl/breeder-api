@@ -353,11 +353,13 @@ class UserController {
 
             // check is breeder available and email registered or admin email
             // user.findByEmailAndRoleNotAdmin(req.body.email, 'breeder', )
+
             User.findOne({email: req.body.email, role: 'breeder'}).then(resultUser => {
                 console.log(resultUser + ' user');
                 if(!resultUser) { 
                     // Register user... 
-                    
+                    req.body.uid = randomstring.generate({length: 8, charset: 'numeric'});
+
                     this.registerUserWithRole(req.body, 'breeder', true).then(success => {
                         console.log(success);
 
@@ -434,6 +436,8 @@ class UserController {
                 } else {
 
                     if(role === 'employee') {
+                        console.log('employee email');
+                        console.log (body);
                         const html = employeeEmail(body.breederUniqueId, body.email, body.password);
                         mailer.sendEmail(config.mailthrough, doc.email, 'Email for logly employee', html);
                         console.log('sending email');

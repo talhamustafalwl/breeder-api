@@ -7,18 +7,33 @@
 // }
 
 module.exports = {
-    mongoURI: 'mongodb+srv://breeder:GtmwECDdd3sL26N3@breederdb-vruiv.mongodb.net/breeder?retryWrites=true&w=majority'
+    mongoURI: 'mongodb+srv://breeder:GtmwECDdd3sL26N3@breederdb-vruiv.mongodb.net/breeder?retryWrites=true&w=majority',
     //   mongoURI:'mongodb://localhost:27017/breeder_official'
-    , //Server: 'https://breeder-api.herokuapp.com',
-    // Server: 'http://localhost:3000',
-    Server: 'https://breeder-dev.herokuapp.com',
-    // webServer: 'http://localhost:3000',
+
+
+        Server: 'https://breeder-api.herokuapp.com',
     webServer: 'https://breeder-dev.herokuapp.com',
+    baseAPIUrl: 'https://breeder-api.herokuapp.com/',
+    baseImageURL: 'https://breeder-api.herokuapp.com/uploads/images/',
+
+    // Server: 'http://localhost:5000',
+    // webServer: 'http://localhost:3000',
+    // baseAPIUrl: 'http://localhost:5000/',
+    // baseImageURL: 'http://localhost:5000/uploads/images/',
+
+
+
+
+    //Server: 'https://breeder-api.herokuapp.com',
+    // Server: 'http://localhost:3000',
+    // Server: 'https://breeder-dev.herokuapp.com',
+    // webServer: 'http://localhost:3000',
+    // webServer: 'https://breeder-dev.herokuapp.com',
     mailthrough: 'admin@breeder.com',
     imageURL: 'https://breeder-api.herokuapp.com/uploads/images/form/',
     // baseAPIUrl: 'http://localhost:3000/',
-    baseAPIUrl: 'https://breeder-api.herokuapp.com/',
-    baseImageURL: 'https://breeder-api.herokuapp.com/uploads/images/',
+    // baseAPIUrl: 'https://breeder-api.herokuapp.com/',
+    // baseImageURL: 'https://breeder-api.herokuapp.com/uploads/images/',
     baseDocumentURL: 'https://breeder-api.herokuapp.com/uploads/documents/',
     sendgridAPIKey: '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',
 

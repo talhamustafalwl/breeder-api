@@ -6,6 +6,7 @@ const Schema = mongoose.Schema;
 const healthRecordSchema  = mongoose.Schema({
     filename: String, 
     size: String, 
+    type: String,
     addedBy:  {
         type: Schema.Types.ObjectId,
         ref: 'User'
