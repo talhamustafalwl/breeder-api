@@ -11,7 +11,11 @@ const ActivitySchema = mongoose.Schema({
     },
     groupId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Group',require: true
+        ref: 'Group'
+    },
+    animalId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Animal'
     },
     description:{type:String},
     breederId: {

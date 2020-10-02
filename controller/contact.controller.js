@@ -12,6 +12,8 @@ class ContactController {
     async addContact(req, res, next) {
         req.body.breederId=req.user.role == "employee" ? req.user.breederId : req.user._id;
         // req.body.breederId="5f3ba1f7a989412710841d5a"
+
+        console.log(req.body.breederId,req.user._id)
         try {
             const {errors, isValid} = await validateContact(req.body);
             console.log(errors);
@@ -36,7 +38,6 @@ class ContactController {
     async getContacts(req, res, next) {
         //const breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
         console.log(req.user._id)
-        const breederId="5f3ba1f7a989412710841d5a"
         try {
             Contact.aggregate( [
                 {$group:{_id:{$substr: ['$name', 0, 1]}, detail:{$push:"$$ROOT"}}},

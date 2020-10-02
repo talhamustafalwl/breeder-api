@@ -5,6 +5,7 @@ const { auth } = require("../middleware/auth");
 
 router.post('/', auth, contactController.create)
 .get('/', auth, contactController.getall)
+.get('/group', auth, contactController.getallByType)
 .get('/:id', auth, contactController.getbyId)
 .put('/:id', auth, contactController.updatebyId)
 .delete('/:id', auth, contactController.deletebyId)

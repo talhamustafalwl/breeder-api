@@ -30,7 +30,7 @@ class ActivityController {
         //console.log(req.query)
         var conditions = Object.keys(req.query).map(function(key) {
             var obj = {},newKey = "";
-            if ( key == "groupId" || key == "categoryId" ) {
+            if ( key == "groupId" || key == "animalId" || key == "categoryId" ) {
                 newKey =  key;
             } 
             else { newKey = key;}
@@ -39,12 +39,22 @@ class ActivityController {
         })
         conditions=Object.assign({},...conditions)
         console.log(conditions)
+        let tableName,matchedBy;
+      if(req.query.groupId){
+        tableName="groups", matchedBy="groupId"
+      }
+      else{
+        tableName="animals", matchedBy="animalId"
+      }
         try {
           const cleaning = await Activity.aggregate([ {$match:   conditions}
-            ,{$lookup:{from: "groups",localField: "groupId",foreignField: "_id",as: "groupId"}},
-            
-            {$group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" }} ,detail:{$push:"$$ROOT"}} },
-    ])
+            ,{$lookup:{from: tableName,localField: matchedBy,foreignField: "_id",as: matchedBy}},
+            {$unwind: {path: `$${matchedBy}`}},
+           {$lookup:{from: "users",localField: "addedBy",foreignField: "_id",as: "addedBy",}},            
+           {$unwind: {path: `$addedBy`}},
+           {$group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" }} ,data:{$push:"$$ROOT"}} },
+           {$project: {"data":"$data"}},
+          ])
 
           return res.status(200).json({ status: 200, message: "All Activities", data: cleaning });
         } catch (err) {
@@ -53,6 +63,30 @@ class ActivityController {
       }
 
 
+
+      async getallByType(req, res) {
+      let tableName;
+      if(req.query.type=== "groupId"){
+        tableName="groups"
+      }
+      else{
+        tableName="animals"
+      }
+
+        try {
+          const cleaning = await Activity.aggregate([ {$match:   {categoryId :mongoose.Types.ObjectId(req.query.categoryId)}},
+           
+            {$lookup:{from: tableName,localField:req.query.type,foreignField: "_id",as:req.query.type}},
+            {$unwind: {path: `$${req.query.type}`}},
+            {$group: { _id: `$${req.query.type}` ,detail:{"$last":"$$ROOT"}} },
+            { $project : {_id : 0 ,}  }
+    ])
+
+          return res.status(200).json({ status: 200, message: `All Activities by ${req.query.type}`, data: cleaning });
+        } catch (err) {
+          return res.json({ status: 400, message: "Error in get Activities", errors: err, data: {} });
+        }
+      }
 
 
     async getbyId(req, res){

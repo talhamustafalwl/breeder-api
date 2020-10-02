@@ -44,7 +44,7 @@ class UserController {
             if (!isValid) {
               return res.json({ status: 400, message: "Please fill all the required fields", errors: errors, data: {} });
             }
-            User.findOne({ email: req.body.email, role: req.body.role, uid: req.body.uid }, (err, user) => {
+            User.findOne({ email: req.body.email, role: req.body.role }, (err, user) => {
               if (!user)
                 return res.json({
                   status: 400, message: "Auth failed, email not found", data: {}
