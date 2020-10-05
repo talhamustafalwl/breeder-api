@@ -366,7 +366,7 @@ class AnimalController {
           ...query,
           breederId:req.user.breederId
           //...{ farmId: { $in: req.user.farmId } },
-        });
+        }).populate("addedBy","_id name")
         return res.status(200).json({
           status: 200,
           message: "Animal data",

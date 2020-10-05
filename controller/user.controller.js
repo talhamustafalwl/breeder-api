@@ -47,9 +47,15 @@ class UserController {
             User.findOne({ email: req.body.email, role: req.body.role }, (err, user) => {
               if (!user)
                 return res.json({
-                  status: 400, message: "Auth failed, email not found", data: {}
-                });
-          
+                  status: 400, message: "Please enter your valid email", data: {}
+                })
+                
+            User.findOne({_id:user.breederId,uid:req.body.uid}, (err, breeder) => {
+                    if (!breeder)
+                    return res.json({
+                      status: 400, message: "Please enter your valid breeder id", data: {}
+                    })
+
               user.comparePassword(req.body.password, (err, isMatch) => {
                 if (!isMatch)
                   return res.json({ status: 400, message: "Incorrect password", errors: errors, data: {} });
@@ -65,6 +71,7 @@ class UserController {
                     });
                 });
               });
+            });
             });
         } catch(err) {
             return next(err);
@@ -136,7 +143,7 @@ class UserController {
                 if(result){
                      result.comparePassword(req.body.password, (err, isMatch) => {
                         if (!isMatch){
-                          return res.json({ status: 400, message: "Incorrect password", data: {} })
+                          return res.json({ status: 400, message: "Existing password is incorrect", data: {} })
                         }
                         else{
                             result.password = req.body.changePassword;

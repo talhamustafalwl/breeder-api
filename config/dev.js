@@ -5,10 +5,10 @@ module.exports = {
     // Server: 'http://localhost:3000',
     Server: 'https://breeder-api.herokuapp.com',
     serverURL: 'https://breeder-api.herokuapp.com',
-    imageURL: 'https://breeder-api.herokuapp.com/uploads/images/form/',
+    imageURL: 'http://192.168.88.129:5000/uploads/images/form/',
     mailthrough: 'admin@breeder.com',
-    baseImageURL: 'https://breeder-api.herokuapp.com/uploads/images/',
-    baseDocumentURL: 'https://breeder-api.herokuapp.com/uploads/documents/',
+    baseImageURL: 'http://192.168.88.129:5000/uploads/images/',
+    baseDocumentURL: 'http://192.168.88.129:5000/uploads/documents/',
 
     //stripe
     stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",

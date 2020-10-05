@@ -24,7 +24,7 @@ class CategoryController {
   async getall(req, res) {
     try {
       console.log('getting categories');
-      const category = await Category.find(req.query.type ?  {type: req.query.type} : {}).populate('parentId');
+      const category = await Category.find(req.query.type ?  {type: req.query.type} : {})
       return res.status(200).json({ status: 200, message: "All Categories", data: category.map(e => ({...e.toObject(), ...{icon: `${baseImageURL}form/${e.toObject().icon}`}})) });
     } catch (err) {
       return res.json({ status: 400, message: "Error in get Categories", errors: err, data: {} });
