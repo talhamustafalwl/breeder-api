@@ -42,12 +42,13 @@ const upload = multer({ storage: storage,
     fileFilter: (req, file, cb) => {
       console.log('calling file')
       console.log(file);
-      if (file.mimetype == "application/pdf") {
-        cb(null, true);
-      } else {
-        cb(null, false);
-        //return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
-      }
+      cb(null, true);
+      // if (file.mimetype == "application/pdf" || file.mimetype.split('/') == 'image') {
+        
+      // } else {
+      //   cb(null, false);
+      //   //return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+      // }
     }
    })
 

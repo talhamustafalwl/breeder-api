@@ -15,7 +15,7 @@ router.post('/test', (req, res) => {
 
 router.post('/gallery/upload', auth, allowBreeder, allowEmployee, authenticateRole, upload.array('file', 10),  AnimalController.uploadGalleryImage )
 router.put('/gallery/delete', auth, allowBreeder, allowEmployee, authenticateRole, AnimalController.deleteGallaryImage)
-
+router.get('/qrcode/:id', AnimalController.getQRCodeOfAnimal);
 // router.get('/downloadFile', (req, res )=> {
 //   console.log('download file');
 //   return res.sen('https://breeder-api.herokuapp.com/uploads/documents/1600069663450-Fullstack Web Developer MEAN Stack.pdf');
@@ -26,7 +26,6 @@ router.route('/all').get(adminauth, AnimalController.getall)
   .delete(adminauth,AnimalController.deleteall)
 
 
-
 //for breeder  animals crud can view/delete all (can only see his animals)
 router.route('/').get(auth, allowBreeder,allowEmployee, authenticateRole, AnimalController.getBreederAnimals)
   .delete(auth, allowBreeder, authenticateRole, AnimalController.deleteBreederAnimals)
@@ -34,6 +33,8 @@ router.route('/').get(auth, allowBreeder,allowEmployee, authenticateRole, Animal
 
   // router.delete('/:id', auth, allowBreeder, authenticateRole, AnimalController.deleteAnimal);
 
+
+router.put('/update/:id', auth, allowBreeder, allowEmployee, authenticateRole, AnimalController.updateAnimalData); 
 
 //for specific animal update/view/delete 
 router.route('/:id').get(auth, allowBreeder, allowEmployee, authenticateRole,AnimalController.getanimal)
@@ -44,6 +45,12 @@ router.route('/:id').get(auth, allowBreeder, allowEmployee, authenticateRole,Ani
 router.post('/healthrecord/upload',auth, allowBreeder, allowEmployee, authenticateRole, uploadDocument.single('file'), AnimalController.uploadHealthRecord)
 
 router.get('/healthrecord/:id', AnimalController.getHealthRecord);
+router.delete('/:animalId/healthrecord/:id', AnimalController.deleteAnimalHealthRecord);
+
+router.delete('/:id/parent/:parentName', AnimalController.removeAnimalParent)
+router.delete('/:id/child/:childId', AnimalController.removeAnimalChild)
+
+router.put('/addasparentchild', AnimalController.addAnimalAsParentChild)
 
 
 module.exports=router

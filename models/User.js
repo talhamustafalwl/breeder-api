@@ -12,7 +12,7 @@ const userSchema = mongoose.Schema({
         type: String, minglength: 10, maxlength: 15
     },
     email: {
-        type: String, trim: true, unique: 1
+        type: String, trim: true,
     },
     website: {
         type: String
@@ -63,7 +63,7 @@ const userSchema = mongoose.Schema({
 
     // For employees need to enter business name.. 
     businessName: String,
-    noOfEmployees: Number,
+    noOfEmployees: String,
     noOfAnimals: Number,
     founded: Number,
     isEmployeeActive: {
@@ -73,13 +73,21 @@ const userSchema = mongoose.Schema({
     appointmentDate: {
         type: Date
     },
+
+    // For Employee...
     breederId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },//belongs to which breeder
+    breederUniqueId:  {
+        type: Number,
+    },
+
+    // For Breeder
     uid: {
         type: Number
     },
+
     farmId: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Farm',
@@ -95,7 +103,18 @@ const userSchema = mongoose.Schema({
         type: String
     },
     currencyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Currency' },
-    isblocked:{type:Boolean,default:false}
+    isblocked:{type:Boolean,default:false},
+
+
+    notificationSettings: {
+        employeeLogin: {type: Boolean, default: true},
+        formPublish: {type: Boolean, default: true},
+    },
+    businessInfoSettings: {
+        tax: {type: Number, default: 0},
+    },
+    deviceToken: {type: String},
+
 }, {
     timestamps: true
 })

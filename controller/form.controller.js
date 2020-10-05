@@ -33,9 +33,18 @@ class FormController {
             console.log('get form called');
             Form.find().populate('categoryId').exec(function (error, result ) {
                 console.log(result);
-                // const finalRes = result.map(e => {return {e, ...{categoryId: {...e.categoryId, ...{icon: `${config.imageURL}${e.categoryId.icon}` }}}}});
-                const finalRes = result.map(e => ({...e.toObject(), ...{categoryId: {...e.categoryId.toObject(), ...{icon: `${config.imageURL}${e.categoryId.toObject().icon}` }}}}));
-                return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data:  finalRes});
+                if(req.query.type) {
+                    
+                    // const finalRes = result.map(e => {return {e, ...{categoryId: {...e.categoryId, ...{icon: `${config.imageURL}${e.categoryId.icon}` }}}}});
+                    console.log(req.query.type);
+                    console.log(result.filter(e => (e.toObject().categoryId.type === req.query.type)));
+                    const finalRes = result.filter(e => (e.toObject().categoryId.type === req.query.type)).map(e => ({...e.toObject(), ...{categoryId: {...e.categoryId.toObject(), ...{icon: `${config.imageURL}${e.categoryId.toObject().icon}` }}}, ...{formStructure: e.toObject().formStructure.map(fst => ((fst.name==='breed') ? {...fst, ...{values: e.toObject().categoryId.breeds}}: fst))}}));
+                    return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data:  finalRes});
+                } else {
+                        // const finalRes = result.map(e => {return {e, ...{categoryId: {...e.categoryId, ...{icon: `${config.imageURL}${e.categoryId.icon}` }}}}});
+                    const finalRes = result.map(e => ({...e.toObject(), ...{categoryId: {...e.categoryId.toObject(), ...{icon: `${config.imageURL}${e.categoryId.toObject().icon}` }}}}));
+                    return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data:  finalRes});
+              }
             });
         } catch (err) {
             return next(err);
@@ -89,23 +98,32 @@ class FormController {
                     console.log(req.user.role);
                     if (categoryResult.error) return res.json({ status: 400, message: categoryResult.message });
                     // getAllBreedersId()
-                    getAllBreedersId().then(breedersId => {
-                        const form = new Form({ ...req.body, ...{ userId: req.user._id, userType: req.user.role[0], breedersId } });
-                        form.save().then(async result => {
-                            return res.status(200).json({ status: 200, message: "Form Created Successfully", data: result });
-                            // await this.cloneFormToBreeder(req.body).then(result => {
-                            //     console.log(result);
-                            // }).catch(err => {
-                            //     return res.json({ status: 400, message: "Form created but error cloning to breeder", errors: err, data: {} });
-                            // });
-                        }).catch(err => {
-                            console.log(err.message);
-                            return res.json({ status: 400, message: err.message ? err.message : "Error Creating form", err, data: {} });
-                        })
+
+                    // Remove all the breeders to add when from create.... 
+                    // Can be undo by uncomment the code down..
+                    // ####################################################
+                    const form = new Form({ ...req.body, ...{ userId: req.user._id, userType: req.user.role[0], breedersId: [] } });
+                    form.save().then(async result => {
+                        return res.status(200).json({ status: 200, message: "Form Created Successfully", data: result });
+                        // await this.cloneFormToBreeder(req.body).then(result => {
+                        //     console.log(result);
+                        // }).catch(err => {
+                        //     return res.json({ status: 400, message: "Form created but error cloning to breeder", errors: err, data: {} });
+                        // });
                     }).catch(err => {
-                        console.log(err)
-                        return res.json({ status: 400, message: err.message ? err.message : "Internal Server Error", err, data: {} });
+                        console.log(err.message);
+                        return res.json({ status: 400, message: err.message ? err.message : "Error Creating form", err, data: {} });
                     })
+
+                    // This is the line that add all breeders in form..
+                    // ##################################################
+                    // getAllBreedersId().then(breedersId => {
+                        
+                       
+                    // }).catch(err => {
+                    //     console.log(err)
+                    //     return res.json({ status: 400, message: err.message ? err.message : "Internal Server Error", err, data: {} });
+                    // })
                 })
             }).catch(err  => {
                 return res.json({ status: 400, message: err.message ? err.message : "Internal Server Error", err, data: {} });
@@ -145,7 +163,7 @@ class FormController {
                 console.log(err);
                 return res.json({ status: 400, message: "Error in modifying form", errors: err, data: {} });
             });
-            return res.status(200).json({ status: 200, message: "Form modified successfully", data: form });
+            return res.status(200).json({ status: 200, message: "Form created successfully", removeMessage: "Form removed successfully" , editMessage: 'Form updated Successfully', data: form });
         } catch (err) {
             return next(err);
         }
@@ -162,13 +180,56 @@ class FormController {
                 if(individualForm.modifiedValuesRequest.map(e => (e.value === data.value))[0]) return res.json({ status: 400, message: "Value already exist in request" });
                 individualForm.modifiedValuesRequest.push({...data, ...{status: 'pending', modifiedBy: req.user._id, modifiedAt: new Date()}})
                 resultForm.save().then(_ => {
-                    return res.status(200).send({status: 200, user: resultForm});
+                    return res.status(200).send({status: 200, user: resultForm, message: 'Request has been successfully send to admin.'});
                 });               
             });
         } catch(error) {
             console.log(error);
         }
     }
+
+
+
+    async getRegisteredFormsOfBreeder(req, res, next) {
+        try {
+            console.log('registered form of breeder');
+            if(req.user.role.includes('breeder')) {
+                console.log('calling breeder form')
+                Form.find({breedersId: req.user._id}).populate('categoryId')               
+                .exec(function (error, result ) {
+                    Form.populate(result, {path: 'categoryId.parentId'}, (err, resultForm) => {
+                        console.log(resultForm);
+                        // const finalRes = result.map(e => {return {e, ...{categoryId: {...e.categoryId, ...{icon: `${config.imageURL}${e.categoryId.icon}` }}}}});
+                        // const finalRes = result.map(e => ({...e.toObject(), ...{categoryId: {...e.categoryId.toObject(), ...{icon: `${config.imageURL}${e.categoryId.toObject().icon}` }}}}));
+
+
+                        // const finalRes = resultForm.filter(e=> e.toObject().categoryId.type===req.query.type);
+
+                        const finalRes = resultForm.filter(e=> e.toObject().categoryId.type===req.query.type).map(e=> ({...e.toObject(), ...{formStructure: e.toObject().formStructure.map(fst => ((fst.name==='breed') ? {...fst, ...{values: e.toObject().categoryId.breeds}}: fst))}}));
+                        console.log('final result is ');
+                        console.log(finalRes);
+                        return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data:  finalRes});
+                    })
+                  
+                });  
+            } else  {
+                console.log('else');
+                Form.find().populate('categoryId').exec().then(result => {
+                    return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data: result });
+                });
+            }
+        } catch (err) {
+            return next(err);
+        }
+    }
+
+    // async forcefullyAcceptRequest(req, res, next) {
+    //     try {
+
+    //     } catch(error) {
+
+    //     }
+    // }
 
 
     async getAllModifiedValuesRequest() {

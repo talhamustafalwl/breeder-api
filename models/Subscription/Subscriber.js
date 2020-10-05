@@ -4,13 +4,17 @@ var idvalidator = require('mongoose-id-validator');
 
 //subscriber details
 const SubscriberSchema = mongoose.Schema({
-    breederId: {
+    userId: {
         type:Schema.Types.ObjectId,
         ref: 'User'
     },
     subscriptionId: {
         type:Schema.Types.ObjectId,
         ref: 'Subscription'
+    },
+    userType: {
+        type: String,
+        enum: ['breeder', 'employee']
     },
     fromDate:{type:Date},
     toDate:{type:Date},

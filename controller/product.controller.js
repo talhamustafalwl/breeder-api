@@ -231,6 +231,17 @@ class ProductController {
       });
     }
   }
+
+
+
+  // For Inventory
+  async getProductForInventory(breederId) {
+    return new Promise(async (resolve, reject) => {
+      await Product.find({breederId}).then(resolve).catch(reject);
+    });
+  }
+
+
 }
 
 module.exports = new ProductController();

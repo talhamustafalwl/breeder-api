@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { auth } = require("../middleware/auth");
+const { auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole } = require("../middleware/auth");
 const { adminauth } = require("../middleware/adminauth");
 const SubscriberController = require('../controller/subscriber.controller');
 
@@ -10,6 +10,7 @@ router.route('/stripe').post(auth,SubscriberController.createstripe)
 //paypal
 router.route('/paypal').post(auth,SubscriberController.createpaypal)
 
+router.post('/breeder', auth, allowBreeder, authenticateRole, SubscriberController.subscribeBreeder );
 
 router.route('/').post(auth,SubscriberController.subscribeUser)
 

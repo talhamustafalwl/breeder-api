@@ -1,4 +1,4 @@
-module.exports = (secretToken, Servername, type) => {
+module.exports = (breederId, username, password) => {
     const today = new Date();
 return `
     <!doctype html>
@@ -14,11 +14,15 @@ return `
 
             Hi there,
             <br/>
-            Thank you for registering!
+            Congratulations!
             <br/><br/>
-            Please verify your email:
+            You are registered as a employee in logly:
             <br/>
-            <a href="${Servername}/user/verify/${secretToken}">verify</a>
+            Breeder Id: <b>${breederId}</b>
+            <br/>
+            User Id: <b>${username}</b>
+            <br/>
+            Password: <b>${password}</b>
             <br/><br/>
             Have a pleasant day.
 

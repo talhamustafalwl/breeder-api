@@ -33,7 +33,7 @@ router.get('/', auth, allowBreeder, allowAdmin, authenticateRole, UserController
 router.put('/', auth, allowBreeder, allowAdmin, authenticateRole, UserController.updateUser);
 
 //auth route check
-router.get("/auth", auth, UserController.authentication);
+router.get("/auth", auth, allowBreeder, allowAdmin, authenticateRole, UserController.authentication);
 router.patch("/isblocked/:id", adminauth, UserController.isblocked);
 
 
@@ -55,7 +55,7 @@ router.put("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, up
 // Breeders ----------------------------------------------------------------------------
 // Register Breeder only .. Using portal
 router.post("/breeder/register", UserController.registerBreeder);
-
+router.get("/breeder/getTax", auth, allowBreeder, allowAdmin, authenticateRole, UserController.getTaxofBreeder)
 
 
 router.post("/emailCheck", (req, res) => {
@@ -107,6 +107,8 @@ router.post('/testLogin', (req, res) => {
 });
 
 
+router.get('/testMail' , UserController.testSendMail);
+
 
 router.post('/employee/login', UserController.employeeLogin);
 
@@ -122,7 +124,7 @@ router.post("/login", (req, res) => {
   User.findOne({ email: req.body.email, role: req.body.role }, (err, user) => {
     if (!user)
       return res.json({
-        status: 400, message: "Auth failed, email not found", data: {}
+        status: 400, message: "Email not found", data: {}
       });
 
     if (!user.verified)
@@ -132,8 +134,9 @@ router.post("/login", (req, res) => {
 
     user.comparePassword(req.body.password, (err, isMatch) => {
       if (!isMatch)
-        return res.json({ status: 400, message: "Incorrect password", errors: errors, data: {} });
+        return res.json({ status: 400, message: "Incorrect email id or password", errors: errors, data: {} });
 
+      user.deviceToken = req.body.deviceToken;
       user.generateToken((err, user) => {
         if (err) return res.send(err);
         //io.emit("userSet", { msg: "email is registered", email: req.body.email });
@@ -141,7 +144,7 @@ router.post("/login", (req, res) => {
        
         return res.status(200)
           .json({
-            status: 200, message: "Login successfully", data: { userId: user._id, token: user.token, email: user.email }
+            status: 200, message: "Login successfully", data: { userId: user._id, token: user.token, email: user.email, user }
           });
       });
     });

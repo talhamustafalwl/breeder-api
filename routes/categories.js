@@ -16,4 +16,10 @@ router.route('/:id').get(auth,CategoryController.getbyId)
   .delete(adminauth,CategoryController.deletebyId)
 .patch(auth, allowBreeder, allowAdmin, authenticateRole,CategoryController.updatebyId)
 
+
+
+// Inventory Section
+// #####################
+router.get('/inventory/:breederId', CategoryController.getInventoryByBreeder);
+
 module.exports=router

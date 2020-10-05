@@ -6,6 +6,7 @@ const Schema = mongoose.Schema;
 const healthRecordSchema  = mongoose.Schema({
     filename: String, 
     size: String, 
+    type: String,
     addedBy:  {
         type: Schema.Types.ObjectId,
         ref: 'User'
@@ -50,17 +51,17 @@ const AnimalSchema = mongoose.Schema({
     //     maxlength: 20, required: true
     // },
     data: Object,
-    family: {parent1: {type: Schema.Types.ObjectId, ref: 'Animal'}, parent2: {type: Schema.Types.ObjectId, ref: 'Animal'},children:[{type: Schema.Types.ObjectId, ref: 'Animal'}]},
+    family: {parent1: {id : {type: Schema.Types.ObjectId, ref: 'Animal'} }, parent2: {id :  {type: Schema.Types.ObjectId, ref: 'Animal'} },children:[{type: Schema.Types.ObjectId, ref: 'Animal'}]},
     healthRecord: [healthRecordSchema],
     gallery: [gallerySchema],
     status: {
         type: String,
-        enum: ['Sold', 'Alive'],
+        enum: ['Sold', 'Alive', 'Dead'],
         default: 'Alive'
     },
     healthStatus:  {
         type: String,
-        enum: ['Sick', 'Died', 'Healthy', 'Pregnant'],
+        enum: ['Sick', 'Healthy', 'Pregnant'],
         default: 'Healthy',
     },
     inventoryStatus: {
@@ -72,6 +73,35 @@ const AnimalSchema = mongoose.Schema({
     gender: {
         type: String,
         enum: ["male", "female"]
+    },
+
+    quantity: {
+        type: Number,
+        default: 0,
+    },
+    aliveQuantity: {
+        type: Number,
+        default: 0,
+    },
+    soldQuantity:  {
+        type: Number,
+        default: 0,
+    },
+    deadQuantity: {
+        type: Number,
+        default: 0,
+    },
+    healthyQuantity: {
+        type: Number,
+        default: 0,
+    },
+    sickQuantity: {
+        type: Number,
+        default: 0,
+    },
+    pregnantQuantity: {
+        type: Number,
+        default: 0,
     },
 
     // color: {
@@ -130,16 +160,22 @@ const AnimalSchema = mongoose.Schema({
 //qrcode of animal save
 const QRCode = require('qrcode')
 AnimalSchema.pre('save', function (next) {
+    console.log('on pre save');
     const animal = this;
     console.log(this);
     const dat = Date.now()
-    QRCode.toFile(`uploads/qrcode/${this._id}-${dat}.png`, [{data: (this._id).toString(), mode: 'byte'}], {
-    }, function (err) {
-        if (err) return next(err);
-        console.log('qrcode done')
-        animal.qrcodepath = `uploads/qrcode/${animal._id}-${dat}.png`
-        return next()
-    })
+    if(!animal.qrcodepath) {
+        QRCode.toFile(`uploads/qrcode/${this._id}-${dat}.png`, [{data: (this._id).toString(), mode: 'byte'}], {
+        }, function (err) {
+            if (err) return next(err);
+            console.log('qrcode done')
+            animal.qrcodepath = `uploads/qrcode/${animal._id}-${dat}.png`
+            return next()
+        })
+    } else {
+        return next();
+    }
+  
     
 });
 

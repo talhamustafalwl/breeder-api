@@ -4,7 +4,8 @@ const LogicController = require("../controller/logic.controller");
 const { JSONCookie } = require("cookie-parser");
 const config = require("../config/key");
 const { baseDocumentURL } = require("../config/dev");
-const { baseImageURL } = require("../config/key");
+const { baseImageURL, baseAPIUrl } = require("../config/key");
+const animal = require("../validation/animal");
 
 class AnimalController {
   constructor() {}
@@ -44,78 +45,108 @@ class AnimalController {
     }
   }
 
+
+  async getQRCodeOfAnimal(req, res, next) {
+    try {
+      Animal.findById(req.params.id).then(resultAnimal => {
+        return res.status(200).json({
+          status: 200,
+          message: "All Animals deleted successfully",
+          data: {...resultAnimal.toObject(), ...{qrcodepath: `${baseAPIUrl}${resultAnimal.toObject().qrcodepath}` }},
+        });
+      }).catch(error=> {
+        return res.json({
+          status: 400,
+          message: "Error occurs"
+        });
+      });
+    } catch(error) {
+      return res.json({
+        status: 400,
+        message: "Error in Finding QR Code",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
   //get specific animal  by id
   async getanimal(req, res) {
     try {
-      const e = await Animal.findOne({ _id: req.params.id })
+      const ea = await Animal.findOne({ _id: req.params.id })
         .populate("family.parent1")
         .populate("family.parent2")
-        .populate("family.children","_id status data.name data.sex image")
-        .populate("healthRecord.addedBy");
-      if (e == "") {
-        return res.json({
-          status: 400,
-          message: "Invalid animal Id",
-          data: {},
-        });
-      }
-      return res.status(200).json({
-        status: 200,
-        message: "Animal data",
-        data: {
-          ...e.toObject(),
-          ...{
-            image: e.toObject().image
-              ? `${config.baseImageURL}${e.toObject().image}`
-              : null,
-          },
-          ...{
-            qrcodepath: e.toObject().qrcodepath
-              ? `${config.Server}/${e.toObject().qrcodepath}`
-              : null,
-          },
-          ...{
-            healthRecord: e
-              .toObject()
-              .healthRecord.map((hr) => ({
-                ...hr,
-                ...{ filename: `${baseDocumentURL}${hr.filename}` },
-              })),
-          },
-          ...{
-            gallery: e
-              .toObject()
-              .gallery.map((img) => ({
-                ...img,
-                ...{ filename: `${baseImageURL}${img.filename}` },
-              })),
-          },
+        .populate("family.children")
+        .populate("healthRecord.addedBy")
+        .populate("categoryId");
 
-          ...{
-            family: {
-              ...e.toObject().family,
-              ...{
-                children: e.toObject().family
-                .children.map((img) => ({
+      Animal.populate(ea, {path: "categoryId.parentId"}, (err, e) => {
+        if (e == "") {
+          return res.json({
+            status: 400,
+            message: "Invalid animal Id",
+            data: {},
+          });
+        }
+        return res.status(200).json({
+          status: 200,
+          message: "Animal data",
+          data: {
+            ...e.toObject(),
+            ...{
+              image: e.toObject().image
+                ? `${config.baseImageURL}${e.toObject().image}`
+                : null,
+            },
+            ...{
+              qrcodepath: e.toObject().qrcodepath
+                ? `${config.Server}/${e.toObject().qrcodepath}`
+                : null,
+            },
+            ...{
+              healthRecord: e
+                .toObject()
+                .healthRecord.map((hr) => ({
+                  ...hr,
+                  ...{ filename: `${baseDocumentURL}${hr.filename}` },
+                })),
+            },
+            ...{
+              gallery: e
+                .toObject()
+                .gallery.map((img) => ({
                   ...img,
-                  ...{ image: `${baseImageURL}${img.image}` },
-                }))
-              },
-              // ...{parent2: e.toObject().family.parent2,
-              //    ...{image:  e.toObject().family.parent2 ? `${config.baseImageURL}${e.toObject().family.parent2.image}`: null}
-              //   },
-
-              ...{
-                parent2:{...e.toObject().family.parent2,...{image:e.toObject().family.parent2 && `${config.baseImageURL}${e.toObject().family.parent2.image}`}}
-                },
+                  ...{ filename: `${baseImageURL}${img.filename}` },
+                })),
+            },
+  
+            ...{
+              family: {
+                ...e.toObject().family,
                 ...{
-                  parent1:{...e.toObject().family.parent1,...{image:e.toObject().family.parent1 && `${config.baseImageURL}${e.toObject().family.parent1.image}`}}
-                  }
-            },   
-          }
-          
-        },
-      });
+                  children: e.toObject().family
+                  .children.map((img) => ({
+                    ...img,
+                    ...{ image: img.image ? `${baseImageURL}${img.image}` : null },
+                  }))
+                },
+                // ...{parent2: e.toObject().family.parent2,
+                //    ...{image:  e.toObject().family.parent2 ? `${config.baseImageURL}${e.toObject().family.parent2.image}`: null}
+                //   },
+  
+                ...{
+                  parent2:{...e.toObject().family.parent2,...{image:e.toObject().family.parent2 && `${config.baseImageURL}${e.toObject().family.parent2.image}`}}
+                  },
+                  ...{
+                    parent1:{...e.toObject().family.parent1,...{image:e.toObject().family.parent1 && `${config.baseImageURL}${e.toObject().family.parent1.image}`}}
+                    }
+              },   
+            }
+            
+          },
+        });
+  
+      })
     } catch (err) {
       return res.json({
         status: 400,
@@ -238,6 +269,28 @@ class AnimalController {
     }
   }
 
+  async updateAnimalData(req, res, next) {
+    try {
+      Animal.updateOne({ _id: req.params.id }, req.body).then(responseAnimal  => {
+        return res.status(200).json({
+          status: 200,
+          message: "Animals updated successfully",
+          data: "",
+        });
+      }).catch(error => {
+        return res.json({
+          status: 400,
+          message: "Error in updating animal",
+          errors: error,
+          data: {},
+        });
+      });
+
+    } catch(error ) {
+      return next(error);
+    }
+  }
+
   async uploadHealthRecord(req, res) {
     try {
       console.log("uploadhealth record");
@@ -250,6 +303,7 @@ class AnimalController {
             healthRecord: {
               filename: req.file.filename,
               size: req.file.size,
+              type: req.file.mimetype,
               addedBy: req.user._id,
             },
           },
@@ -385,24 +439,27 @@ class AnimalController {
           })),
         });
       } else {
-        const animals = await Animal.find(query).populate("addedBy");
-        return res.status(200).json({
-          status: 200,
-          message: "Animal data",
-          data: animals.map((e) => ({
-            ...e.toObject(),
-            ...{
-              image: e.toObject().image
-                ? `${config.baseImageURL}${e.toObject().image}`
-                : null,
-            },
-            ...{
-              qrcodepath: e.toObject().qrcodepath
-                ? `${config.Server}/${e.toObject().qrcodepath}`
-                : null,
-            },
-          })),
-        });
+        const animals = await Animal.find(query).populate("addedBy").populate('categoryId');
+        Animal.populate(animals, {path: 'categoryId.parentId'}, (err, resultAnimal) => {
+          return res.status(200).json({
+            status: 200,
+            message: "Animal data",
+            data: resultAnimal.map((e) => ({
+              ...e.toObject(),
+              ...{
+                image: e.toObject().image
+                  ? `${config.baseImageURL}${e.toObject().image}`
+                  : null,
+              },
+              ...{
+                qrcodepath: e.toObject().qrcodepath
+                  ? `${config.Server}/${e.toObject().qrcodepath}`
+                  : null,
+              },
+            })),
+          });
+        })
+      
       }
     } catch (err) {
       return res.json({
@@ -413,6 +470,20 @@ class AnimalController {
       });
     }
   }
+
+
+
+
+  // For Inventory
+  async getAnimalForInventory(breederId) {
+    return new Promise(async (resolve, reject) => {
+     await Animal.find({breederId}).then(resolve).catch(reject);
+    });
+  }
+
+
+
+
   
 
   //get delete animal of specific breeder
@@ -493,6 +564,36 @@ class AnimalController {
     }
   }
 
+  async deleteAnimalHealthRecord(req, res, next) {
+    try {
+      Animal.findById(req.params.animalId).then(resultAnimal => {
+        resultAnimal.healthRecord = resultAnimal.healthRecord.filter(e => !(e._id==req.params.id));
+        console.log(req.params.id);
+        console.log('delete animal update');
+        console.log(resultAnimal.healthRecord.filter(e => !(e._id==req.params.id)));
+        resultAnimal.save().then(_ => {
+          return res
+          .status(200)
+          .json({ status: 200, message: "Animal health record deleted successfully" });
+        });
+      }).catch(error => {
+        return res.json({
+          status: 400,
+          message: "Error in deleting health record",
+          errors: err,
+          data: {},
+        });
+      }); 
+    } catch(error) {
+      return res.json({
+        status: 400,
+        message: "Error in deleting health record",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
   async addBreederAnimals(req, res) {
     console.log("add breeder animal works");
     console.log(req.body);
@@ -510,8 +611,13 @@ class AnimalController {
       req.body.breederId =
         req.user.role == "employee" ? req.user.breederId : req.user._id;
       req.body.addedBy = req.user._id;
-      req.body.image = req.file.filename;
+      const data = JSON.parse(req.body.data);
+      req.body.image = req.file ? req.file.filename : null;
       req.body.data = JSON.parse(req.body.data);
+      delete req.body.data.quantity;
+      req.body.quantity = data.quantity;
+      req.body.aliveQuantity = data.quantity;
+      req.body.healthyQuantity = data.quantity;
       req.body.family = JSON.parse(req.body.family);
       console.log(req.body);
       const animal = await new Animal(req.body);
@@ -522,6 +628,7 @@ class AnimalController {
         data: doc,
       });
     } catch (err) {
+      console.log(err);
       return res.json({
         status: 400,
         message: "Error in creating Animal",
@@ -545,6 +652,154 @@ class AnimalController {
       });
     });
   }
+
+
+
+
+  async removeAnimalParent(req, res) {
+
+    try {
+      let parent = '';
+      console.log(req.params.id);
+      console.log(req.params.parentName);
+      Animal.findById(req.params.id).then(animalResult => {
+        parent = animalResult.family[req.params.parentName].id;
+        animalResult.family[req.params.parentName] = {};
+        animalResult.save().then(_ => {
+          Animal.findById(parent).then(parentResult => {
+            parentResult.family['children'] = parentResult.family['children'].filter(e => !(e==req.params.id));
+            parentResult.save();
+            return res.status(200).json({
+              status: 200,
+              message: "Parent Deleted successfully",
+            });
+          });
+        });
+      })
+    } catch (err) {
+      return res.json({
+        status: 400,
+        message: "Error in deleting Animal",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
+
+
+
+
+  async removeAnimalChild(req, res) {
+
+    try {
+      let child = '';
+      console.log(req.params.id);
+      console.log(req.params.childId);
+      Animal.findById(req.params.id).then(animalResult => {
+        // child = animalResult.family['children'].filter(e => e==req.params.childId);
+        animalResult.family['children'] = animalResult.family['children'].filter(e => !(e==req.params.childId));
+        animalResult.save().then(_ => {
+          Animal.findById(req.params.childId).then(childResult => {
+            if(childResult.family['parent1'].id == req.params.id) {
+              childResult.family['parent1'] = {};
+            } else if(childResult.family['parent2'].id == req.params.id) {
+              childResult.family['parent2'] = {};
+            }
+            console.log(childResult.family);
+            childResult.save();
+            return res.status(200).json({
+              status: 200,
+              message: "Parent Deleted successfully",
+            });
+          });
+        });
+      })
+    } catch (err) {
+      return res.json({
+        status: 400,
+        message: "Error in deleting Animal",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
+
+
+  async addAnimalAsParentChild(req, res) {
+
+    try {
+      const {type} = req.body;
+      console.log(req.body.type);
+      console.log(req.body.id);
+      console.log(req.body.animalId);
+      Animal.findById(req.body.id).then(animalResult => {
+        if(type === 'parent1') {
+          animalResult.family['parent1'] = {id: req.body.animalId};
+        } else if(type === 'parent2') {
+          animalResult.family['parent2'] = {id: req.body.animalId};
+        } else {
+          animalResult.family.children = [...animalResult.family.children, ...[req.body.animalId]]
+        }
+        Animal.findById(req.body.animalId).then(parentChildAnimal => {
+          if(type === 'parent1' || type === 'parent2') { 
+            parentChildAnimal.family['children'] = [...parentChildAnimal.family['children'], ...[req.body.id]];
+            console.log(parentChildAnimal.family['children']);
+            animalResult.save().then(_ => {
+              parentChildAnimal.save().then(_ => {
+                return res.status(200).json({
+                  status: 200,
+                  message: "Animal added successfully",
+                });
+              });
+            });
+           
+          } else { 
+            if(parentChildAnimal.family['parent1'].id && parentChildAnimal.family['parent2'].id) {
+              console.log('in if condition');
+              console.log(parentChildAnimal.family['parent1'])
+              return res.json({
+                status: 400,
+                message: "You can not be the parent of this animal.",
+                // errors: err,
+                data: {},
+              });
+            } else {
+              if(!parentChildAnimal.family['parent1'].id) {
+                parentChildAnimal.family['parent1'] = {id: req.body.id};
+              } else {
+                parentChildAnimal.family['parent2'] = {id: req.body.id};
+              }
+              animalResult.save().then(_ => {
+                parentChildAnimal.save().then(_ => {
+                  return res.status(200).json({
+                    status: 200,
+                    message: "Animal added successfully",
+                  });
+                });
+              });
+            }
+          
+          }
+          
+         
+        })
+       
+      })
+    } catch (err) {
+      return res.json({
+        status: 400,
+        message: "Error in adding Animal",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
+  
+
+  
 }
 
 module.exports = new AnimalController();
