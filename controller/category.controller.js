@@ -49,7 +49,7 @@ class CategoryController {
       console.log("getting categories");
       const category = await Category.find(
         req.query.type ? { type: req.query.type } : {}
-      ).populate("parentId");
+      )
       //removed (.populate("parentId");)
       return res
         .status(200)
