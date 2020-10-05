@@ -16,7 +16,7 @@ module.exports = {
 
 
     serverURL: 'https://breeder-api.herokuapp.com',
-    imageURL: 'http://192.168.88.129:5000/uploads/images/form/',
+    imageURL: 'http://breeder-api.herokuapp.com/uploads/images/form/',
     mailthrough: 'admin@breeder.com',
     baseDocumentURL: 'https://breeder-api.herokuapp.com/uploads/documents/',
     sendgridAPIKey: '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',
