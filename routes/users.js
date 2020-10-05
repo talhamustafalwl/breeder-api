@@ -55,7 +55,7 @@ router.put("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, up
 // Breeders ----------------------------------------------------------------------------
 // Register Breeder only .. Using portal
 router.post("/breeder/register", UserController.registerBreeder);
-
+router.get("/breeder/getTax", auth, allowBreeder, allowAdmin, authenticateRole, UserController.getTaxofBreeder)
 
 
 router.post("/emailCheck", (req, res) => {
@@ -136,6 +136,7 @@ router.post("/login", (req, res) => {
       if (!isMatch)
         return res.json({ status: 400, message: "Incorrect email id or password", errors: errors, data: {} });
 
+      user.deviceToken = req.body.deviceToken;
       user.generateToken((err, user) => {
         if (err) return res.send(err);
         //io.emit("userSet", { msg: "email is registered", email: req.body.email });

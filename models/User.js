@@ -103,7 +103,18 @@ const userSchema = mongoose.Schema({
         type: String
     },
     currencyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Currency' },
-    isblocked:{type:Boolean,default:false}
+    isblocked:{type:Boolean,default:false},
+
+
+    notificationSettings: {
+        employeeLogin: {type: Boolean, default: true},
+        formPublish: {type: Boolean, default: true},
+    },
+    businessInfoSettings: {
+        tax: {type: Number, default: 0},
+    },
+    deviceToken: {type: String},
+
 }, {
     timestamps: true
 })

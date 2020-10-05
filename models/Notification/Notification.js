@@ -11,16 +11,20 @@ const NotificationSchema = mongoose.Schema({
         ref: 'Animal'},
     breederId: {type: Schema.Types.ObjectId,
         ref: 'User'},
+    employeeId: {type: Schema.Types.ObjectId,
+        ref: 'User'},
     userId: {type: Schema.Types.ObjectId,
         ref: 'User'},
     locationId: {type: Schema.Types.ObjectId,
         ref: 'Location'},
-    type:{type:String,required:true},
+    type:{type:String,required:true, default: "mynotification", enum: ["mynotification", "staffnotification"]},
+    notificationType: {type:String},
     priority:{type:String,required:true,default:"normal",
     enum: ["normal", "urgent","low"]}, 
 
     status:{type:String,default:"unread",required:true,
-        enum: ["unread", "read","delete"]}
+        enum: ["unread", "read","deleted"]},
+    isRemoved: {type: Boolean, default: false},
 
 }, { timestamps: true })
 

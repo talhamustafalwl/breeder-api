@@ -34,10 +34,11 @@ class FormController {
             Form.find().populate('categoryId').exec(function (error, result ) {
                 console.log(result);
                 if(req.query.type) {
+                    
                     // const finalRes = result.map(e => {return {e, ...{categoryId: {...e.categoryId, ...{icon: `${config.imageURL}${e.categoryId.icon}` }}}}});
                     console.log(req.query.type);
                     console.log(result.filter(e => (e.toObject().categoryId.type === req.query.type)));
-                    const finalRes = result.filter(e => (e.toObject().categoryId.type === req.query.type)).map(e => ({...e.toObject(), ...{categoryId: {...e.categoryId.toObject(), ...{icon: `${config.imageURL}${e.categoryId.toObject().icon}` }}}}));
+                    const finalRes = result.filter(e => (e.toObject().categoryId.type === req.query.type)).map(e => ({...e.toObject(), ...{categoryId: {...e.categoryId.toObject(), ...{icon: `${config.imageURL}${e.categoryId.toObject().icon}` }}}, ...{formStructure: e.toObject().formStructure.map(fst => ((fst.name==='breed') ? {...fst, ...{values: e.toObject().categoryId.breeds}}: fst))}}));
                     return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data:  finalRes});
                 } else {
                         // const finalRes = result.map(e => {return {e, ...{categoryId: {...e.categoryId, ...{icon: `${config.imageURL}${e.categoryId.icon}` }}}}});
@@ -191,6 +192,7 @@ class FormController {
 
     async getRegisteredFormsOfBreeder(req, res, next) {
         try {
+            console.log('registered form of breeder');
             if(req.user.role.includes('breeder')) {
                 console.log('calling breeder form')
                 Form.find({breedersId: req.user._id}).populate('categoryId')               
@@ -199,12 +201,19 @@ class FormController {
                         console.log(resultForm);
                         // const finalRes = result.map(e => {return {e, ...{categoryId: {...e.categoryId, ...{icon: `${config.imageURL}${e.categoryId.icon}` }}}}});
                         // const finalRes = result.map(e => ({...e.toObject(), ...{categoryId: {...e.categoryId.toObject(), ...{icon: `${config.imageURL}${e.categoryId.toObject().icon}` }}}}));
-                        const finalRes = resultForm.filter(e=> e.toObject().categoryId.type===req.query.type);
+
+
+                        // const finalRes = resultForm.filter(e=> e.toObject().categoryId.type===req.query.type);
+
+                        const finalRes = resultForm.filter(e=> e.toObject().categoryId.type===req.query.type).map(e=> ({...e.toObject(), ...{formStructure: e.toObject().formStructure.map(fst => ((fst.name==='breed') ? {...fst, ...{values: e.toObject().categoryId.breeds}}: fst))}}));
+                        console.log('final result is ');
+                        console.log(finalRes);
                         return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data:  finalRes});
                     })
                   
                 });  
             } else  {
+                console.log('else');
                 Form.find().populate('categoryId').exec().then(result => {
                     return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data: result });
                 });

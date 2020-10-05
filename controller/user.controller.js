@@ -11,6 +11,7 @@ const forgetpasswordemail = require('../emails/forgetpassword');
 // const formController = require("./form.controller");
 const {removeQuote} = require('../middleware/constant');
 const { Types } = require("mongoose");
+const notificationController = require("./notification.controller");
 
 class UserController {
     constructor() { 
@@ -32,6 +33,7 @@ class UserController {
                     _id: req.user._id,
                     email: req.user.email,
                     name: req.user.name,
+                    notificationSettings : req.user.notificationSettings
                 }
             });
         } catch (err) {
@@ -39,6 +41,16 @@ class UserController {
         }
     }
 
+
+    async getAllEmployeesOfBreeder(breederId) {
+        return new Promise((resolve, reject)=> {
+            User.find({breederId, role: 'employee'}).then(allEmployees => {
+                resolve(allEmployees);
+            }).catch(error => {
+                reject(error);
+            })
+        }); 
+    }
 
     async employeeLogin(req, res, next) {
         try {
@@ -224,6 +236,9 @@ class UserController {
                         req.body.image = req.file ? req.file.filename : null;
                         this.registerUserWithRole(req.body, 'employee', false).then(success => {
                             console.log(success);
+                            notificationController.create(req.user._id, 'mynotification',  'employee', 'Employee Registered Successfully', 'You have registered a new employee', req.user._id, null, success.data._id, req.user.deviceToken, true).then(resultNotifCreate => {
+                                console.log(resultNotifCreate);
+                            })
                             return res.status(200).send({status: 200, message: 'Employee Registered Successfully', data: success});
                         }).catch(error => {
                             console.log(error);
@@ -293,6 +308,18 @@ class UserController {
                 return res.json({ status: 400, message: "Error updating employees", errors: error, data: {} });
             });
         } catch (error) {
+            return next(error);
+        }
+    }
+
+    async getTaxofBreeder(req, res, next) {
+        try {
+            User.findById(req.user._id).then(userResult => {
+                return res.status(200).json({ status: 200, message: "Tax found successfully", data: {tax: userResult.businessInfoSettings.tax} });
+            }).catch((error) => {
+                return res.json({ status: 400, message: "Error getting tax", errors: error, data: {} });
+            })
+        } catch(error) {
             return next(error);
         }
     }
@@ -439,7 +466,7 @@ class UserController {
                         console.log('employee email');
                         console.log (body);
                         const html = employeeEmail(body.breederUniqueId, body.email, body.password);
-                        mailer.sendEmail(config.mailthrough, doc.email, 'Email for logly employee', html);
+                        mailer.sendEmail(config.mailthrough, body.email, 'Email for logly employee', html);
                         console.log('sending email');
                     }
                     return resolve({ status: 200, message: "Registered Successfully", data: doc });
