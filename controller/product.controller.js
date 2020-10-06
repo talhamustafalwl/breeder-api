@@ -26,7 +26,7 @@ class ProductController {
     req.body.breederId =
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     req.body.addedBy = req.user._id;
-    req.body.image = req.file.filename;
+    req.body.image = req.file.filename ? req.file.filename : null;
     req.body.data = JSON.parse(req.body.data);
     req.body.status = "active";
     console.log(req.body);
