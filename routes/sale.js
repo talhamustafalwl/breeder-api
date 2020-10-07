@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const SaleControoler = require('../controller/sales.controller');
-const { auth } = require("../middleware/auth");
+const { auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole } = require("../middleware/auth");
 
 
-router.post('/saleAnimal', auth, SaleControoler.saleAnimal),
+router.post('/saleAnimal', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SaleControoler.saleAnimal),
 
 
 module.exports = router;

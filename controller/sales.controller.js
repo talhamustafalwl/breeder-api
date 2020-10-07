@@ -1,9 +1,14 @@
-const { Sale } = require('../models/Contact/Sales');
+const { Sale } = require('../models/Sales');
 const InvoiceController = require('./invoice.controller');
 const AnimalController = require('./animal.controller');
 const InstallmentController = require('./installment.controller');
 const SaleValidation = require('../validation/sals');
+
 class SalesController {
+
+
+
+    // Manage sales, installment and invoice.. 
 
     async saleAnimal(req, res, next) {
         try {
@@ -55,6 +60,16 @@ class SalesController {
         } catch (error) {
             return next(error);
         }
+    }
+
+    async getBreederSalesList(breederId) {
+        return new Promise((resolve, reject) => {
+            Sale.find({sellerId: breederId}).then(result => {
+                resolve(result.map(r => r.toObject().buyerId));
+            }).catch(error => {
+                reject(error);
+            });
+        });
     }
 }
 
