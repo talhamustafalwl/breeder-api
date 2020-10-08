@@ -12,29 +12,37 @@ class SalesController {
 
     async saleAnimal(req, res, next) {
         try {
-            const { contactId, animals, installments, amount, isPaid } = req.body;
+            const { buyerId, animals, installments, amount, tax, downpayment } = req.body;
             const {errors, isValid, isInstallment} = SaleValidation.validateSales(req.body);
             if(!isValid)  return res.json({ status: 400, message: "errors present", errors: errors });
             
             // if (!(animals && animals[0])) {
             //     return res.status(400).send({ status: 400, message: "At least one animal entry required!" });
             // }
-            console.log( req.body.animals.map(e => e.price).reduce((a, b) => a + b, 0));
-            if (!(amount === req.body.animals.map(e => e.price).reduce((a, b) => a + b, 0))) {
-                return res.status(400).send({ status: 400, message: "Total amount is not matched with animal price!" });
-            }
+
             // add sale with animal array
-            const sale = new Sale({ ...{ sellerRole: req.user.role, sellerId: req.user._id, isInstallment }, ...req.body })
+            const sale = new Sale({ 
+                sellerRole: req.user.role[0] ? req.user.role[0] : req.user.role, 
+                sellerId: req.user._id, 
+                buyerId,
+                tax,
+                totalPrice: amount.totalPrice,
+                price: amount.subTotal,
+                isPaid: false,
+                animals,
+                isInstallment, 
+                downpayment
+            });
             sale.save().then(result => {
                 console.log('Sales added Successfully');
                 console.log(result);
                 Promise.all([new Promise((resolve, reject) => {
                     // create invoice 
-                    InvoiceController.addInvoice(contactId, 'sale', result._id, animals).then(resolve)
+                    InvoiceController.addInvoice('sale', result._id, '0000').then(resolve);
                 }),
                 new Promise((resolve, reject) => {
                     // updatemany animals
-                    AnimalController.updateAnimalAfterSale(animals,contactId, req.user._id ).then(resolve);
+                    AnimalController.updateAnimalAfterSale(animals, buyerId, req.user._id ).then(resolve);
                     
                 })
                 ]).then(([resInvoice, resAnimal]) => {
@@ -58,6 +66,7 @@ class SalesController {
 
             });
         } catch (error) {
+            console.log(error);
             return next(error);
         }
     }

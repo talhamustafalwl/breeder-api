@@ -13,6 +13,21 @@ class FormController {
         this.addForm = this.addForm.bind(this);
     }
 
+
+    addBreederInForm(breederId, categoryId, sellerId) {
+        return new Promise((resolve, reject) => {
+            Form.findOne({categoryId}).then(resultForm  => {
+                if(resultForm.breedersId.includes(breederId)) resolve();
+                resultForm.formStructure  = resultForm.formStructure.map(e => ({...e, breedersId: e.breedersId.map(eb => eb._id).includes(sellerId) ? [...e.breedersId, ...[{_id: breederId}]] : e.breedersId}));
+                resultForm.breedersId = [...resultForm.breedersId, ...[breederId]];
+                resultForm.save(resolve).catch(reject);
+            }).catch(error => {
+                reject();
+            });
+        });
+    }
+
+
     getFormByCategory(req, res, next) {
         try {
             const { categoryId } = req.params;

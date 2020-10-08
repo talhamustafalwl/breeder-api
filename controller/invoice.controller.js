@@ -95,9 +95,9 @@ async getallbreeder(req, res) {
     }
 
 
-    async addInvoice(contactId, type, saleId, items) {
+    async addInvoice(type, saleId, invoiceNumber) {
       return new Promise(async (resolve, reject) => {
-        const invoice = await new Invoice({contactId, type, saleId, items});
+        const invoice = await new Invoice({type, saleId, invoiceNumber});
         invoice.save().then(resolve);
       });
     }

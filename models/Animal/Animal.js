@@ -27,7 +27,6 @@ const AnimalSchema = mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'User', required: true
     },
-
     addedBy: {
         type: Schema.Types.ObjectId,
         ref: 'User'
@@ -56,17 +55,20 @@ const AnimalSchema = mongoose.Schema({
     gallery: [gallerySchema],
     status: {
         type: String,
-        enum: ['Sold', 'Alive', 'Dead'],
+        // No more using these status..
+        // enum: ['Sold', 'Alive', 'Dead'],
         default: 'Alive'
     },
     healthStatus:  {
         type: String,
-        enum: ['Sick', 'Healthy', 'Pregnant'],
+        // No more using these status..
+        // enum: ['Sick', 'Healthy', 'Pregnant'],
         default: 'Healthy',
     },
     inventoryStatus: {
         type: String,
-        enum: ['In stock', 'Out of stock'],
+        // No more using these status..
+        // enum: ['In stock', 'Out of stock'],
         default: 'In stock',  
     },
     age: Number,
@@ -120,15 +122,18 @@ const AnimalSchema = mongoose.Schema({
     tattoo: String,
     identificationMark: String,
     notes: String,
-    buyer: {
-        type: Schema.Types.ObjectId,
-        ref: 'Contact',
-    },
-    seller: {
+    buyer: [{id: {
         type: Schema.Types.ObjectId,
         ref: 'User',
+    }, quantity: Number, date: Date}],
+    seller: [{id: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    }, quantity: Number, date: Date}],
+    sellerAnimalId : {
+        type: Schema.Types.ObjectId,
+        ref: 'Animal',
     },
-
     description: {
         type: String, minglength: 5,
         maxlength: 300
