@@ -204,7 +204,7 @@ class AnimalController {
     }
     return res.status(200).json({
       status: 200,
-      message: "Animal data",
+      message: "Animal Profile Updated Successfully",
       data: {
         ...e.toObject(),
         ...{
