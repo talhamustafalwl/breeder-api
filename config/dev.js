@@ -3,7 +3,8 @@ module.exports = {
       // mongoURI:'mongodb://localhost:27017/breeder_official'
     , //Server: 'https://breeder-api.herokuapp.com',
    
-    Server: 'https://breeder-api.herokuapp.com',
+    // Server: 'https://breeder-api.herokuapp.com',
+    Server: 'https://breeder-livewireapps-api.herokuapp.com',
     webServer: 'https://breeder-dev.herokuapp.com',
     baseAPIUrl: 'https://breeder-api.herokuapp.com/',
     baseImageURL: 'http://192.168.88.129:5000/uploads/images/',
@@ -15,7 +16,8 @@ module.exports = {
     // baseImageURL: 'http://localhost:5000/uploads/images/',
 
 
-    serverURL: 'https://breeder-api.herokuapp.com',
+    // serverURL: 'https://breeder-api.herokuapp.com',
+    serverURL: 'https://breeder-livewireapps-api.herokuapp.com',
     imageURL: 'http://192.168.88.129:5000/uploads/images/form/',
     mailthrough: 'admin@breeder.com',
     baseDocumentURL: 'http://192.168.88.129:5000/uploads/documents/',
