@@ -422,7 +422,7 @@ class AnimalController {
           ...query,
           breederId:req.user.breederId
           //...{ farmId: { $in: req.user.farmId } },
-        }).populate("addedBy","_id name")
+        }).sort({createdAt: -1}).populate("addedBy","_id name")
         return res.status(200).json({
           status: 200,
           message: "Animal data",
@@ -438,6 +438,13 @@ class AnimalController {
                 ? `${config.Server}/${e.toObject().qrcodepath}`
                 : null,
             },
+            ...{
+              family: {
+                ...e.toObject().family,
+                parent1: e.toObject().family.parent1 ? `${config.Server}/${e.toObject().family.parent1}` : null,
+                parent2: e.toObject().family.parent2 ? `${config.Server}/${e.toObject().family.parent2}` : null
+              }
+            }
           })),
         });
       } else {

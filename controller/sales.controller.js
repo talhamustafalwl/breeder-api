@@ -29,6 +29,7 @@ class SalesController {
                 totalPrice: amount.totalPrice,
                 price: amount.subTotal,
                 isPaid: false,
+                saleUniqueId: '0000F',
                 animals,
                 isInstallment, 
                 downpayment
@@ -39,7 +40,7 @@ class SalesController {
                 Promise.all([new Promise((resolve, reject) => {
                     // create invoice 
                     console.log('calling Add invoice');
-                    InvoiceController.addInvoice('sale', result._id, '0000').then(resolve);
+                    InvoiceController.addInvoice('sale', result._id, '0000', buyerId, req.user._id).then(resolve);
                 }),
                 new Promise((resolve, reject) => {
                     // updatemany animals
@@ -86,7 +87,22 @@ class SalesController {
 
     async getSales(req, res, next) {
         try {
-            
+            const { type } = req.query;
+            if(type === 'upcomming') {
+                Sale.find({isPaid: false, sellerId: req.user._id, }).then(resultSale => {
+                    return res.status(200).json({ status: 200, message: "Sales Found successfully", data: resultSale });                        
+                });
+            } else if(type === 'history') {
+                Sale.find({ sellerId: req.user._id, }).then(resultSale => {
+                    return res.status(200).json({ status: 200, message: "Sales Found successfully", data: resultSale });                        
+                });
+            } else if(type === 'invoice') {
+                InvoiceController.getAllInvoiceByBreeder(req.user._id).then(resultInvoice => {
+                    return res.status(200).json({ status: 200, message: "Sales Invoice Found successfully", data: resultInvoice });                        
+                })
+            } else {
+                return res.json({ status: 400, message: "Unknown type", data: {} });
+            }
         } catch(error) {    
             console.log(error);
             return next(error);

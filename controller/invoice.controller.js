@@ -95,13 +95,23 @@ async getallbreeder(req, res) {
     }
 
 
-    async addInvoice(type, saleId, invoiceNumber) {
+    async addInvoice(type, saleId, invoiceNumber,  buyerId, sellerId) {
       console.log(' in add invoice');
       return new Promise(async (resolve, reject) => {
-        const invoice = await new Invoice({type, saleId, invoiceNumber});
+        const invoice = await new Invoice({type, saleId, invoiceNumber, buyerId, sellerId});
         console.log('in add in voice resolve');
         invoice.save().then(resolve).catch(reject);
       });
+    }
+
+    async getAllInvoiceByBreeder(breederId) {
+      return new Promise((resolve, reject) => {
+        Invoice.find({sellerId: breederId}).then(resultInvoice => {
+          resolve(resultInvoice);
+        }).catch(error => {
+          reject(error);
+        })
+      })
     }
     
 };

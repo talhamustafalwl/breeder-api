@@ -9,6 +9,16 @@ const InvoiceSchema = mongoose.Schema({
         ref: 'Sale',required:true
     },// Who created this invoice
     invoiceNumber: {type: String, required: true},
+    buyerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    sellerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }, //belongs to which user
 }, { timestamps: true })
 
 InvoiceSchema.plugin(idvalidator);

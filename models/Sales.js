@@ -20,6 +20,7 @@ const SalesSchema = mongoose.Schema({
         ref: 'User',
         required: true
     }, //belongs to which user
+    saleUniqueId: { type: String },
     sellerRole: {
         type: String,
         required: true,
