@@ -21,6 +21,7 @@ class SalesController {
             // }
 
             // add sale with animal array
+            console.log(amount.subTotal);
             const sale = new Sale({ 
                 sellerRole: req.user.role[0] ? req.user.role[0] : req.user.role, 
                 sellerId: req.user._id, 
@@ -89,11 +90,11 @@ class SalesController {
         try {
             const { type } = req.query;
             if(type === 'upcomming') {
-                Sale.find({isPaid: false, sellerId: req.user._id, }).then(resultSale => {
+                Sale.find({isPaid: false, sellerId: req.user._id, }).populate('buyerId').then(resultSale => {
                     return res.status(200).json({ status: 200, message: "Sales Found successfully", data: resultSale });                        
                 });
             } else if(type === 'history') {
-                Sale.find({ sellerId: req.user._id, }).then(resultSale => {
+                Sale.find({ sellerId: req.user._id, }).populate('buyerId').then(resultSale => {
                     return res.status(200).json({ status: 200, message: "Sales Found successfully", data: resultSale });                        
                 });
             } else if(type === 'invoice') {
@@ -104,6 +105,18 @@ class SalesController {
                 return res.json({ status: 400, message: "Unknown type", data: {} });
             }
         } catch(error) {    
+            console.log(error);
+            return next(error);
+        }
+    }
+
+
+    async getSaleDetail(req, res, next) {
+        try {
+            Sale.findById(req.params.id).populate('buyerId').populate('animals.animalId').then(resultSale => {
+                return res.status(200).json({ status: 200, message: "Sales Found successfully", data: resultSale });                        
+            });
+        } catch(error) {
             console.log(error);
             return next(error);
         }

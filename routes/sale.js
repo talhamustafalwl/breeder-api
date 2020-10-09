@@ -6,5 +6,6 @@ const { auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole } = requ
 
 router.post('/saleAnimal', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SaleControoler.saleAnimal);
 router.get('/', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SaleControoler.getSales);
+router.get('/:id', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SaleControoler.getSaleDetail);
 
 module.exports = router;
