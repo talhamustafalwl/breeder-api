@@ -26,9 +26,9 @@ class ProductController {
     req.body.breederId =
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     req.body.addedBy = req.user._id;
-    req.body.image = req.file.filename ? req.file.filename : null;
+    req.body.image = req.file ? req.file.filename : null;
     req.body.data = JSON.parse(req.body.data);
-    req.body.status = "active";
+    req.body.status = "InStock";
     console.log(req.body);
     try {
       const products = await new Product(req.body);
@@ -63,7 +63,7 @@ class ProductController {
             message: "All Products",
             data: result.map((e) => ({
               ...e.toObject(),
-              ...{image:  `${configKey.baseImageURL}${e.toObject().image}`},
+              ...{image: e.toObject().image ? `${configKey.baseImageURL}${e.toObject().image}` : null},
               ...{
                 gallery: e
                   .toObject()
@@ -144,7 +144,7 @@ class ProductController {
         .status(200)
         .json({ status: 200, message: "Product", data: {
           ...products.toObject(),
-          image:  `${configKey.baseImageURL}${products.toObject().image}`,
+          image:  products.toObject().image ? `${configKey.baseImageURL}${products.toObject().image}` : null,
           
           gallery: products.toObject().gallery ? products.toObject()
             .gallery.map((eimg) => ({...eimg, filename: `${configKey.baseImageURL}${eimg.filename}`})) : [],
@@ -210,7 +210,7 @@ class ProductController {
 
   async updatebyId(req, res) {
     //const {name,active}=req.body
-
+console.log("--->>",req.body)
     try {
       const products = await Product.updateOne(
         { _id: req.params.id },

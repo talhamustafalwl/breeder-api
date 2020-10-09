@@ -6,7 +6,7 @@ module.exports = {
     Server: 'https://breeder-api.herokuapp.com',
     webServer: 'https://breeder-dev.herokuapp.com',
     baseAPIUrl: 'https://breeder-api.herokuapp.com/',
-    baseImageURL: 'http://breeder-api.herokuapp.com/uploads/images/',
+    baseImageURL: 'http://192.168.88.129:5000/uploads/images/',
 
 
     // Server: 'http://localhost:5000',
@@ -16,9 +16,9 @@ module.exports = {
 
 
     serverURL: 'https://breeder-api.herokuapp.com',
-    imageURL: 'http://breeder-api.herokuapp.com/uploads/images/form/',
+    imageURL: 'http://192.168.88.129:5000/uploads/images/form/',
     mailthrough: 'admin@breeder.com',
-    baseDocumentURL: 'http://breeder-api.herokuapp.com/uploads/documents/',
+    baseDocumentURL: 'http://192.168.88.129:5000/uploads/documents/',
     sendgridAPIKey: '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',
     
     // sendgridAPIKey: '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',
