@@ -96,9 +96,11 @@ async getallbreeder(req, res) {
 
 
     async addInvoice(type, saleId, invoiceNumber) {
+      console.log(' in add invoice');
       return new Promise(async (resolve, reject) => {
         const invoice = await new Invoice({type, saleId, invoiceNumber});
-        invoice.save().then(resolve);
+        console.log('in add in voice resolve');
+        invoice.save().then(resolve).catch(reject);
       });
     }
     

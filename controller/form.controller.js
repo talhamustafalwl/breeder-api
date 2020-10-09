@@ -15,13 +15,27 @@ class FormController {
 
 
     addBreederInForm(breederId, categoryId, sellerId) {
+        console.log('in add breeer in form');
         return new Promise((resolve, reject) => {
             Form.findOne({categoryId}).then(resultForm  => {
+                console.log ('Breeder id included or not  ? ', resultForm.breedersId.includes(breederId));
                 if(resultForm.breedersId.includes(breederId)) resolve();
-                resultForm.formStructure  = resultForm.formStructure.map(e => ({...e, breedersId: e.breedersId.map(eb => eb._id).includes(sellerId) ? [...e.breedersId, ...[{_id: breederId}]] : e.breedersId}));
-                resultForm.breedersId = [...resultForm.breedersId, ...[breederId]];
-                resultForm.save(resolve).catch(reject);
+                console.log('adding breeder Id');
+                // resultForm = resultForm.toObject();
+                // console.log(sellerId);
+                // console.log(resultForm.toObject().formStructure.map(e => ({...e, breedersId: e.breedersId.map(eb => eb._id).includes(sellerId) ? [...e.breedersId, ...[{_id: breederId}]] : e.breedersId})));
+                resultForm.formStructure  = resultForm.toObject().formStructure.map(e => ({...e, breedersId: [...e.breedersId, ...[{_id: breederId}]]}));
+                resultForm.breedersId = [...resultForm.toObject().breedersId, ...[breederId]];
+                console.log('resolve');
+                resultForm.save().then(success  => {
+                    console.log(success);
+                    resolve();
+                }).catch(error => {
+                    console.log(error);
+                    reject()
+                });
             }).catch(error => {
+                console.log(error)
                 reject();
             });
         });

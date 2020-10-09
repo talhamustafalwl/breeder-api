@@ -38,10 +38,12 @@ class SalesController {
                 console.log(result);
                 Promise.all([new Promise((resolve, reject) => {
                     // create invoice 
+                    console.log('calling Add invoice');
                     InvoiceController.addInvoice('sale', result._id, '0000').then(resolve);
                 }),
                 new Promise((resolve, reject) => {
                     // updatemany animals
+                    console.log('calling update animal after sales')
                     AnimalController.updateAnimalAfterSale(animals, buyerId, req.user._id ).then(resolve);
                     
                 })
@@ -79,6 +81,16 @@ class SalesController {
                 reject(error);
             });
         });
+    }
+
+
+    async getSales(req, res, next) {
+        try {
+            
+        } catch(error) {    
+            console.log(error);
+            return next(error);
+        }
     }
 }
 
