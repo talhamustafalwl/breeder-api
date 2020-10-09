@@ -6,6 +6,8 @@ const config = require("../config/key");
 const { baseDocumentURL } = require("../config/dev");
 const { baseImageURL, baseAPIUrl } = require("../config/key");
 const animal = require("../validation/animal");
+var async = require('async');
+const formController = require("./form.controller");
 
 class AnimalController {
   constructor() {}
@@ -639,17 +641,84 @@ class AnimalController {
   }
 
   async updateAnimalAfterSale(animalArr, buyer, seller) {
+    // animalId, price, quantity
     return new Promise((resolve, reject) => {
       console.log(
         "Updating animal ",
         animalArr.map((e) => e.animalId)
       );
-      Animal.updateMany(
-        { _id: { $in: animalArr.map((e) => e.animalId) } },
-        { $set: { status: "sold", buyer, seller } }
-      ).then((result) => {
-        resolve(result);
-      });
+
+      async.eachSeries(animalArr, function updateObj(obj, done) {
+        Animal.findById(obj.animalId).then(animalResult => {
+          const isBuyerAvailable = animalResult.buyer.map(e=> e.id).includes(buyer);
+          animalResult.aliveQuantity = parseInt(animalResult.aliveQuantity) - parseInt(obj.quantity);
+          animalResult.healthyQuantity = parseInt(animalResult.healthyQuantity) - parseInt(obj.quantity);
+          animalResult.soldQuantity = parseInt(animalResult.soldQuantity) + parseInt(obj.quantity);
+          animalResult.buyer = [...animalResult.buyer, ...[{id: buyer, quantity: obj.quantity, date: new Date()}]];
+          animalResult.save( _ => {
+            animalResult = animalResult.toObject();
+            const currentSellerAnimalId = animalResult._id;
+            delete animalResult._id;
+            if(isBuyerAvailable) {
+              Animal.findOne({sellerAnimalId: obj.animalId}).then(partnerAnimal => {
+                partnerAnimal.aliveQuantity = parseInt(partnerAnimal.aliveQuantity) + parseInt(obj.quantity);
+                partnerAnimal.healthyQuantity = parseInt(partnerAnimal.healthyQuantity) + parseInt(obj.quantity);
+                partnerAnimal.seller = [...partnerAnimal.seller, ...[{id: seller, quantity: obj.quantity, date: new Date()}]]
+                partnerAnimal.save().then(_ => {
+                  formController.addBreederInForm(buyer, animalResult.categoryId, seller).then(done);
+                });
+              });
+            } else {
+              console.log(animalResult);
+              const newAnimal = new Animal({
+                ...animalResult, 
+                breederId: buyer,
+                aliveQuantity: parseInt(obj.quantity),
+                soldQuantity: 0,
+                deadQuantity: 0,
+                healthyQuantity: parseInt(obj.quantity),
+                sickQuantity: 0,
+                pregnantQuantity: 0,
+                sellerAnimalId: currentSellerAnimalId,
+                seller: [{id: seller, quantity: obj.quantity, date: new Date()}]
+              });
+              newAnimal.save().then(_ => {
+                formController.addBreederInForm(buyer, animalResult.categoryId, seller).then(done);
+              });
+            }
+          })
+        });
+       
+        // Animal.update({_id: obj.animalId}, {$inc: {aliveQuantity: parseInt(obj.quantity)*-1, soldQuantity: parseInt(obj.quantity)}}).then(_ => {
+         
+        // })
+      }).then((alldone) => {
+        console.log('all done');
+        resolve(true);
+      }).catch(error => {
+        console.log('Error ');
+        console.log(error);
+        reject();
+      })
+      // Animal.updateMany(
+      //   { _id: { $in: animalArr.map((e) => e.animalId) } },
+      //   { 
+      //     $set: { 
+      //       status: "sold", 
+      //       buyer, 
+      //       seller, 
+      //       // Shift animal to new breeder..
+      //       breederId: buyer 
+      //     } ,
+      //     $inc: {
+      //       aliveQuantity: 
+      //       soldQuantity
+      //     },
+          
+      //   }
+      // ).then((result) => {
+      //   resolve(result);
+      // });
     });
   }
 

@@ -7,12 +7,18 @@ const InstallmentSchema = mongoose.Schema({
     installmentNo: {
         type: Number
     },
+    salesNumber:  {
+        type: Schema.Types.ObjectId,
+        ref: 'Sale',
+        required: true
+    },
     amount: {
         type: Number
     },
-    reminder: {
-        type: Date
+    date: {
+        type: Date,
     },
+    isPaid: {type: Boolean, required: true, default: false},
     breederId: {
         type: Schema.Types.ObjectId,
         ref: 'User'

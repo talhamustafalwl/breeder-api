@@ -39,6 +39,8 @@ router.patch("/isblocked/:id", adminauth, UserController.isblocked);
 
 // Employees ---------------------------------------------------------------------------
 router.get('/employees/all', auth, allowAdmin, allowBreeder, authenticateRole, UserController.getAllEmployees);
+router.get('/breeders/all', auth, allowAdmin, allowBreeder, authenticateRole, UserController.getBreederForSales);
+
 router.get('/employee/:id', auth, allowAdmin, allowBreeder, authenticateRole, UserController.getEmployeeById);
 router.get('/breeder/employees', auth, allowBreeder, authenticateRole, UserController.getEmployeeByBreeder);
 router.post('/employee/changePassword', auth , UserController.changePasswordEmp);
