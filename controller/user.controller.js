@@ -348,7 +348,7 @@ class UserController {
 
     async getTaxofBreeder(req, res, next) {
         try {
-            User.findById(req.user._id).then(userResult => {
+            User.findById(req.user.role[0] === 'employee'  ? req.user.breederId :  req.user._id).then(userResult => {
                 return res.status(200).json({ status: 200, message: "Tax found successfully", data: {tax: userResult.businessInfoSettings.tax} });
             }).catch((error) => {
                 return res.json({ status: 400, message: "Error getting tax", errors: error, data: {} });

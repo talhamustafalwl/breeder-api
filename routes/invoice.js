@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { adminauth } = require("../middleware/adminauth");
-const { auth } = require("../middleware/auth");
+const { auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole } = require("../middleware/auth");
 const InvoiceController = require('../controller/invoice.controller');
 
 
@@ -18,5 +18,10 @@ router.route('/all').delete(adminauth,InvoiceController.deleteall)
 router.route('/:id').get(auth,InvoiceController.getbyId)
     .delete(auth,InvoiceController.deletebyId)
     .patch(auth,InvoiceController.updatebyId)
+
+
+
+router.get('/seller/:sellerId', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, InvoiceController.getInvoiceBySellerId);
+router.delete('/softremove/:id', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, InvoiceController.softRemoveInvoice);
 
 module.exports=router

@@ -99,7 +99,9 @@ class SalesController {
                 });
             } else if(type === 'invoice') {
                 InvoiceController.getAllInvoiceByBreeder(req.user._id).then(resultInvoice => {
-                    return res.status(200).json({ status: 200, message: "Sales Invoice Found successfully", data: resultInvoice });                        
+                    // Sale.populate(resultInvoice, {path: 'saleId.animals.animalId'}).then(finalRes => {
+                        return res.status(200).json({ status: 200, message: "Sales Invoice Found successfully", data: resultInvoice });                        
+                    // })
                 })
             } else {
                 return res.json({ status: 400, message: "Unknown type", data: {} });
@@ -113,8 +115,27 @@ class SalesController {
 
     async getSaleDetail(req, res, next) {
         try {
-            Sale.findById(req.params.id).populate('buyerId').populate('animals.animalId').then(resultSale => {
+            Sale.findById(req.params.id).populate('buyerId').populate('animals.animalId').exec().then(resultSale => resultSale.toObject()).then(resultSale => {
+                if(!resultSale.isInstallment)  
                 return res.status(200).json({ status: 200, message: "Sales Found successfully", data: resultSale });                        
+                
+                InstallmentController.getSaleIntallment(req.params.id).then(resultInstallment => {
+                    return res.status(200).json({ status: 200, message: "Sales Found successfully", data: {...resultSale, installmentData: resultInstallment} });                        
+                });
+           
+            });
+        } catch(error) {
+            console.log(error);
+            return next(error);
+        }
+    }
+
+
+    async changePaidStatus(req, res, next) {
+        try {
+            Sale.findByIdAndUpdate(req.params.id, {isPaid: req.body.isPaid ? true: false}).then(resultSale => {
+                console.log(resultSale);
+                return res.status(200).json({ status: 200, message: "Sales status updated successfully" });        
             });
         } catch(error) {
             console.log(error);

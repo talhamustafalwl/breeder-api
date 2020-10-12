@@ -21,6 +21,18 @@ class InvoiceController {
         }
     }
 
+    async getInvoiceBySellerId(req, res, next) {
+      try {
+        const {saleId} = req.params;
+        if(!req.params.saleId) return res.json({ status: 400, message: "SaleId is required" });
+        Invoice.find({saleId, type: 'sale'}).then(resultInvoice => {
+          return res.status(200).json({ status: 200, message: "Invoice of animal by sale found successfully", data: resultInvoice });
+        });
+      } catch(error) {
+        return next(error);
+      }
+    }
+
 //////////admin
     async getall(req, res) {
         try {
@@ -106,12 +118,24 @@ async getallbreeder(req, res) {
 
     async getAllInvoiceByBreeder(breederId) {
       return new Promise((resolve, reject) => {
-        Invoice.find({sellerId: breederId}).then(resultInvoice => {
+        Invoice.find({sellerId: breederId}).populate('buyerId').populate({path: 'saleId', populate: {path: 'animals.animalId'}} ).exec().then(resultInvoice => {
           resolve(resultInvoice);
         }).catch(error => {
           reject(error);
         })
       })
+    }
+
+
+    async softRemoveInvoice(req, res, next ) {
+      try {
+        const {id} = req.params;
+        Invoice.update({_id: id}, {isRemoved: true}).then(resultRemove => {
+          return res.status(200).json({ status: 200, message: "Invoice removed successfully" });
+        })
+      } catch(error) {
+        return next(error);
+      }
     }
     
 };

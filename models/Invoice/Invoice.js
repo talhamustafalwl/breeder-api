@@ -19,6 +19,10 @@ const InvoiceSchema = mongoose.Schema({
         ref: 'User',
         required: true
     }, //belongs to which user
+    isRemoved: {
+        type: Boolean,
+        default: false,
+    }
 }, { timestamps: true })
 
 InvoiceSchema.plugin(idvalidator);

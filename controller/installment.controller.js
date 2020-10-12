@@ -107,6 +107,12 @@ class InstallmentController {
     });
   }
 
+  async getSaleIntallment(salesId) {
+    return new Promise((resolve, reject) => {
+      Installment.find({salesId}).exec().then(resolve).catch(reject);
+    });  
+  }
+
 };
 
 module.exports = new InstallmentController();
