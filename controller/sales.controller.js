@@ -103,6 +103,12 @@ class SalesController {
                         return res.status(200).json({ status: 200, message: "Sales Invoice Found successfully", data: resultInvoice });                        
                     // })
                 })
+            } else if(type === 'recentlySold') {
+                let date = new Date();
+                date.setDate(date.getDate()-7);
+                Sale.find({ sellerId: req.user._id, createdAt: {$gt: date} }).populate('buyerId').populate('animals.animalId').then(resultSale => {
+                    return res.status(200).json({ status: 200, message: "Sales Found successfully", data: resultSale });                        
+                });
             } else {
                 return res.json({ status: 400, message: "Unknown type", data: {} });
             }

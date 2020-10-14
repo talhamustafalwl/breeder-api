@@ -3,7 +3,11 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const jwt = require('jsonwebtoken');
 const Schema = mongoose.Schema;
-
+const gallerySchema = mongoose.Schema({
+    filename: String,
+    size: String,
+    title: String,
+},  {timestamps: true})
 const userSchema = mongoose.Schema({
     name: {
         type: String, minglength: 5, maxlength: 50
@@ -17,6 +21,7 @@ const userSchema = mongoose.Schema({
     website: {
         type: String
     },
+
     password: {
         type: String, minglength: 6
     },
@@ -25,6 +30,7 @@ const userSchema = mongoose.Schema({
     },
     isAdmin: { type: Boolean, default: false },
     image: String,
+    coverImage: String,
     token: {
         type: String,
     },
@@ -54,7 +60,11 @@ const userSchema = mongoose.Schema({
     },
     city: String, state: String, zipcode: Number,
     address: String,
-    
+    gallery: [gallerySchema],
+    dealCategories: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category'
+    }],
 
 
     // For employees need to give access rights.. 

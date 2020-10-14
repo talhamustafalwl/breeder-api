@@ -105,7 +105,10 @@ const AnimalSchema = mongoose.Schema({
         type: Number,
         default: 0,
     },
-
+    featured: {
+        type: Boolean,
+        default: false,
+    },
     // color: {
     //     type: String, minglength: 3,
     //     maxlength: 20, required: true

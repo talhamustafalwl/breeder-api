@@ -358,6 +358,117 @@ class UserController {
         }
     }
 
+
+
+    async uploadGalleryImage(req, res, next) {
+        try {
+          console.log("uploadGalleryImage",req.files);
+    
+          User.updateOne({_id: req.user._id}, {$push: {gallery: {$each: req.files.map(file => ({filename: file.filename, size: file.size}))} }}).then(userResult => {
+            return res.status(200).json({
+              status: 200,
+              message: "User gallery uploaded successfully",
+            });
+          }).catch(error => {
+            return res.json({
+              status: 400,
+              message: "Error in upload gallary image record",
+              errors: err,
+              data: {},
+            });
+          });
+        } catch (error) {
+          console.log(error);
+          return res.json({
+            status: 400,
+            message: "Error in upload gallary image record",
+            errors: err,
+            data: {},
+          });
+        }
+      }
+    
+      async deleteGallaryImage(req, res,next) {
+        try {
+          // galleryImages, 
+          console.log('delete gallery image');
+          User.findById(req.user._id).then(userData => {
+            userData.gallery = userData.gallery.filter(e => !req.body.galleryImages.includes(e._id.toString()));
+            console.log(userData);
+            userData.save().then(_ => {
+              return res.status(200).json({
+                status: 200,
+                message: "User gallery images deleted successfully",
+              });
+            });
+          })
+        } catch(error) {
+          console.log(error);
+          return res.json({
+            status: 400,
+            message: "Error in deleting gallary image record",
+            data: {},
+          });
+        }
+      }
+
+
+
+      async addDealCategories(req, res, next) {
+        try {
+        //   console.log("uploadGalleryImage",req.files);
+          User.updateOne({_id: req.user._id}, {$push: {dealCategories: {$each: req.body.dealCategories} }}).then(userResult => {
+            return res.status(200).json({
+              status: 200,
+              message: "Categories added successfully",
+            });
+          }).catch(error => {
+              console.log(error);
+            return res.json({
+              status: 400,
+              message: "Error in adding category",
+              data: {},
+            });
+          });
+        } catch (error) {
+          console.log(error);
+          return res.json({
+            status: 400,
+            message: "Error in adding category",
+            data: {},
+          });
+        }
+      }
+
+
+      async deleteDealCategories(req, res,next) {
+        try {
+          // galleryImages, 
+          console.log(req.params.id);
+          User.findById(req.user._id).then(userData => {
+            userData.dealCategories = userData.dealCategories.filter(e => !(req.params.id==e));
+            console.log(userData);
+            userData.save().then(_ => {
+              return res.status(200).json({
+                status: 200,
+                message: "User deal category deleted successfully",
+              });
+            });
+          })
+        } catch(error) {
+          console.log(error);
+          return res.json({
+            status: 400,
+            message: "Error in deleting",
+            errors: err,
+            data: {},
+          });
+        }
+      }
+
+
+
+
     async deleteEmployee(req, res, next) {
         try {
             // console.log(req.params);
@@ -599,8 +710,8 @@ class UserController {
     async getUserDetail(req, res, next) {
         try  {
             console.log('user detail called');
-            User.findById(req.user._id).then(resultUser => {
-                return res.status(200).send({status: 200, data: resultUser});
+            User.findById(req.user._id).populate('dealCategories').then(resultUser => {
+                return res.status(200).send({status: 200, data: {...resultUser.toObject(), coverImage: resultUser.toObject().coverImage ? `${config.baseImageURL}${resultUser.toObject().coverImage}` : null ,  image: resultUser.toObject().image ? `${config.baseImageURL}${resultUser.toObject().image}` : null , gallery: (resultUser.gallery && resultUser.gallery[0]) ? resultUser.toObject().gallery.map(e => ({...e, filename: `${config.baseImageURL}${e.filename}`})) : [] }});
             }).catch(error => {
                 return res.status(400).json({ status: 400, message: "Internal Server Error", data: {} });
             });
@@ -613,6 +724,18 @@ class UserController {
         try {
             User.updateOne({_id: req.user._id}, {$set: req.body}).then(resultUser => {
                 return res.send({status: 200, message: 'User updated successfully'});
+            }).catch(error => {
+                return res.json({ status: 400, message: error.message ? error.message : 'Internal Server Error', data: {}, error });
+            });
+        } catch(error) {
+            return next(error);
+        }
+    }
+
+    async updateImage(req, res, next) {
+        try {
+            User.updateOne({_id: req.user._id}, {$set: {[req.body.name]: req.file.filename}}).then(resultUser => {
+                return res.send({status: 200, message: 'Image updated successfully'});
             }).catch(error => {
                 return res.json({ status: 400, message: error.message ? error.message : 'Internal Server Error', data: {}, error });
             });

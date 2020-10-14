@@ -45,6 +45,10 @@ router.get('/employee/:id', auth, allowAdmin, allowBreeder, authenticateRole, Us
 router.get('/breeder/employees', auth, allowBreeder, authenticateRole, UserController.getEmployeeByBreeder);
 router.post('/employee/changePassword', auth , UserController.changePasswordEmp);
 
+
+router.post("/image/upload", auth, allowAdmin, allowBreeder, authenticateRole, upload.single('file'), UserController.updateImage);
+
+
 // Register Employee only .. By Breeder..
 // employeesubscriber //// Will manage subscribe later.. 
 router.post("/employee/register", auth, allowAdmin, allowBreeder, authenticateRole, upload.single('file'), UserController.registerEmployees);
@@ -58,6 +62,14 @@ router.put("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, up
 // Register Breeder only .. Using portal
 router.post("/breeder/register", UserController.registerBreeder);
 router.get("/breeder/getTax", auth, allowBreeder, allowAdmin, authenticateRole, UserController.getTaxofBreeder)
+
+
+router.post('/gallery/upload', auth, allowBreeder, allowEmployee, authenticateRole, upload.array('file', 10),  UserController.uploadGalleryImage )
+router.put('/gallery/delete', auth, allowBreeder, allowEmployee, authenticateRole, UserController.deleteGallaryImage)
+
+
+router.post('/dealcategories', auth, allowAdmin, allowBreeder, authenticateRole, UserController.addDealCategories)
+router.delete('/dealcategories/:id', auth, allowAdmin, allowBreeder, authenticateRole, UserController.deleteDealCategories)
 
 
 router.post("/emailCheck", (req, res) => {
