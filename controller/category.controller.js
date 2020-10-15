@@ -1,10 +1,14 @@
 const { Category } = require("../models/Animal/Category");
+const { Animal } = require("../models/Animal/Animal");
+const { Product } = require("../models/Product");
+
 const { restart } = require("nodemon");
 const { imageURL, baseImageURL } = require("../config/dev");
-const animalController = require("./animal.controller");
 const productController = require("./product.controller");
 class CategoryController {
-  constructor() {}
+  constructor() {
+    this.getInventoryByBreeder = this.getInventoryByBreeder.bind(this);
+  }
 
   //only admin
   async create(req, res) {
@@ -183,137 +187,315 @@ class CategoryController {
       });
   }
 
+
+  async getAnimalForInventory(breederId) {
+    return new Promise(async (resolve, reject) => {
+      await Animal.find({ breederId }).then(resolve).catch(reject);
+    });
+  }
+  async getProductForInventory(breederId) {
+    return new Promise(async (resolve, reject) => {
+      await Product.find({breederId}).then(resolve).catch(reject);
+    });
+  }
   // Inventory Section.....
   // ##########################################################################
 
-  async getInventoryByBreeder(req, res, next) {
-    try {
-      console.log ('inventory breeder');
-      const { breederId } = req.params;
-      const {type} = req.query;
-      let match;
+//   async getInventoryByBreeder(req, res, next) {
+//     try {
+//       console.log ('inventory breeder');
+//       const { breederId } = req.params;
+//       const {type} = req.query;
+//       let match;
      
-      if(type === 'animal') {
-        match = await animalController.getAnimalForInventory(breederId);
-        // console.log(animalResult.map(e => e.categoryId));
-      } else {
-        match = await productController.getProductForInventory(breederId);
-      }
+//       if(type === 'animal') {
+//         console.log('animal inventory finding');
+//         match = await this.getAnimalForInventory(breederId);
+//         // console.log(animalResult.map(e => e.categoryId));
+//       } else {
+//         match = await this.getProductForInventory(breederId);
+//       }
 
-      // const categoryReducer  = (acc, currValue) => {
-      //   currValue.items = currValue.items.map(e => {
-      //     const status = {
-      //       alive: match.reduce((a, cv)=> (cv.status==='Alive') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
-      //       sold: match.reduce((a, cv)=> (cv.status==='Sold') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
-      //       died: match.reduce((a, cv)=> (cv.healthStatus==='Died') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
-      //       pregnant: match.reduce((a, cv)=> (cv.healthStatus==='Pregnant') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
-      //     }
-      //     return {
-      //     ...e,
-      //     ...status,
-      //     total: status.alive + status.sold
-      //   }
-      //   })
+//       // const categoryReducer  = (acc, currValue) => {
+//       //   currValue.items = currValue.items.map(e => {
+//       //     const status = {
+//       //       alive: match.reduce((a, cv)=> (cv.status==='Alive') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+//       //       sold: match.reduce((a, cv)=> (cv.status==='Sold') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+//       //       died: match.reduce((a, cv)=> (cv.healthStatus==='Died') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+//       //       pregnant: match.reduce((a, cv)=> (cv.healthStatus==='Pregnant') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+//       //     }
+//       //     return {
+//       //     ...e,
+//       //     ...status,
+//       //     total: status.alive + status.sold
+//       //   }
+//       //   })
 
-      //   return [...acc, 
-      //     {
-      //       ...currValue, 
-      //       total: currValue.items.reduce((a, cv) => a+cv.total,0),
-      //       alive: currValue.items.reduce((a, cv) => a+cv.alive, 0),
-      //       sold: currValue.items.reduce((a, cv) => a+cv.sold, 0),
-      //       died: currValue.items.reduce((a, cv) => a+cv.died, 0),
-      //       pregnant: currValue.items.reduce((a, cv) => a+cv.pregnant, 0),
+//       //   return [...acc, 
+//       //     {
+//       //       ...currValue, 
+//       //       total: currValue.items.reduce((a, cv) => a+cv.total,0),
+//       //       alive: currValue.items.reduce((a, cv) => a+cv.alive, 0),
+//       //       sold: currValue.items.reduce((a, cv) => a+cv.sold, 0),
+//       //       died: currValue.items.reduce((a, cv) => a+cv.died, 0),
+//       //       pregnant: currValue.items.reduce((a, cv) => a+cv.pregnant, 0),
             
-      //     }];
-      // } 
+//       //     }];
+//       // } 
 
 
-      const categoryReducer  = (acc, currValue) => {
-        currValue.items = currValue.items.map(e => {
-          const status = {
-            alive: match.reduce((a, cv)=> (cv.categoryId.toString()===e._id.toString()) ? a+cv.aliveQuantity : a ,0),
-            sold: match.reduce((a, cv)=> (cv.categoryId.toString()===e._id.toString()) ? a+cv.soldQuantity : a ,0),
-            died: match.reduce((a, cv)=> (cv.categoryId.toString()===e._id.toString()) ? a+cv.deadQuantity : a ,0),
-            pregnant: match.reduce((a, cv)=> (cv.categoryId.toString()===e._id.toString()) ? a+cv.pregnantQuantity : a ,0),
-          }
-          return {
-          ...e,
-          ...status,
-          total: status.alive + status.sold
+//       const categoryReducer  = (acc, currValue) => {
+//         currValue.items = currValue.items.map(e => {
+//           const status = {
+//             alive: match.reduce((a, cv)=> (cv.categoryId.toString()===e._id.toString()) ? a+cv.aliveQuantity : a ,0),
+//             sold: match.reduce((a, cv)=> (cv.categoryId.toString()===e._id.toString()) ? a+cv.soldQuantity : a ,0),
+//             died: match.reduce((a, cv)=> (cv.categoryId.toString()===e._id.toString()) ? a+cv.deadQuantity : a ,0),
+//             pregnant: match.reduce((a, cv)=> (cv.categoryId.toString()===e._id.toString()) ? a+cv.pregnantQuantity : a ,0),
+//           }
+//           return {
+//           ...e,
+//           ...status,
+//           total: status.alive + status.sold
+//         }
+//         })
+
+//         return [...acc, 
+//           {
+//             ...currValue, 
+//             total: currValue.items.reduce((a, cv) => a+cv.total,0),
+//             alive: currValue.items.reduce((a, cv) => a+cv.alive, 0),
+//             sold: currValue.items.reduce((a, cv) => a+cv.sold, 0),
+//             died: currValue.items.reduce((a, cv) => a+cv.died, 0),
+//             pregnant: currValue.items.reduce((a, cv) => a+cv.pregnant, 0),
+            
+//           }];
+//       } 
+
+
+//       const productReducer = (acc, currValue) => {
+//         currValue.items = currValue.items.map(e => {
+//           const status = {
+//             alive: match.reduce((a, cv)=> (cv.status==='Alive') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+//             sold: match.reduce((a, cv)=> (cv.status==='Sold') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+//             died: match.reduce((a, cv)=> (cv.healthStatus==='Died') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+//             pregnant: match.reduce((a, cv)=> (cv.healthStatus==='Pregnant') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+//           }
+//           return {
+//           ...e,
+//           ...status,
+//           total: status.alive + status.sold
+//         }
+//         })
+
+//         return [...acc, 
+//           {
+//             ...currValue, 
+//             total: currValue.items.reduce((a, cv) => a+cv.total,0),
+//             alive: currValue.items.reduce((a, cv) => a+cv.alive, 0),
+//             sold: currValue.items.reduce((a, cv) => a+cv.sold, 0),
+//             died: currValue.items.reduce((a, cv) => a+cv.died, 0),
+//             pregnant: currValue.items.reduce((a, cv) => a+cv.pregnant, 0),
+            
+//           }];
+//       }
+// // subCategories: {$addToSet: { id: '$_id', name: '$name', type: '$type', icon: '$icon' }}
+// console.log(match.map(e => e.categoryId));
+//       Category.aggregate(
+//         [
+//           {$match: {
+//             _id: {$in: match.map(e => e.categoryId) } 
+//           }},
+//           { $group: { _id: "$_id", category: {$first: '$_id'}, items: {$push : '$$ROOT'} } },
+//         ])
+//         .exec()
+//         .then((result) => {
+//           console.log(result);
+//           Category.populate(result, {path: "category"}, (err, categoryDoc) => {
+//             const finalRes = categoryDoc.reduce((type==='animal') ? categoryReducer : productReducer, [])
+//             console.log(finalRes);
+//             return res
+//               .status(200)
+//               .json({
+//                 status: 200,
+//                 message: "Result found successfully",
+//                 data: finalRes,
+//               });
+//           })
+//         })
+//         .catch((error) => {
+//           console.log(error);
+//           return res.json({ status: 400, message: "Error in finding result" });
+//         });
+//     } catch (error) {
+//       return next(error);
+//     }
+//   }
+
+
+
+
+
+
+async getInventoryByBreeder(req, res, next) {
+  try {
+    console.log ('inventory breeder');
+    const { breederId } = req.params;
+    const {type} = req.query;
+    let match;
+   
+    if(type === 'animal') {
+      console.log('animal inventory finding');
+      match = await this.getAnimalForInventory(breederId);
+      // console.log(animalResult.map(e => e.categoryId));
+    } else {
+      match = await this.getProductForInventory(breederId);
+    }
+
+    // const categoryReducer  = (acc, currValue) => {
+    //   currValue.items = currValue.items.map(e => {
+    //     const status = {
+    //       alive: match.reduce((a, cv)=> (cv.status==='Alive') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+    //       sold: match.reduce((a, cv)=> (cv.status==='Sold') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+    //       died: match.reduce((a, cv)=> (cv.healthStatus==='Died') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+    //       pregnant: match.reduce((a, cv)=> (cv.healthStatus==='Pregnant') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+    //     }
+    //     return {
+    //     ...e,
+    //     ...status,
+    //     total: status.alive + status.sold
+    //   }
+    //   })
+
+    //   return [...acc, 
+    //     {
+    //       ...currValue, 
+    //       total: currValue.items.reduce((a, cv) => a+cv.total,0),
+    //       alive: currValue.items.reduce((a, cv) => a+cv.alive, 0),
+    //       sold: currValue.items.reduce((a, cv) => a+cv.sold, 0),
+    //       died: currValue.items.reduce((a, cv) => a+cv.died, 0),
+    //       pregnant: currValue.items.reduce((a, cv) => a+cv.pregnant, 0),
+          
+    //     }];
+    // } 
+
+
+    const categoryReducer  = (acc, currValue) => {
+      currValue.items = currValue.items.map(e => {
+        const status = {
+          alive: match.reduce((a, cv)=> (cv.categoryId.toString()===e._id.toString()) ? a+cv.aliveQuantity : a ,0),
+          sold: match.reduce((a, cv)=> (cv.categoryId.toString()===e._id.toString()) ? a+cv.soldQuantity : a ,0),
+          died: match.reduce((a, cv)=> (cv.categoryId.toString()===e._id.toString()) ? a+cv.deadQuantity : a ,0),
+          pregnant: match.reduce((a, cv)=> (cv.categoryId.toString()===e._id.toString()) ? a+cv.pregnantQuantity : a ,0),
         }
-        })
-
-        return [...acc, 
-          {
-            ...currValue, 
-            total: currValue.items.reduce((a, cv) => a+cv.total,0),
-            alive: currValue.items.reduce((a, cv) => a+cv.alive, 0),
-            sold: currValue.items.reduce((a, cv) => a+cv.sold, 0),
-            died: currValue.items.reduce((a, cv) => a+cv.died, 0),
-            pregnant: currValue.items.reduce((a, cv) => a+cv.pregnant, 0),
-            
-          }];
-      } 
-
-
-      const productReducer = (acc, currValue) => {
-        currValue.items = currValue.items.map(e => {
-          const status = {
-            alive: match.reduce((a, cv)=> (cv.status==='Alive') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
-            sold: match.reduce((a, cv)=> (cv.status==='Sold') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
-            died: match.reduce((a, cv)=> (cv.healthStatus==='Died') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
-            pregnant: match.reduce((a, cv)=> (cv.healthStatus==='Pregnant') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
-          }
-          return {
-          ...e,
-          ...status,
-          total: status.alive + status.sold
-        }
-        })
-
-        return [...acc, 
-          {
-            ...currValue, 
-            total: currValue.items.reduce((a, cv) => a+cv.total,0),
-            alive: currValue.items.reduce((a, cv) => a+cv.alive, 0),
-            sold: currValue.items.reduce((a, cv) => a+cv.sold, 0),
-            died: currValue.items.reduce((a, cv) => a+cv.died, 0),
-            pregnant: currValue.items.reduce((a, cv) => a+cv.pregnant, 0),
-            
-          }];
+        return {
+        ...e,
+        ...status,
+        total: status.alive + status.sold
       }
+      })
+
+      return [...acc, 
+        {
+          ...currValue, 
+          total: currValue.items.reduce((a, cv) => a+cv.total,0),
+          alive: currValue.items.reduce((a, cv) => a+cv.alive, 0),
+          sold: currValue.items.reduce((a, cv) => a+cv.sold, 0),
+          died: currValue.items.reduce((a, cv) => a+cv.died, 0),
+          pregnant: currValue.items.reduce((a, cv) => a+cv.pregnant, 0),
+          
+        }];
+    } 
+
+
+    const productReducer = (acc, currValue) => {
+      currValue.items = currValue.items.map(e => {
+        const status = {
+          alive: match.reduce((a, cv)=> (cv.status==='Alive') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+          sold: match.reduce((a, cv)=> (cv.status==='Sold') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+          died: match.reduce((a, cv)=> (cv.healthStatus==='Died') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+          pregnant: match.reduce((a, cv)=> (cv.healthStatus==='Pregnant') && (cv.categoryId.toString()===e._id.toString()) ? a+1 : a ,0),
+        }
+        return {
+        ...e,
+        ...status,
+        total: status.alive + status.sold
+      }
+      })
+
+      return [...acc, 
+        {
+          ...currValue, 
+          total: currValue.items.reduce((a, cv) => a+cv.total,0),
+          alive: currValue.items.reduce((a, cv) => a+cv.alive, 0),
+          sold: currValue.items.reduce((a, cv) => a+cv.sold, 0),
+          died: currValue.items.reduce((a, cv) => a+cv.died, 0),
+          pregnant: currValue.items.reduce((a, cv) => a+cv.pregnant, 0),
+          
+        }];
+    }
 // subCategories: {$addToSet: { id: '$_id', name: '$name', type: '$type', icon: '$icon' }}
-      Category.aggregate(
-        [
-          {$match: {
-            _id: {$in: match.map(e => e.categoryId) } 
-          }},
-          { $group: { _id: "$parentId", category: {$first: '$parentId'}, items: {$push : '$$ROOT'} } },
-        ])
-        .exec()
-        .then((result) => {
-          Category.populate(result, {path: "category"}, (err, categoryDoc) => {
-            const finalRes = categoryDoc.reduce((type==='animal') ? categoryReducer : productReducer, [])
-            console.log(finalRes);
-            return res
+console.log(match.map(e => e.data.breed));
+
+
+    // Category.find({"breeds.value" : {$in: match.map(e =>)}})
+
+
+
+    Category.aggregate(
+      [
+        {$match: {
+          _id: {$in: match.map(e => e.categoryId) } 
+        }},
+        { $group: { _id: "$_id", category: {$first: '$_id'}, items: {$push : '$$ROOT'} } },
+      ])
+      .exec()
+      .then((result) => {
+        console.log(result);
+        Category.populate(result, {path: "category"}, (err, categoryDoc) => {
+          const finalRes = categoryDoc.reduce((type==='animal') ? categoryReducer : productReducer, [])
+          console.log(finalRes);
+          return res
+            .status(200)
+            .json({
+              status: 200,
+              message: "Result found successfully",
+              data: finalRes,
+            });
+        })
+      })
+      .catch((error) => {
+        console.log(error);
+        return res.json({ status: 400, message: "Error in finding result" });
+      });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
+
+
+
+  // Activity section...
+  async addType(req, res, next) {
+    try {
+      Category.update({_id: req.params.id}, {$push: {subType: req.body.type}}).then(categoryResult => {
+        return res
               .status(200)
               .json({
                 status: 200,
-                message: "Result found successfully",
-                data: finalRes,
+                message: "Category updated successfully",
+                data: categoryResult,
               });
-          })
-        })
-        .catch((error) => {
-          console.log(error);
-          return res.json({ status: 400, message: "Error in finding result" });
-        });
-    } catch (error) {
+      }).catch((error) => {
+        console.log(error);
+        return res.json({ status: 400, message: "Error in updating result" });
+      });
+    }catch(error) {
+      console.log(error);
       return next(error);
     }
   }
-
-
 
 
 

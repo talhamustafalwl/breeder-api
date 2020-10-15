@@ -1,33 +1,81 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 //for Activity create to hold info
-const ActivitySchema = mongoose.Schema({
-    
-    name:{type:String},
-    categoryName:{type:String},
-    categoryId:{type: mongoose.Schema.Types.ObjectId,ref: 'Category',require: true},
+const ActivitySchema = mongoose.Schema(
+  {
+    name: { type: String },
+    categoryType: { type: String },
+    description: { type: String },
+    assignToType: {
+        type: String,
+        enum: ["Animal", "Group"],
+        default: "Animal",
+    },
+    categoryName: { type: String },
+
+    categoryId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      require: true,
+    },
+
     addedBy: {
-        type: mongoose.Schema.Types.ObjectId,ref: 'User',require: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      require: true,
     },
-    groupId: {
+
+    groupId: [
+      {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Group'
-    },
-    animalId: {
+        ref: "Group",
+      },
+    ],
+    animalId: [
+      {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Animal'
-    },
-    description:{type:String},
+        ref: "Animal",
+      },
+    ],
+    employeeId: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     breederId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        require: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      require: true,
     },
-    date:{type:Date},
+    date: { type: Date },
+    period: {
+      type: String,
+      enum: ["Daily", "Weekly", "Montly", "Yearly", "Group"],
+      default: "Daily",
+    },
+    time: [{
+        type: String,
+    }],
+    days: [{
+        type: String,
+    }],
+    months: [{
+        type: String,
+    }],
+    years: [{
+        type: String,
+    }],
+    timePeriod: {
+        type: String,
+        enum: ["P.M", "A.M"],
+    },
+
     //more...
-}, { timestamps: true })
+  },
+  { timestamps: true }
+);
 
+const Activity = mongoose.model("Activity", ActivitySchema);
 
-const Activity = mongoose.model('Activity', ActivitySchema);
-
-module.exports = { Activity }
+module.exports = { Activity };

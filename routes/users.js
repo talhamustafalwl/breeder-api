@@ -46,6 +46,9 @@ router.get('/breeder/employees', auth, allowBreeder, authenticateRole, UserContr
 router.post('/employee/changePassword', auth , UserController.changePasswordEmp);
 
 
+
+router.post('/setupwizard', auth, allowBreeder, authenticateRole, UserController.setupWizard)
+
 router.post("/image/upload", auth, allowAdmin, allowBreeder, authenticateRole, upload.single('file'), UserController.updateImage);
 
 

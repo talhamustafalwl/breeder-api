@@ -2,6 +2,9 @@ const { User } = require("../models/User");
 const { validateLoginInput, validateRegisterInput, validateRegisterInputEmp, validateRegisterInputBreeder, validateResetPassword } = require("../validation/users");
 const mailer = require('../misc/mailer');
 const randomstring = require('randomstring');
+const { Animal } = require("../models/Animal/Animal");
+const { Form } = require("../models/Form/Form");
+
 
 const config = require("../config/key");
 const registeremail = require('../emails/register');
@@ -13,12 +16,14 @@ const {removeQuote} = require('../middleware/constant');
 const { Types } = require("mongoose");
 const notificationController = require("./notification.controller");
 const salesController = require("./sales.controller");
+const { reject } = require("async");
 
 class UserController {
     constructor() { 
         // this.registerUserWithRole = this.registerUserWithRole.bind(this);
         this.registerBreeder = this.registerBreeder.bind(this);
         this.registerEmployees = this.registerEmployees.bind(this);
+        this.setupWizard = this.setupWizard.bind(this);
     }
 
 
@@ -751,6 +756,46 @@ class UserController {
 
     async getAllBreedersId() {
         return User.find({ role: 'breeder' }).then(breederResult => breederResult.map((value) => value._id));
+    }
+
+    async setupWizard(req, res, next) {
+        try  {
+            const {selectedAnimalForms, selectedProductForm, employeeArray} = req.body;
+            console.log(selectedAnimalForms);
+            Promise.all([
+                new Promise(async (resolve, reject) => {
+                    let resultForm = await Form.find({_id: {$in: [...selectedAnimalForms, ...selectedProductForm]}});
+                    resultForm = resultForm.map(e => e.toObject());
+                    resultForm = resultForm.map(e => ({...e, breedersId: [...e.breedersId, ...[req.user._id]], formStructure: e.formStructure.map(fs => ({...fs, breedersId: [...fs.breedersId, ...[{_id: req.user._id}]]}))}))
+                    // console.log(resultForm);
+                    // resultForm[0].save().then(resultComplete=> {
+                    //     console.log('saved [0]');
+                    // })
+                    
+
+                    
+                    resultForm.forEach(form  => {
+                       Form.updateOne({_id: form._id}, form).then(resultModified => {
+                           console.log('modified successfully');
+                       })
+                    });
+                    resolve();
+                }),
+                new Promise((resolve, reject) => {
+                    employeeArray.forEach(employee => {
+                        this.registerUserWithRole(req.body, 'employee', false).then(success => {
+                            
+                        });
+                    })
+                }),
+            ]).then(([animal, product, employee]) => {
+
+            });
+            return res.send({status: 200, message: 'user updated successfully'});
+
+        } catch(error) {
+            return next(error);
+        }
     }
 
 };

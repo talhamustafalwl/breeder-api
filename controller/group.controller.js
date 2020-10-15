@@ -21,7 +21,8 @@ class GroupController {
 
 
     async getallbreeder(req, res) {
-        breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
+      console.log(req.user);
+        const breederId=req.user.role[0] == "employee" ? req.user.breederId : req.user._id
         try {
           const unit = await Group.find({breederId});
           return res.status(200).json({ status: 200, message: "All Groups", data: unit });

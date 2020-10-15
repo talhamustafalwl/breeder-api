@@ -43,7 +43,6 @@ class NotificationController {
       sendMessage('e6dtTNG_lIIM9hzikEj9GC:APA91bFa8LKi1i6ON29M0NN2B1y875rDCNsY0d_wIaVigfC5mhr249zlDUQtoOgrTJTyP8xakAN7aAkUdXjGb84Vnmnb6XJQ2eGbQnpjAlESa-BSIpOGc8j0h1enzd7ucYwMRr7n4mkD',
         'Test notification from server',
         'This is test notification from the server',
-
         );
         resolve(true);
       });

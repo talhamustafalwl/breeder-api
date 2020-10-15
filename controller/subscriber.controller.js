@@ -4,9 +4,22 @@ const { Transaction } = require("../models/Subscription/Transaction");
 const LogicController = require("./logic.controller");
 const { validateSubscriberInput } = require("../validation/subscriber");
 const config = require("../config/key");
-const stripe = require("stripe")(config.stripe_private);
+const PaymentSesrvice = require('../misc/payment');
+
+
 class SubscriberController {
   constructor() {}
+
+
+
+  async createCard(req, res) {
+    // PaymentSesrvice.createCardToken('4242424242424242', 10, 2021,'314').then(result => {
+    //   res.send(result);
+    // })
+    PaymentSesrvice.getCreditCard('tok_1HcCXFLWds26JzlySYOMSbdy').then(result => {
+      res.send(result);
+    })
+  }
 
   ///paypal payment made from react using react-paypal-express-checkout then call this to save
   async createpaypal(req, res) {

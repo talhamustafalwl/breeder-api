@@ -6,7 +6,7 @@ const GroupController = require('../controller/group.controller');
 
 router.route('/').post(auth, allowBreeder, authenticateRole,GroupController.create)
   .delete(auth,GroupController.deleteallbreeder)
-  .get(auth,GroupController.getallbreeder)
+  .get(auth, allowBreeder, authenticateRole, GroupController.getallbreeder)
 
 
 router.route('/all')

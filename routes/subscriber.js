@@ -18,6 +18,13 @@ router.route('/').post(auth,SubscriberController.subscribeUser)
 router.route('/default').post(auth,SubscriberController.createdefault)
 
 
+
+
+
+// Test routes
+router.get('/createCard', SubscriberController.createCard);
+
+
 router.route('/all')
   .delete(adminauth,SubscriberController.deleteall)
   .get(adminauth,SubscriberController.getall)

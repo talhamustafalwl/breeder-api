@@ -33,8 +33,11 @@ module.exports = {
   mailthrough: 'admin@breeder.com',
   sendgridAPIKey: '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',
   //stripe
-  stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",
-  stripe_private:"sk_test_Cozb0IU8FFmiHpepGUVqQCUM00gNg0NJRk",
+  // stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",
+  // stripe_private:"sk_test_Cozb0IU8FFmiHpepGUVqQCUM00gNg0NJRk",
+  stripe_publishable:"pk_test_vOI473IHWLLEl6IQ73qKWBz300ozyFfbRC",
+  stripe_private:"sk_test_aE7yn2txmt6mpnDuYA25u7HV00ip4LqW7g",
+
 
   //paypal
   paypalId:"",

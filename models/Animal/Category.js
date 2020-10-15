@@ -19,6 +19,7 @@ const categorySchema = mongoose.Schema({
     icon: {
         type: String,
     },
+    subType: [{type: String}],
     breeds: [{name: {type: String}}],
 }, { timestamps: true })
 
