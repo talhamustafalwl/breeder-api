@@ -17,6 +17,8 @@ class ProductController {
         data: {},
       });
     }
+    const data = JSON.parse(req.body.data)
+
     // let Images=[];
     // await req.files.map((f)=>{
     //   Images.push(f.filename)
@@ -28,6 +30,13 @@ class ProductController {
     req.body.addedBy = req.user._id;
     req.body.image = req.file ? req.file.filename : null;
     req.body.data = JSON.parse(req.body.data);
+    console.log('data is ===> ', data);
+    delete req.body.data.quantity;
+
+
+    req.body.quantity = data.quantity;
+    req.body.goodConditionQuantity = data.quantity;
+
     req.body.status = "InStock";
     console.log(req.body);
     try {
