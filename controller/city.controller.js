@@ -21,7 +21,7 @@ class CityController {
       
         try {
             if(req.query.stateId){
-                city = await City.find({stateId:req.query.stateId});
+                city = await City.find({stateId:req.query.stateId}).sort({name:1});
             }
             else{
                 city = await City.find({});

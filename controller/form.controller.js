@@ -7,6 +7,7 @@ const { validateAddForm } = require('../validation/form');
 const { Mongoose, Document } = require("mongoose");
 const config  = require('../config/key');
 const { Animal } = require("../models/Animal/Animal");
+const { Product } = require("../models/Product");
 const { serverURL } = require("../config/dev");
 class FormController {
     constructor() {
@@ -279,17 +280,28 @@ class FormController {
 
 
     async deleteFormByCategory(req, res, next) {
+        
         try { 
-            const {categoryId} = req.params;
-            Animal.findById(categoryId).then(result => {
-                console.log(result);
-                if(result) {
-                    return res.json({ status: 400, message: "Can not remove category because animal is added on this category", errors: err, data: {} });
-                }
-                Form.deleteOne({categoryId}).then(resForm => {
-                    return res.status(200).json({ status: 200, message: "Form removed successfully" });
+            const {categoryId,id} = req.params;
+            console.log("===>>>>",categoryId,id)
+            
+            Animal.find({categoryId}).then(result => {
+                     if(result && result.length > 0) {
+                        console.log("===>>>>",result.length)
+                         return res.json({ status: 400, message: "Can not remove category because animal is added on this category",  data: {} });
+                     }
+
+                     Product.find({categoryId}).then(result2 => {
+                        if(result2 && result2.length > 0) {
+                           console.log("===>>>>",result2.length)
+                            return res.json({ status: 400, message: "Can not remove category because product is added on this category",  data: {} });
+                        }
+
+                      Form.findByIdAndDelete(id).then(() => {
+                                 return res.status(200).json({ status: 200, message: "Form removed successfully" });
+                             })
+                    })
                 })
-            })
         } catch(error) {
             return next(error);
         }

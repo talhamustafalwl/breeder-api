@@ -6,7 +6,7 @@ class ProductController {
   constructor() {}
 
   async create(req, res, next) {
-    console.log(req.body);
+    console.log("<<===",req.body);
     const { errors, isValid } = validateProductInput(req.body);
     if (!isValid) {
       console.log(errors);

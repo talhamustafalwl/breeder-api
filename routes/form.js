@@ -12,7 +12,7 @@ router.get('/category/:categoryId', FormController.getFormByCategory)
 .get('/', auth, allowBreeder, authenticateRole, FormController.getAllForms)
     .post('/', adminauth, FormController.addForm)
     .put('/:id', auth, FormController.modifyForm)
-    .delete('/category/:id', FormController.deleteFormByCategory);
+    .delete('/category/:categoryId/:id', FormController.deleteFormByCategory);
 
 
 // router.delete('/:id/breeder/:breederId', FormController.excludeBreederForm)

@@ -18,7 +18,7 @@ class StateController {
 
     async getall(req, res) {
         try {
-          const state = await State.find({});
+          const state = await State.find({}).sort({name:1});
           return res.status(200).json({ status: 200, message: "All State", data: state });
         } catch (err) {
           return res.json({ status: 400, message: "Error in get State", errors: err, data: {} });
