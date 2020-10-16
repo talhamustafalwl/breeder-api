@@ -24,7 +24,7 @@ class GroupController {
       console.log(req.user);
         const breederId=req.user.role[0] == "employee" ? req.user.breederId : req.user._id
         try {
-          const unit = await Group.find({breederId});
+          const unit = await Group.find({breederId}).sort({ createdAt: -1 });
           return res.status(200).json({ status: 200, message: "All Groups", data: unit });
         } catch (err) {
           return res.json({ status: 400, message: "Error in get Groups", errors: err, data: {} });

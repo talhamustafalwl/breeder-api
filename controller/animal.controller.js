@@ -511,6 +511,7 @@ class AnimalController {
         const animals = await Animal.find({...query,
           ...(req.query.featured ? { featured: req.query.featured } : {}),
         })
+        .sort({ createdAt: -1 })
           .populate("addedBy")
           .populate("categoryId");
         Animal.populate(

@@ -64,7 +64,7 @@ class ContactController {
                 console.log('get contact with categories');
                 console.log (req.user);
                 // categoryController.allCategories().then(categories => {
-                    Contact.find({isRemoved: false, breederId: req.user.role.includes('breeder') ? req.user._id : req.user.breederId}).populate('category').then(contactResult => {
+                    Contact.find({isRemoved: false, breederId: req.user.role.includes('breeder') ? req.user._id : req.user.breederId}).sort({ createdAt: -1 }).populate('category').then(contactResult => {
                         // data = categories.map(e => ({...e, ...{contacts: contactResult.filter(cr => cr.toObject().)}}));
                         return res.status(200).json({ status: 200, message: "Contacts with categories fetched successfully", data: contactResult})
                     });

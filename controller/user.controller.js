@@ -186,7 +186,7 @@ class UserController {
         console.log('breeder employee called');
         console.log(req.user._id);
         try {
-            User.find({ role: 'employee', breederId: req.user._id, isEmployeeActive: true, }).then(result => {
+            User.find({ role: 'employee', breederId: req.user._id, isEmployeeActive: true, }).sort({ createdAt: -1 }).then(result => {
                 console.log(result);
                 return res.status(200).json({ status: 200, message: "Employee found successfully", data: result.map(e => ({...e.toObject(), ...{image:  e.toObject().image ? `${config.baseImageURL}${e.toObject().image}`: null}})) });
             }).catch(error => {

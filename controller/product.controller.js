@@ -54,7 +54,7 @@ class ProductController {
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     // const breederId="5f3ba1f7a989412710841d5a"
     try {
-      Product.find({ breederId })
+      Product.find({ breederId }).sort({ createdAt: -1 })
         .populate("addedBy", "name")
         .then((result) => {
           console.log(result);
