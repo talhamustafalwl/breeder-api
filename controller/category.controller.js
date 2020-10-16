@@ -12,7 +12,7 @@ class CategoryController {
 
   //only admin
   async create(req, res) {
-    const { name, active, parentId, type, icon } = req.body;
+    const { name, active, parentId, type, icon, breeds } = req.body;
     console.log(name);
     if (!name) {
       return res.json({
@@ -29,6 +29,7 @@ class CategoryController {
         type,
         parentId: parentId ? parentId : null,
         icon: icon ? icon : null,
+        breeds: breeds.map(e => ({name: e, value: e.replace(/[\s,-]/g, "")}))
       });
       const doc = await animal.save();
       return res
@@ -39,6 +40,7 @@ class CategoryController {
           data: doc,
         });
     } catch (err) {
+      console.log(err);
       return res.json({
         status: 400,
         message: "Error in creating Category",

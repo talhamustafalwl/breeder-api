@@ -25,4 +25,5 @@ router.route('/:id').get(auth,CategoryController.getbyId)
 // #####################
 router.get('/inventory/:breederId', CategoryController.getInventoryByBreeder);
 
+
 module.exports=router
