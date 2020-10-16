@@ -23,6 +23,33 @@ const ProductSchema = mongoose.Schema(
       enum: ["In stock", "Out of stock"],
       default: "In stock",
     },
+    conditionStatus:  {
+      type: String,
+      enum: ["Good Condition", "Damaged", "Expired"],
+      default: "Good Condition",
+    },
+    quantity: {
+      type: Number,
+      default: 0,
+    },
+    damagedQuantity: {
+      type: Number,
+      default: 0,
+    },
+    expiredQuantity: {
+      type: Number,
+      default: 0,
+    },
+    goodConditionQuantity: {
+      type: Number,
+      default: 0,
+    },
+
+    soldQuantity: {
+      type: Number,
+      default: 0,
+    },
+
     // model: {type: Number,required:true},
     // price: {type: Number,required:true},
     categoryId: {
