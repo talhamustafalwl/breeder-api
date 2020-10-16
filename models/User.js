@@ -124,6 +124,9 @@ const userSchema = mongoose.Schema({
         tax: {type: Number, default: 0},
     },
     deviceToken: {type: String},
+    setupWizardCompleted: {
+        type: Boolean, default: false,
+    }
 
 }, {
     timestamps: true

@@ -39,6 +39,8 @@ class UserController {
                     _id: req.user._id,
                     email: req.user.email,
                     name: req.user.name,
+
+                    setupWizardCompleted: req.user.setupWizardCompleted,
                     notificationSettings : req.user.notificationSettings
                 }
             });
@@ -783,15 +785,21 @@ class UserController {
                 }),
                 new Promise((resolve, reject) => {
                     employeeArray.forEach(employee => {
-                        this.registerUserWithRole(req.body, 'employee', false).then(success => {
-                            
+                        employee.breederUniqueId = req.user.uid;
+                        User.findOne({email: employee.email, role: 'employee', breederId: req.user._id, isEmployeeActive: true }).then(resultUser => {
+                            this.registerUserWithRole(employee, 'employee', false).then(success => {
+                                console.log('employee added');
+                            });
                         });
-                    })
+                    });
+                    resolve();
                 }),
             ]).then(([animal, product, employee]) => {
-
+                User.updateOne({_id: req.user._id}, {$set: {setupWizardCompleted: true}}).then(resultComplted => {
+                    return res.send({status: 200, message: 'Setup Wizard Completed!'});
+                });
             });
-            return res.send({status: 200, message: 'user updated successfully'});
+            
 
         } catch(error) {
             return next(error);
