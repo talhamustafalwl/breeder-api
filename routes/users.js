@@ -64,7 +64,7 @@ router.put("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, up
 // Breeders ----------------------------------------------------------------------------
 // Register Breeder only .. Using portal
 router.post("/breeder/register", UserController.registerBreeder);
-router.get("/breeder/getTax", auth, allowBreeder, allowAdmin, authenticateRole, UserController.getTaxofBreeder)
+router.get("/breeder/getTax", auth, allowBreeder, allowEmployee, allowAdmin, authenticateRole, UserController.getTaxofBreeder)
 
 
 router.post('/gallery/upload', auth, allowBreeder, allowEmployee, authenticateRole, upload.array('file', 10),  UserController.uploadGalleryImage )

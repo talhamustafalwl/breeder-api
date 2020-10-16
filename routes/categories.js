@@ -16,7 +16,7 @@ router.route('/all').delete(adminauth, CategoryController.deleteall)
 
 //for see/delete/update category by id
 router.route('/:id').get(auth,CategoryController.getbyId)
-  .delete(adminauth,CategoryController.deletebyId)
+  .delete(auth, allowBreeder, allowAdmin, authenticateRole ,CategoryController.deletebyId)
 .patch(auth, allowBreeder, allowAdmin, authenticateRole,CategoryController.updatebyId)
 
 
