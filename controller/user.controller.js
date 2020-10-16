@@ -4,6 +4,7 @@ const mailer = require('../misc/mailer');
 const randomstring = require('randomstring');
 const { Animal } = require("../models/Animal/Animal");
 const { Form } = require("../models/Form/Form");
+const { Sale } = require('../models/Sales');
 
 
 const config = require("../config/key");
@@ -759,6 +760,23 @@ class UserController {
     async getAllBreedersId() {
         return User.find({ role: 'breeder' }).then(breederResult => breederResult.map((value) => value._id));
     }
+
+
+    async dashboardAnalysis(req, res, next) {
+        try {
+            const {_id} = req.user;
+            Animal.aggregate([
+                {$match: {breederId: _id}},
+                { $group: { _id: "$breederId", animalSold: {$sum: '$soldQuantity'}, aliveQuantity: {$sum: '$aliveQuantity'}, sickQuantity: {$sum: '$sickQuantity'}, deadQuantity: {$sum:  '$deadQuantity'}, pregnantQuantity: {$sum: '$pregnantQuantity'}  } },
+            ]).then((animalResult) => {
+                // Sale.find({sellerId: _id})
+                return res.send({status: 200, message: 'Dashboard Data found successfully', data: {animal: animalResult}});
+            })
+        } catch(error) {
+            return next(error);
+        }
+    }
+
 
     async setupWizard(req, res, next) {
         try  {

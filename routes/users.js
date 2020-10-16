@@ -29,6 +29,9 @@ router.get('/allusers', (req, res) => {
 });
 
 
+
+router.get('/dashboardAnalysis', auth , allowBreeder, allowAdmin, authenticateRole, UserController.dashboardAnalysis)
+
 router.get('/', auth, allowBreeder, allowAdmin, authenticateRole, UserController.getUserDetail);
 router.put('/', auth, allowBreeder, allowAdmin, authenticateRole, UserController.updateUser);
 
