@@ -23,3 +23,27 @@ module.exports.sendMessage = (token, title, description, data ) => {
         }
     });
 }
+
+
+module.exports.sendBulkMessage = (token, title, description, data) => {
+    this.sendMessage(token, title, description, data);
+    // var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
+    //     to: token, 
+    //     // collapse_key: 'your_collapse_key',
+    //     notification: {
+    //         title: title, 
+    //         body: description 
+    //     },
+        
+    //     data
+    // };
+    // console.log(message);
+    // fcm.send( message , function(err, response) {
+    //     if (err) {
+    //         console.log(err);
+    //         console.log("Something has gone wrong!");
+    //     } else {
+    //         console.log("Successfully sent with response: ", response);
+    //     }
+    // });
+}
