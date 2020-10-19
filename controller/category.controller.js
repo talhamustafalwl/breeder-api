@@ -29,7 +29,7 @@ class CategoryController {
         type,
         parentId: parentId ? parentId : null,
         icon: icon ? icon : null,
-        breeds: breeds.map(e => ({name: e, value: e.replace(/[\s,-]/g, "")}))
+        breeds: breeds ? breeds.map(e => ({name: e, value: e.replace(/[\s,-]/g, "")})) : [],
       });
       const doc = await animal.save();
       return res
