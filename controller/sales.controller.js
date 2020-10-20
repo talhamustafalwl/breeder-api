@@ -91,6 +91,7 @@ class SalesController {
 
     async getAllBreederSaleList (req, res, next) {
         try {
+            console.log('working');
             const breeerId = (req.user.role[0] === 'breeder') ? req.user._id : req.user.breederId;
             this.getBreederSalesList(breeerId).then(resultSales => {
                 User.find({role: 'breeder', _id: {$in: resultSales}}).then(result => {
@@ -99,6 +100,7 @@ class SalesController {
                     return res.json({ status: 400, message: "Error fetching breeder", errors: error, data: {} });
                 });
             });
+            // return res.status(200).json({ status: 200, message: "Sales added successfully" });  
          } catch(error) {
             return next(error);
         }
