@@ -5,6 +5,7 @@ const { auth, allowBreeder, authenticateRole, allowEmployee } = require("../midd
 
 router.post('/', auth, allowBreeder, allowEmployee, authenticateRole, contactController.addContact)
 .get('/', auth, contactController.getContacts)
+.get('/breeders', auth, contactController.getContactsBreeder)
 .get('/categories/all',auth, allowBreeder, authenticateRole, contactController.getContactWithCategories)
 .get('/:id', auth, contactController.getContact)
 .put('/:id', auth, allowBreeder, allowEmployee, authenticateRole, contactController.UpdateContact)

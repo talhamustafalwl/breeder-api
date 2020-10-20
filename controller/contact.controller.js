@@ -1,7 +1,10 @@
 const {validateContact} = require('../validation/contact');
 const {Contact} = require('../models/Contact/Contact');
+const {User} = require('../models/User');
 const categoryController = require('./category.controller');
 const contact = require('../validation/contact');
+const { Types } = require("mongoose");
+
 class ContactController {
     constructor() {
 
@@ -31,15 +34,36 @@ class ContactController {
         }
     }
 
+    async getContactsBreeder(req, res, next) {
+        //const breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
+        console.log(req.user._id)
+        try {
+            User.aggregate( [ {$match : {role: 'breeder'}},
+                {$group:{_id:{$substr: ['$name', 0, 1]}, detail:{$push:"$$ROOT"}}},
+                { $sort: { _id : 1 } }
+            ])
+            //Contact.find(req.user.role === 'admin' ?  {} :{addedBy:req.user._id})
+            .then(result => {
+                let detail=result.map(e=> {return {[e._id]:e.detail}}) 
+                let object = Object.assign({}, ...detail);
+
+                 return res.status(200).json({ status: 200, message: "contacts fetched successfully", data: object})
+            }).catch(error => {
+                return res.json({ status: 400, message: "Error in fetching contacts ", errors: error, data: {} });
+            })
+        } catch(error) {
+            return next(error);
+        }
+    }
 
 
 
 
     async getContacts(req, res, next) {
         //const breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
-        console.log(req.user._id)
+        console.log(req.query)
         try {
-            Contact.aggregate( [
+            Contact.aggregate( [{$match: {category: Types.ObjectId(req.query.category)}},
                 {$group:{_id:{$substr: ['$name', 0, 1]}, detail:{$push:"$$ROOT"}}},
                 { $sort: { _id : 1 } }
             ])
