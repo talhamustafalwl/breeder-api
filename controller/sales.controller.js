@@ -92,7 +92,7 @@ class SalesController {
     async getAllBreederSaleList (req, res, next) {
         try {
             const breeerId = (req.user.role[0] === 'breeder') ? req.user._id : req.user.breederId;
-            this.getAllBreederSaleList(breeerId).then(resultSales => {
+            this.getBreederSalesList(breeerId).then(resultSales => {
                 User.find({role: 'breeder', _id: {$in: resultSales}}).then(result => {
                     return res.status(200).json({ status: 200, message: "Breeder found successfully", data: result.map(e => ({...e.toObject(), ...{image:  e.toObject().image ? `${config.baseImageURL}${e.toObject().image}`: null}})) });
                 }).catch(error => {
