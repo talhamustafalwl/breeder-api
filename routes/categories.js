@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { adminauth } = require("../middleware/adminauth");
-const { auth, allowBreeder, allowAdmin, authenticateRole } = require("../middleware/auth");
+const { auth, allowBreeder, allowAdmin, allowEmployee, authenticateRole } = require("../middleware/auth");
 const CategoryController = require('../controller/category.controller');
 
 //create,delete category only by admin
@@ -10,7 +10,7 @@ router.post("/", CategoryController.create)
 router.put('/addtype/:id', CategoryController.addType)
 
 router.route('/all').delete(adminauth, CategoryController.deleteall)
-  .get(CategoryController.getall)
+  .get(auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, CategoryController.getall)
 
 
 

@@ -19,6 +19,10 @@ const categorySchema = mongoose.Schema({
     icon: {
         type: String,
     },
+    addedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
     subType: [{type: String}],
     breeds: [{name: {type: String}, value: {type: String}}],
     subCategories: [{name: {type: String}, value: {type: String}}],

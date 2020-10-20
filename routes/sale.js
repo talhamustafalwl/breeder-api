@@ -8,6 +8,6 @@ router.post('/saleAnimal', auth, allowAdmin, allowBreeder, allowEmployee, authen
 router.get('/', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SaleControoler.getSales);
 router.get('/:id', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SaleControoler.getSaleDetail);
 router.put('/changePaidStatus/:id', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SaleControoler.changePaidStatus);
-
+router.get('/breederSaleList', auth, allowBreeder, allowEmployee, authenticateRole, SaleControoler.getAllBreederSaleList);
 
 module.exports = router;

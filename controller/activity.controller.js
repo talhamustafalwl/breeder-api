@@ -32,6 +32,7 @@ class ActivityController {
         data: doc,
       });
     } catch (err) {
+      console.log(err);
       return res.json({
         status: 400,
         message: "Error in creating Activity of animal",

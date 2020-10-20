@@ -29,8 +29,10 @@ router.get('/allusers', (req, res) => {
 });
 
 
-router.get('/', auth, allowBreeder, allowAdmin, authenticateRole, UserController.getUserDetail);
-router.put('/', auth, allowBreeder, allowAdmin, authenticateRole, UserController.updateUser);
+
+router.get('/dashboardAnalysis', auth , allowBreeder, allowAdmin, authenticateRole, UserController.dashboardAnalysis)
+
+
 
 //auth route check
 router.get("/auth", auth, allowBreeder, allowAdmin,allowEmployee, authenticateRole, UserController.authentication);
@@ -42,7 +44,7 @@ router.get('/employees/all', auth, allowAdmin, allowBreeder, authenticateRole, U
 router.get('/breeders/all', auth, allowAdmin, allowBreeder,allowEmployee, authenticateRole, UserController.getBreederForSales);
 
 router.get('/employee/:id', auth, allowAdmin, allowBreeder, authenticateRole, UserController.getEmployeeById);
-router.get('/breeder/employees', auth, allowBreeder, authenticateRole, UserController.getEmployeeByBreeder);
+router.get('/breeder/employees', (req, res, next) => {console.log('calling breeder/employees');  return next();}, auth, allowBreeder, authenticateRole, UserController.getEmployeeByBreeder);
 router.post('/employee/changePassword', auth , UserController.changePasswordEmp);
 
 
@@ -183,7 +185,8 @@ router.get("/logout", auth, allowAdmin, allowBreeder, allowEmployee, authenticat
 router.post("/forgetpassword", UserController.forgotPassword);
 router.get('/isForgotTokenActive', UserController.isForgotTokenActive);
 router.post('/resetForgotPassword/:token', UserController.resetForgotPassword);
-
+router.get('/', auth, allowBreeder, allowAdmin, authenticateRole, UserController.getUserDetail);
+router.put('/', auth, allowBreeder, allowAdmin, authenticateRole, UserController.updateUser);
 
 
 router.post('/force_verify', (req, res, next) => {

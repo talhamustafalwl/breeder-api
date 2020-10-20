@@ -3,10 +3,13 @@ const InvoiceController = require('./invoice.controller');
 const AnimalController = require('./animal.controller');
 const InstallmentController = require('./installment.controller');
 const SaleValidation = require('../validation/sals');
+const { User } = require("../models/User");
 
 class SalesController {
 
-
+    constructor() {
+        this.getAllBreederSaleList = this.getAllBreederSaleList.bind(this);
+    }
 
     // Manage sales, installment and invoice.. 
 
@@ -83,6 +86,22 @@ class SalesController {
                 reject(error);
             });
         });
+    }
+
+
+    async getAllBreederSaleList (req, res, next) {
+        try {
+            const breeerId = (req.user.role[0] === 'breeder') ? req.user._id : req.user.breederId;
+            this.getAllBreederSaleList(breeerId).then(resultSales => {
+                User.find({role: 'breeder', _id: {$in: resultSales}}).then(result => {
+                    return res.status(200).json({ status: 200, message: "Breeder found successfully", data: result.map(e => ({...e.toObject(), ...{image:  e.toObject().image ? `${config.baseImageURL}${e.toObject().image}`: null}})) });
+                }).catch(error => {
+                    return res.json({ status: 400, message: "Error fetching breeder", errors: error, data: {} });
+                });
+            });
+         } catch(error) {
+            return next(error);
+        }
     }
 
 

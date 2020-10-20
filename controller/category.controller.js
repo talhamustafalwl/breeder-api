@@ -29,7 +29,8 @@ class CategoryController {
         type,
         parentId: parentId ? parentId : null,
         icon: icon ? icon : null,
-        breeds: breeds.map(e => ({name: e, value: e.replace(/[\s,-]/g, "")}))
+        breeds: breeds ? breeds.map(e => ({name: e, value: e.replace(/[\s,-]/g, "")})) : [],
+        // addedBy: req.user._id,
       });
       const doc = await animal.save();
       return res
@@ -53,8 +54,10 @@ class CategoryController {
   async getall(req, res) {
     try {
       console.log("getting categories");
-      const category = await Category.find(
-        req.query.type ? { type: req.query.type } : {}
+      const category = await Category.find({
+        ...req.query.type ? { type: req.query.type } : {},
+        ...(req.query.type==="contact" || req.query.type==="activity") ? {addedBy: req.user._id}: {},
+        }
       )
       //removed (.populate("parentId");)
       return res
@@ -68,6 +71,7 @@ class CategoryController {
           })),
         });
     } catch (err) {
+      console.log(err);
       return res.json({
         status: 400,
         message: "Error in get Categories",
