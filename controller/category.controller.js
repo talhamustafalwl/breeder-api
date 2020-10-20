@@ -30,7 +30,7 @@ class CategoryController {
         parentId: parentId ? parentId : null,
         icon: icon ? icon : null,
         breeds: breeds ? breeds.map(e => ({name: e, value: e.replace(/[\s,-]/g, "")})) : [],
-        addedBy: req.user._id,
+        // addedBy: req.user._id,
       });
       const doc = await animal.save();
       return res

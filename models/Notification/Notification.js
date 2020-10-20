@@ -19,6 +19,7 @@ const NotificationSchema = mongoose.Schema({
         ref: 'Location'},
     type:{type:String,required:true, default: "mynotification", enum: ["mynotification", "staffnotification"]},
     notificationType: {type:String},
+    notificationSubType: {type: String},
     priority:{type:String,required:true,default:"normal",
     enum: ["normal", "urgent","low"]}, 
 

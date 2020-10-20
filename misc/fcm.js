@@ -25,8 +25,12 @@ module.exports.sendMessage = (token, title, description, data ) => {
 }
 
 
-module.exports.sendBulkMessage = (token, title, description, data) => {
-    this.sendMessage(token, title, description, data);
+
+
+module.exports.sendBulkMessage = (data=[]) => {
+    data.forEach(value => this.sendMessage(value.token, value.title, value.description, value.data));
+    return;
+    // this.sendMessage(token, title, description, data);
     // var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
     //     to: token, 
     //     // collapse_key: 'your_collapse_key',
@@ -38,7 +42,10 @@ module.exports.sendBulkMessage = (token, title, description, data) => {
     //     data
     // };
     // console.log(message);
-    // fcm.send( message , function(err, response) {
+    // console.log(data);
+    // data = data.map(d => transformData(d));
+    // console.log(data);
+    // fcm.send( data , function(err, response) {
     //     if (err) {
     //         console.log(err);
     //         console.log("Something has gone wrong!");
@@ -47,3 +54,5 @@ module.exports.sendBulkMessage = (token, title, description, data) => {
     //     }
     // });
 }
+
+
