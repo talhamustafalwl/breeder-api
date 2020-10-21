@@ -9,7 +9,7 @@ class SalesController {
 
     constructor() {
         this.getAllBreederList = this.getAllBreederList.bind(this);
-        this.getAllBreederSaleList = this.getAllBreederSaleList.bind(this);
+        this.getAllBreederListSimple = this.getAllBreederListSimple.bind(this);
     }
 
     // Manage sales, installment and invoice.. 
@@ -94,8 +94,8 @@ class SalesController {
     async getAllBreederSaleList (req, res, next) {
         try {
         const breeerId = (req.user.role[0] === 'breeder') ? req.user._id : req.user.breederId;
-        this.getBreederSalesList(breeerId).then(resultSales => {
-            return res.status(200).json({ status: 200, message: "Sales fetched successfully", data: resultSales})
+        Sale.find({ breederId:breederId,buyerId: req.params.buyerId}).then(result => {
+            return res.status(200).json({ status: 200, message: "Sales fetched successfully", data: result})
         })
     } catch(error) {
         return next(error);
@@ -114,6 +114,25 @@ class SalesController {
                 let object = Object.assign({}, ...detail);
 
                  return res.status(200).json({ status: 200, message: "Breeders fetched successfully", data: object})
+            })
+                .catch(error => {
+                    return res.json({ status: 400, message: "Error fetching breeder", errors: error, data: {} });
+                });
+            });
+         } catch(error) {
+            return next(error);
+        }
+    }
+
+
+
+    async getAllBreederListSimple (req, res, next) {
+        try {
+            const breeerId = (req.user.role[0] === 'breeder') ? req.user._id : req.user.breederId;
+            this.getBreederSalesList(breeerId).then(resultSales => {
+                User.find(  {role: 'breeder' ,_id: {$in: resultSales}}
+                ) .then(result => {
+                 return res.status(200).json({ status: 200, message: "Breeders fetched successfully", data: result})
             })
                 .catch(error => {
                     return res.json({ status: 400, message: "Error fetching breeder", errors: error, data: {} });
