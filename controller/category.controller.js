@@ -52,11 +52,12 @@ class CategoryController {
   }
 
   async getall(req, res) {
+    const breederId =req.user.role == "employee" ? req.user.breederId : req.user._id;
     try {
       console.log("getting categories");
       const category = await Category.find({
         ...req.query.type ? { type: req.query.type } : {},
-        ...(req.query.type==="contact" || req.query.type==="activity") ? {addedBy: req.user._id}: {},
+        ...(req.query.type==="contact" || req.query.type==="activity") ? {addedBy: breederId}: {},
         }
       )
       //removed (.populate("parentId");)

@@ -8,7 +8,8 @@ const { User } = require("../models/User");
 class SalesController {
 
     constructor() {
-        this.getAllBreederSaleList = this.getAllBreederSaleList.bind(this);
+        this.getAllBreederList = this.getAllBreederList.bind(this);
+        this.getAllBreederListSimple = this.getAllBreederListSimple.bind(this);
     }
 
     // Manage sales, installment and invoice.. 
@@ -28,6 +29,7 @@ class SalesController {
             const sale = new Sale({ 
                 sellerRole: req.user.role[0] ? req.user.role[0] : req.user.role, 
                 sellerId: req.user._id, 
+                breederId: (req.user.role[0] === 'employee') ? req.user.breederId : req.user._id,
                 buyerId,
                 tax,
                 totalPrice: amount.totalPrice,
@@ -80,7 +82,8 @@ class SalesController {
 
     async getBreederSalesList(breederId) {
         return new Promise((resolve, reject) => {
-            Sale.find({sellerId: breederId}).then(result => {
+            Sale.find({breederId: breederId}).then(result => {
+                //console.log("sales-->",result)
                 resolve(result.map(r => r.toObject().buyerId));
             }).catch(error => {
                 reject(error);
@@ -88,19 +91,53 @@ class SalesController {
         });
     }
 
-
     async getAllBreederSaleList (req, res, next) {
         try {
-            console.log('working');
+        const breeerId = (req.user.role[0] === 'breeder') ? req.user._id : req.user.breederId;
+        Sale.find({ breederId:breederId,buyerId: req.params.buyerId}).then(result => {
+            return res.status(200).json({ status: 200, message: "Sales fetched successfully", data: result})
+        })
+    } catch(error) {
+        return next(error);
+    }
+    }
+
+    async getAllBreederList (req, res, next) {
+        try {
             const breeerId = (req.user.role[0] === 'breeder') ? req.user._id : req.user.breederId;
             this.getBreederSalesList(breeerId).then(resultSales => {
-                User.find({role: 'breeder', _id: {$in: resultSales}}).then(result => {
-                    return res.status(200).json({ status: 200, message: "Breeder found successfully", data: result.map(e => ({...e.toObject(), ...{image:  e.toObject().image ? `${config.baseImageURL}${e.toObject().image}`: null}})) });
-                }).catch(error => {
+                User.aggregate( [ {$match : {role: 'breeder' ,_id: {$in: resultSales}}},
+                {$group:{_id:{$substr: ['$name', 0, 1]}, detail:{$push:"$$ROOT"}}},
+                { $sort: { _id : 1 } }
+            ]) .then(result => {
+                let detail=result.map(e=> {return {[e._id]:e.detail}}) 
+                let object = Object.assign({}, ...detail);
+
+                 return res.status(200).json({ status: 200, message: "Breeders fetched successfully", data: object})
+            })
+                .catch(error => {
                     return res.json({ status: 400, message: "Error fetching breeder", errors: error, data: {} });
                 });
             });
-            // return res.status(200).json({ status: 200, message: "Sales added successfully" });  
+         } catch(error) {
+            return next(error);
+        }
+    }
+
+
+
+    async getAllBreederListSimple (req, res, next) {
+        try {
+            const breeerId = (req.user.role[0] === 'breeder') ? req.user._id : req.user.breederId;
+            this.getBreederSalesList(breeerId).then(resultSales => {
+                User.find(  {role: 'breeder' ,_id: {$in: resultSales}}
+                ) .then(result => {
+                 return res.status(200).json({ status: 200, message: "Breeders fetched successfully", data: result})
+            })
+                .catch(error => {
+                    return res.json({ status: 400, message: "Error fetching breeder", errors: error, data: {} });
+                });
+            });
          } catch(error) {
             return next(error);
         }

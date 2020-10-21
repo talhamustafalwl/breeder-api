@@ -13,22 +13,22 @@ module.exports = {
 
   
 
-  // Server: 'http://192.168.88.129:5000',
-  // webServer: 'http://192.168.88.129:3000',
-  // baseAPIUrl: 'http://192.168.88.129:5000/',
-  // baseImageURL: 'http://192.168.88.129:5000/uploads/images/',
-  // serverURL: 'http://192.168.88.129:5000',
-  // imageURL: 'http://192.168.88.129:5000/uploads/images/form/',
-  // baseDocumentURL: 'http://192.168.88.129:5000/uploads/documents/',
+  Server: 'http://192.168.88.129:5000',
+  webServer: 'http://192.168.88.129:5000',
+  baseAPIUrl: 'http://192.168.88.129:5000/',
+  baseImageURL: 'http://192.168.88.129:5000/uploads/images/',
+  serverURL: 'http://192.168.88.129:5000',
+  imageURL: 'http://192.168.88.129:5000/uploads/images/form/',
+  baseDocumentURL: 'http://192.168.88.129:5000/uploads/documents/',
 
 
-  Server: 'http://localhost:5000',
-  webServer: 'http://localhost:3000',
-  baseAPIUrl: 'http://localhost:5000/',
-  baseImageURL: 'http://localhost:5000/uploads/images/',
-  serverURL: 'http://localhost:5000',
-  imageURL: 'http://localhost:5000/uploads/images/form/',
-  baseDocumentURL: 'http://localhost:5000/uploads/documents/',
+  // Server: 'http://localhost:5000',
+  // webServer: 'http://localhost:3000',
+  // baseAPIUrl: 'http://localhost:5000/',
+  // baseImageURL: 'http://localhost:5000/uploads/images/',
+  // serverURL: 'http://localhost:5000',
+  // imageURL: 'http://localhost:5000/uploads/images/form/',
+  // baseDocumentURL: 'http://localhost:5000/uploads/documents/',
 
   // Server: 'https://breeder-api.herokuapp.com',
   // webServer: 'https://breeder-dev.herokuapp.com',

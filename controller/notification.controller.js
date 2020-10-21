@@ -108,6 +108,18 @@ class NotificationController {
 
 
 
+    async getAll(req, res) {
+      const breederId =req.user.role == "employee" ? req.user.breederId : req.user._id;
+        try {
+          const notifications= await Notification.find({userId : breederId, notificationType: req.query.type});
+          if(notifications== '') {
+            return res.json({ status: 400, message: "Invalid Id",  data: {} }); 
+          }
+          return res.status(200).json({ status: 200, message: "Notification",data: notifications});
+        } catch (err) {
+          return res.json({ status: 400, message: "Error in get Notification", errors: err, data: {} });
+        }
+    }
 
 
 
