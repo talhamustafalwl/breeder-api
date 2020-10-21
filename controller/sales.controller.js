@@ -10,6 +10,7 @@ class SalesController {
     constructor() {
         this.getAllBreederList = this.getAllBreederList.bind(this);
         this.getAllBreederListSimple = this.getAllBreederListSimple.bind(this);
+        this.getSaleByUser = this.getSaleByUser.bind(this);
     }
 
     // Manage sales, installment and invoice.. 
@@ -76,6 +77,48 @@ class SalesController {
             });
         } catch (error) {
             console.log(error);
+            return next(error);
+        }
+    }
+
+
+    getStaticsForUser(data, id) {
+        console.log('in data');
+        const result = {
+            totalSale: data.length,
+            mytotalSale: data.filter(e => (e.sellerId==id)).length,
+            get mytotalSalePercentage() {
+                return Math.round((parseInt(this.mytotalSale*100))/parseInt(this.totalSale));
+            },
+            totalAnimals: data.map(e => e.animals).flat(1),
+            totalAnimalsSold: data.map(e => e.animals).flat(1).reduce((acc, cv) => parseInt(cv.quantity)+acc, 0),
+            myAnimalsSold: data.filter(e => (e.sellerId==id)).map(e => e.animals).flat(1).reduce((acc, cv) => parseInt(cv.quantity)+acc, 0),
+            get myAnimalSoldPercentage() {
+                return Math.round((parseInt(this.myAnimalsSold*100))/parseInt(this.totalAnimalsSold));
+            },
+            totalSaleAmount: data.reduce((acc, cv) => acc+(parseInt(cv.price)+(parseInt(cv.price)*(parseInt(cv.tax)/100))),0),
+            myTotalSaleAmount: data.filter(e => (e.sellerId==id)).reduce((acc, cv) => acc+(parseInt(cv.price)+(parseInt(cv.price)*(parseInt(cv.tax)/100))),0),
+            totalAmountReceived: data.filter(e => e.isPaid).reduce((acc, cv) => acc+(parseInt(cv.price)+(parseInt(cv.price)*(parseInt(cv.tax)/100))),0),
+            myTotalAmountReceived: data.filter(e => (e.sellerId==id)).filter(e => e.isPaid).reduce((acc, cv) => acc+(parseInt(cv.price)+(parseInt(cv.price)*(parseInt(cv.tax)/100))),0),
+            get myTotalAmountReceivedPercentage() {
+                return Math.round((parseInt(this.myTotalAmountReceived*100))/parseInt(this.myTotalSaleAmount));
+            },
+        
+        }
+        return result;
+    }
+
+    async getSaleByUser(req, res, next) {
+        try {
+            const { id, breederId } = req.params;
+            console.log(id);
+            Sale.find({breederId}).then(result => result.map(e => e.toObject())).then(result => {
+                console.log(result);
+                return res.status(200).json({ status: 200, message: "Sales fetched successfully", data: this.getStaticsForUser(result, id)});                        
+            }).catch(error => {
+                return res.json({ status: 400, message: "Error in fetching Sales", errors: error });
+            })
+        } catch(error) {
             return next(error);
         }
     }
