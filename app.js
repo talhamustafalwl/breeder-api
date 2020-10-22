@@ -36,7 +36,7 @@ app.use((req, res,next) => {
 })
 
 // app.use("/api/users", require("./routes/users"));
-app.use(routes);
+app.use('/api', routes);
 
 // app.use((error, req, res) => {
 //     res.status(400).send('internal server error');
