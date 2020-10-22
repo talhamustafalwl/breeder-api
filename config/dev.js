@@ -30,13 +30,25 @@ module.exports = {
   // imageURL: 'http://localhost:5000/uploads/images/form/',
   // baseDocumentURL: 'http://localhost:5000/uploads/documents/',
 
-  Server: 'https://breeder-api.herokuapp.com',
+  // Server: 'https://breeder-api.herokuapp.com',
+  // webServer: 'https://breeder-dev.herokuapp.com',
+  // baseAPIUrl: 'https://breeder-api.herokuapp.com/',
+  // baseImageURL: 'https://breeder-api.herokuapp.com/uploads/images/',
+  // serverURL: 'https://breeder-api.herokuapp.com',
+  // imageURL: 'https://breeder-api.herokuapp.com/uploads/images/form/',
+  // baseDocumentURL: 'https://breeder-api.herokuapp.com/uploads/documents/',
+
+
+
+
+  Server: 'http://3.21.129.23/api',
   webServer: 'https://breeder-dev.herokuapp.com',
-  baseAPIUrl: 'https://breeder-api.herokuapp.com/',
-  baseImageURL: 'https://breeder-api.herokuapp.com/uploads/images/',
-  serverURL: 'https://breeder-api.herokuapp.com',
-  imageURL: 'https://breeder-api.herokuapp.com/uploads/images/form/',
-  baseDocumentURL: 'https://breeder-api.herokuapp.com/uploads/documents/',
+  baseAPIUrl: 'http://3.21.129.23/api/',
+  baseImageURL: 'http://3.21.129.23/api/uploads/images/',
+  serverURL: 'http://3.21.129.23/api',
+  imageURL: 'http://3.21.129.23/api/uploads/images/form/',
+  baseDocumentURL: 'http://3.21.129.23/api/uploads/documents/',
+
 
 
   mailthrough: 'admin@breeder.com',
