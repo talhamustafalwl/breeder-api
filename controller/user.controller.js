@@ -32,6 +32,7 @@ class UserController {
 
     
     authentication(req, res, next) {
+        console.log(req.user)
         try {
             return res.status(200).json({
                 status: 200, message: "auth user success", isAuth: true,
@@ -40,7 +41,7 @@ class UserController {
                     _id: req.user._id,
                     email: req.user.email,
                     name: req.user.name,
-
+                    image: req.user.image ?  `${config.baseImageURL}${req.user.image}` : null,
                     setupWizardCompleted: req.user.setupWizardCompleted,
                     notificationSettings : req.user.notificationSettings
                 }
@@ -62,6 +63,7 @@ class UserController {
     }
 
     async employeeLogin(req, res, next) {
+        console.log(req.body)
         try {
             const { errors, isValid } = validateLoginInput(req.body);
             //console.log(req.body);
@@ -84,7 +86,9 @@ class UserController {
               user.comparePassword(req.body.password, (err, isMatch) => {
                 if (!isMatch)
                   return res.json({ status: 400, message: "Incorrect password", errors: errors, data: {} });
-          
+                user.deviceToken = req.body.deviceToken;
+                user.save
+                //console.log(user)
                 user.generateToken((err, user) => {
                   if (err) return res.send(err);
                   //io.emit("userSet", { msg: "email is registered", email: req.body.email });
