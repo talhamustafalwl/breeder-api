@@ -5,7 +5,7 @@ var idvalidator = require('mongoose-id-validator');
 const categorySchema = mongoose.Schema({
     //userId: {type: Schema.Types.ObjectId,ref: 'User'},
     name: {
-        type: String, unique: true
+        type: String,
     },
     active: {
         type: Boolean, default: 0
