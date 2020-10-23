@@ -23,24 +23,33 @@ class CategoryController {
       });
     }
     try {
-      const animal = await new Category({
-        name,
-        active,
-        type,
-        parentId: parentId ? parentId : null,
-        icon: icon ? icon : null,
-        // breeds: breeds ? breeds.map(e => ({name: e, value: e.replace(/[\s,-]/g, "")})) : [],
-        breeds: breeds ? breeds : [],
-        addedBy: req.user._id,
-      });
-      const doc = await animal.save();
-      return res
-        .status(200)
-        .json({
-          status: 200,
-          message: "Category created successfully",
-          data: doc,
+      Category.find({name, addedBy: req.user._id}).then(async (resultCategoryExist) => {
+        console.log(resultCategoryExist);
+        if(resultCategoryExist[0]) return res.json({
+          status: 400,
+          message: "Category already exist!",
+          data: {},
         });
+        const animal = await new Category({
+          name,
+          active,
+          type,
+          parentId: parentId ? parentId : null,
+          icon: icon ? icon : null,
+          // breeds: breeds ? breeds.map(e => ({name: e, value: e.replace(/[\s,-]/g, "")})) : [],
+          breeds: breeds ? breeds : [],
+          addedBy: req.user._id,
+        });
+        const doc = await animal.save();
+        return res
+          .status(200)
+          .json({
+            status: 200,
+            message: "Category created successfully",
+            data: doc,
+          });
+      })
+  
     } catch (err) {
       console.log(err);
       return res.json({
@@ -156,18 +165,27 @@ class CategoryController {
       return res.json({ status: 400, message: "name required", data: {} });
     }
     try {
-      const category = await Category.updateOne(
-        { _id: req.params.id },
-        { name, active }
-      );
-
-      return res
-        .status(200)
-        .json({
-          status: 200,
-          message: "Category updated successfully",
-          data: category,
+      Category.find({name, addedBy: req.user._id}).then(async (resultCategoryExist) => {
+        console.log(resultCategoryExist);
+        if(resultCategoryExist[0]) return res.json({
+          status: 400,
+          message: "Category already exist!",
+          data: {},
         });
+        const category = await Category.updateOne(
+          { _id: req.params.id },
+          { name, active }
+        );
+  
+        return res
+          .status(200)
+          .json({
+            status: 200,
+            message: "Category updated successfully",
+            data: category,
+          });
+      });
+    
     } catch (err) {
       return res.json({
         status: 400,
