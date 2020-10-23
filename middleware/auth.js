@@ -3,25 +3,25 @@ const { Subscriber } = require('../models/Subscription/Subscriber');
 
 let auth = (req, res, next) => {
   //console.log("auth")
-  console.log('auth called');
-  console.log(req.route);
-  console.log('headers : ', req.headers['auth']) 
-  console.log('cookies :  ', req.cookies['w_auth']);
+  // console.log('auth called');
+  // console.log(req.route);
+  // console.log('headers : ', req.headers['auth']) 
+  // console.log('cookies :  ', req.cookies['w_auth']);
 
   let token = req.headers['auth'];
   if(!token){
     token=req.cookies['w_auth'];
   }
 
-  console.log(token);
+  //console.log(token);
   
   if (!token)
     {return res.status(205).send({ status: 400, message: 'No token provided header(auth).',data:{} });}
 
   User.findOne({token}, async (err, user) => {
-    console.log(token);
-    console.log('auth');
-    console.log(user);
+    //console.log(token);
+    //console.log('auth');
+    //console.log(user);
     if (err) throw err;
     if (!user)
       return res.json({

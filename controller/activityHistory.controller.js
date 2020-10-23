@@ -9,6 +9,7 @@ class ActivityController {
   constructor() {}
 
     async create(req, res) {
+      console.log(req.body)
         const { errors, isValid } = await validateActivity(req.body);
         // Check validation
         if (!isValid) {
@@ -44,7 +45,7 @@ class ActivityController {
 
 
         async getall(req, res) {
-            //console.log(req.query)
+            console.log("req.query",req.query)
             var conditions = Object.keys(req.query).map(function (key) {
             var obj = {},
                 newKey = "";
@@ -110,13 +111,13 @@ class ActivityController {
 
 
         async getallByType(req, res) {
+          console.log("req.query",req.query)
             let tableName;
             if (req.query.type === "groupId") {
               tableName = "groups";
             } else {
               tableName = "animals";
             }
-        
             try {
               const cleaning = await ActivityHistory.aggregate([
                 {

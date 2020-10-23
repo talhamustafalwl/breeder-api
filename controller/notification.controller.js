@@ -2,6 +2,7 @@ const { sendMessage, sendBulkMessage } = require("../misc/fcm");
 const { Notification } = require("../models/Notification/Notification");
 const { User } = require("../models/User");
 
+const { Expo }=require('expo-server-sdk');
 const { validateNotificationInput } = require("../validation/notification");
 const userController = require("./user.controller");
 
@@ -11,13 +12,15 @@ class NotificationController {
     this.create = this.create.bind(this);
     this.createMultiple = this.createMultiple.bind(this);
     this.addNotification = this.addNotification.bind(this);
+    this.addNotificationUpdated = this.addNotificationUpdated.bind(this);
+    
   }
 
   transformData(data) {
-    console.log(data);
+    //console.log(data);
     return {
       //this may vary according to the message type (single recipient, multicast, topic, et cetera)
-      to: data.deviceToken,
+      to: data,
       // collapse_key: 'your_collapse_key',
       notification: {
         title: data.title,
@@ -91,6 +94,7 @@ class NotificationController {
 
   async createNotif(req, res) {
     console.log("in create notif");
+    this.testExpoNotification()
     this.NotifTest().then((result) => {
       return res
         .status(200)
@@ -151,7 +155,7 @@ class NotificationController {
           //   this.create(employee._id, 'mynotification',  'employee', 'Employee Registered Successfully', 'You have registered a new employee', req.user._id, null, success.data._id, req.user.deviceToken, true).then(resultNotifCreate => { });
           // });
 
-          User.find({ breederId, role: "employee" })
+          User.find({ breederId:req.user._id, role: "employee" })
             .then((allEmployees) => {
               // console.log(allEmployees);
 
@@ -234,6 +238,102 @@ class NotificationController {
       });
     }
   }
+
+
+
+   //breeder create notifications
+   async addNotificationUpdated(req, res) {
+    console.log(req.body);
+    const { errors, isValid } = validateNotificationInput(req.body);
+    // Check validation
+    if (!isValid) {
+      return res.json({
+        status: 400,
+        message: "errors present",
+        errors: errors,
+        data: {},
+      });
+    }
+    try {
+      if (req.user.role.includes("breeder")) {
+        let allEmployees;
+        if (req.body.employees === "all") {
+          allEmployees=await User.find({ breederId:req.user._id, role: "employee"})
+        }
+        else{
+          allEmployees=await User.find({ _id:req.body.employees})
+        }
+          const data={
+            title: req.body.title,
+            description: req.body.description,
+            userId: req.user._id,
+            breederId: req.user._id,
+            notificationType: req.body.notificationType,
+            notificationSubType: req.body.notificationSubType,
+          }
+          let employeeId=allEmployees.map(e=> e._id)
+          let tokens=allEmployees.map(e=> e.deviceToken)
+          await this.ExpoNotification(tokens,data)
+          try {      
+            const notification= await new Notification({...data,...{employeeId}})
+            const doc=await notification.save()
+            return res.status(200).json({ status: 200, message: "Notification created successfully", data: doc });
+        } catch (err) {
+            return res.json({ status: 400, message: "Notification created error", errors: err, data: {} });
+        }
+        }
+
+        else{
+          console.log("admin");
+          return
+        }
+    
+    } catch (err) {
+      console.log(err);
+      return res.json({
+        status: 400,
+        message: "Error in creating Notification",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
+
+      
+    async ExpoNotification(tokens,data){
+      let expo = new Expo();
+      let messages = [];
+      //let arrayOfTokens=["ExponentPushToken[mn1etSOV8gRoj0sNXQ4_0o]","ExponentPushToken[KTCVnDN-dNjqLlD02M3xuR]"]
+      for (let pushToken of tokens) {
+        if (!Expo.isExpoPushToken(pushToken)) {
+          //console.error(`Push token ${pushToken} is not a valid Expo push token`);
+          continue;
+        }
+      
+        messages.push({
+          to: pushToken,sound: 'default',
+          title: data.title,
+          body: data.description,
+          data: data,
+        })
+      }
+      let chunks = expo.chunkPushNotifications(messages);
+      let tickets = [];
+      (async () => {
+        for (let chunk of chunks) {
+          try {
+            let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+           // console.log(ticketChunk);
+            tickets.push(...ticketChunk);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      })();
+
+      }
+
 }
 
 module.exports = new NotificationController();
