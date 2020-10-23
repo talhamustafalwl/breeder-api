@@ -46,8 +46,8 @@ module.exports = {
     baseDocumentURL: 'http://3.21.129.23/api/uploads/documents/',
 
 
-    mailthrough: 'admin@breeder.com',
-    sendgridAPIKey: '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',
+    mailthrough: 'bilal@livewirelabs.co',
+    sendgridAPIKey: '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',
     //stripe
     // stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",
     // stripe_private:"sk_test_Cozb0IU8FFmiHpepGUVqQCUM00gNg0NJRk",

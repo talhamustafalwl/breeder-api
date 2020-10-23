@@ -285,7 +285,7 @@ class FormController {
             const {categoryId,id} = req.params;
             console.log("===>>>>",categoryId,id)
             
-            Animal.find({categoryId}).then(result => {
+            Animal.find({categoryId, breederId: req.user._id}).then(result => {
                      if(result && result.length > 0) {
                         console.log("===>>>>",result.length)
                          return res.json({ status: 400, message: "Can not remove category because animal is added on this category",  data: {} });

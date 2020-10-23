@@ -116,8 +116,8 @@ class ActivityController {
         {
           $lookup: {
             from: "activities",
-            localField: "name",
-            foreignField: "categoryName",
+            localField: "_id",
+            foreignField: "categoryId",
             as: "activities",
           },
         },

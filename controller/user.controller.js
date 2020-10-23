@@ -32,6 +32,7 @@ class UserController {
 
     
     authentication(req, res, next) {
+        console.log(req.user)
         try {
             return res.status(200).json({
                 status: 200, message: "auth user success", isAuth: true,
@@ -40,9 +41,11 @@ class UserController {
                     _id: req.user._id,
                     email: req.user.email,
                     name: req.user.name,
-
+                    image: req.user.image ?  `${config.baseImageURL}${req.user.image}` : null,
                     setupWizardCompleted: req.user.setupWizardCompleted,
-                    notificationSettings : req.user.notificationSettings
+                    notificationSettings : req.user.notificationSettings,
+                    creditCard: req.user.creditCard,
+                    businessInfoSettings: req.user.businessInfoSettings,
                 }
             });
         } catch (err) {
@@ -62,6 +65,7 @@ class UserController {
     }
 
     async employeeLogin(req, res, next) {
+        console.log(req.body)
         try {
             const { errors, isValid } = validateLoginInput(req.body);
             //console.log(req.body);
@@ -84,7 +88,9 @@ class UserController {
               user.comparePassword(req.body.password, (err, isMatch) => {
                 if (!isMatch)
                   return res.json({ status: 400, message: "Incorrect password", errors: errors, data: {} });
-          
+                user.deviceToken = req.body.deviceToken;
+                user.save
+                //console.log(user)
                 user.generateToken((err, user) => {
                   if (err) return res.send(err);
                   //io.emit("userSet", { msg: "email is registered", email: req.body.email });
@@ -198,7 +204,10 @@ class UserController {
         }
     }
 
-   
+
+
+
+
     async changePasswordEmp(req, res, next) {
         console.log('changePasswordEmp employee',req.body);
         console.log(req.user._id);
@@ -630,7 +639,7 @@ class UserController {
 
     async testSendMail(req, res, next) {
         const html = registeremail('token', config.Server, 'breeder');
-        mailer.sendEmail(config.mailthrough, 'bilal@livewirelabs.co', 'Please verify your email!', html);
+        mailer.sendEmail(config.mailthrough, 'khatribilal5@gmail.com', 'Please verify your email!', html);
         console.log('sending email');
         res.status(200).json({ status: 200, message: "email is send"});
     }
@@ -730,15 +739,34 @@ class UserController {
 
     async updateUser(req, res, next) {
         try {
-            User.updateOne({_id: req.user._id}, {$set: req.body}).then(resultUser => {
-                return res.send({status: 200, message: 'User updated successfully'});
-            }).catch(error => {
-                return res.json({ status: 400, message: error.message ? error.message : 'Internal Server Error', data: {}, error });
-            });
+            const {type} = req.query;
+            if(type === 'card') {
+                console.log(req.body);
+                console.log(req.user._id);
+                User.updateOne({_id: req.user._id}, {$push: {creditCard: req.body} }).then(resultUser => {
+                    console.log(resultUser);
+                    console.log('user reulst');
+                    return res.send({status: 200, message: 'Card updated successfully'});
+                }).catch(error => {
+                    return res.json({ status: 400, message: error.message ? error.message : 'Internal Server Error', data: {}, error });
+                });
+            } else {
+                console.log(req.body);
+                console.log(req.user._id);
+                User.updateOne({_id: req.user._id}, {$set: req.body}).then(resultUser => {
+                    console.log(resultUser);
+                    console.log('user reulst');
+                    return res.send({status: 200, message: 'User updated successfully'});
+                }).catch(error => {
+                    return res.json({ status: 400, message: error.message ? error.message : 'Internal Server Error', data: {}, error });
+                });
+            }
+         
         } catch(error) {
             return next(error);
         }
     }
+
 
     async updateImage(req, res, next) {
         try {
@@ -805,10 +833,13 @@ class UserController {
                 new Promise((resolve, reject) => {
                     employeeArray.forEach(employee => {
                         employee.breederUniqueId = req.user.uid;
+                        employee.breederId = req.user._id;
                         User.findOne({email: employee.email, role: 'employee', breederId: req.user._id, isEmployeeActive: true }).then(resultUser => {
-                            this.registerUserWithRole(employee, 'employee', false).then(success => {
-                                console.log('employee added');
-                            });
+                            if(!resultUser) {
+                                this.registerUserWithRole(employee, 'employee', false).then(success => {
+                                    console.log('employee added');
+                                });
+                            }
                         });
                     });
                     resolve();
