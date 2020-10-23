@@ -30,10 +30,13 @@ app.use(express.urlencoded({ extended: false }))
 app.use("/uploads", express.static("uploads"));
 
 //routes
-
+app.use((req, res,next) => {
+    console.log(req.originalUrl)
+    next();
+})
 
 // app.use("/api/users", require("./routes/users"));
-app.use(routes);
+app.use('/api', routes);
 
 // app.use((error, req, res) => {
 //     res.status(400).send('internal server error');
@@ -48,6 +51,7 @@ app.use((req, res, next) => {
     const err = new Error('Resource does not exist');
     // err.status = 404;
     // next(err);
+    console.log(req.originalUrl)
     res.status(404).json({ status: 404, message: 'Resource Not Found' });
 });
 
