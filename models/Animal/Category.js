@@ -16,6 +16,9 @@ const categorySchema = mongoose.Schema({
     type: {
         type: String, enum: ["animal", "activity", "product", "contact"]
     },
+    isDefault: {
+        type: Boolean, default: false,
+    },
     icon: {
         type: String,
     },
