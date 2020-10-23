@@ -27,7 +27,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
 //for image,qrcode,videos
-app.use("/uploads", express.static("uploads"));
+app.use("/api/uploads", express.static("uploads"));
 
 //routes
 app.use((req, res,next) => {

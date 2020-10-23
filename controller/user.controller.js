@@ -782,6 +782,7 @@ class UserController {
         try  {
             const {selectedAnimalForms, selectedProductForm, employeeArray} = req.body;
             console.log(selectedAnimalForms);
+            console.log(employeeArray);
             Promise.all([
                 new Promise(async (resolve, reject) => {
                     let resultForm = await Form.find({_id: {$in: [...selectedAnimalForms, ...selectedProductForm]}});
