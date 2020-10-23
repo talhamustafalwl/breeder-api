@@ -43,7 +43,9 @@ class UserController {
                     name: req.user.name,
                     image: req.user.image ?  `${config.baseImageURL}${req.user.image}` : null,
                     setupWizardCompleted: req.user.setupWizardCompleted,
-                    notificationSettings : req.user.notificationSettings
+                    notificationSettings : req.user.notificationSettings,
+                    creditCard: req.user.creditCard,
+                    businessInfoSettings: req.user.businessInfoSettings,
                 }
             });
         } catch (err) {
@@ -202,7 +204,10 @@ class UserController {
         }
     }
 
-   
+
+
+
+
     async changePasswordEmp(req, res, next) {
         console.log('changePasswordEmp employee',req.body);
         console.log(req.user._id);
@@ -734,15 +739,34 @@ class UserController {
 
     async updateUser(req, res, next) {
         try {
-            User.updateOne({_id: req.user._id}, {$set: req.body}).then(resultUser => {
-                return res.send({status: 200, message: 'User updated successfully'});
-            }).catch(error => {
-                return res.json({ status: 400, message: error.message ? error.message : 'Internal Server Error', data: {}, error });
-            });
+            const {type} = req.query;
+            if(type === 'card') {
+                console.log(req.body);
+                console.log(req.user._id);
+                User.updateOne({_id: req.user._id}, {$push: {creditCard: req.body} }).then(resultUser => {
+                    console.log(resultUser);
+                    console.log('user reulst');
+                    return res.send({status: 200, message: 'Card updated successfully'});
+                }).catch(error => {
+                    return res.json({ status: 400, message: error.message ? error.message : 'Internal Server Error', data: {}, error });
+                });
+            } else {
+                console.log(req.body);
+                console.log(req.user._id);
+                User.updateOne({_id: req.user._id}, {$set: req.body}).then(resultUser => {
+                    console.log(resultUser);
+                    console.log('user reulst');
+                    return res.send({status: 200, message: 'User updated successfully'});
+                }).catch(error => {
+                    return res.json({ status: 400, message: error.message ? error.message : 'Internal Server Error', data: {}, error });
+                });
+            }
+         
         } catch(error) {
             return next(error);
         }
     }
+
 
     async updateImage(req, res, next) {
         try {

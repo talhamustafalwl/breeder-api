@@ -8,6 +8,18 @@ const gallerySchema = mongoose.Schema({
     size: String,
     title: String,
 },  {timestamps: true})
+
+const creditCardSchema = mongoose.Schema({
+    name: String,
+    billing_details: Object,
+    card: Object,
+    created: Number,
+    customer: String,
+    id: String,
+    livemode: Boolean,
+    object: String,
+    type: String,
+})
 const userSchema = mongoose.Schema({
     name: {
         type: String, minglength: 5, maxlength: 50
@@ -126,7 +138,8 @@ const userSchema = mongoose.Schema({
     deviceToken: {type: String},
     setupWizardCompleted: {
         type: Boolean, default: false,
-    }
+    },
+    creditCard: [creditCardSchema],
 
 }, {
     timestamps: true
