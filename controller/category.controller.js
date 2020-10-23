@@ -24,10 +24,10 @@ class CategoryController {
     }
     try {
       Category.find({name, addedBy: req.user._id}).then(async (resultCategoryExist) => {
-        if(resultCategoryExist) return res.json({
+        console.log(resultCategoryExist);
+        if(resultCategoryExist[0]) return res.json({
           status: 400,
           message: "Category already exist!",
-          errors: err,
           data: {},
         });
         const animal = await new Category({
