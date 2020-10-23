@@ -630,7 +630,7 @@ class UserController {
 
     async testSendMail(req, res, next) {
         const html = registeremail('token', config.Server, 'breeder');
-        mailer.sendEmail(config.mailthrough, 'bilal@livewirelabs.co', 'Please verify your email!', html);
+        mailer.sendEmail(config.mailthrough, 'khatribilal5@gmail.com', 'Please verify your email!', html);
         console.log('sending email');
         res.status(200).json({ status: 200, message: "email is send"});
     }
@@ -805,10 +805,13 @@ class UserController {
                 new Promise((resolve, reject) => {
                     employeeArray.forEach(employee => {
                         employee.breederUniqueId = req.user.uid;
+                        employee.breederId = req.user._id;
                         User.findOne({email: employee.email, role: 'employee', breederId: req.user._id, isEmployeeActive: true }).then(resultUser => {
-                            this.registerUserWithRole(employee, 'employee', false).then(success => {
-                                console.log('employee added');
-                            });
+                            if(!resultUser) {
+                                this.registerUserWithRole(employee, 'employee', false).then(success => {
+                                    console.log('employee added');
+                                });
+                            }
                         });
                     });
                     resolve();

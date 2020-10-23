@@ -33,17 +33,20 @@ module.exports = {
 
       const msg = {
         to,
-        from: 'faizan@livewireapps.com',
+        // from: 'faizan@livewireapps.com',
 
-        // from: 'bilal@livewirelabs.co',
+        from: 'bilal@livewirelabs.co',
         subject,
         // text: 'and easy to do anywhere, even with Node.js',
         html,
       };
       sgMail.send(msg).then(info => {
+        console.log(info);
+        console.log(info.body);
         resolve(info);
       }).catch(error => {
           console.log(error);
+          console.log(error.response.body);
       });
       // transport.sendMail({ from, subject, to, html }, (err, info) => {
       //   if (err) {reject(err);
