@@ -114,8 +114,10 @@ class NotificationController {
 
     async getAll(req, res) {
       const breederId =req.user.role == "employee" ? req.user.breederId : req.user._id;
+      console.log(req.query)
         try {
-          const notifications= await Notification.find({userId : breederId, notificationType: req.query.type});
+          const notifications= await Notification.find({breederId : breederId,
+             type: req.query &&  req.query.type ? req.query.type : "staffnotification"});
           if(notifications== '') {
             return res.json({ status: 400, message: "Invalid Id",  data: {} }); 
           }
