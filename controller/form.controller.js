@@ -223,9 +223,9 @@ class FormController {
     async getRegisteredFormsOfBreeder(req, res, next) {
         try {
             console.log('registered form of breeder');
-            if(req.user.role.includes('breeder')) {
-                console.log('calling breeder form')
-                Form.find({breedersId: req.user._id}).populate('categoryId')               
+            if(req.user.role.includes('breeder') || req.user.role.includes('employee')) {
+                
+                Form.find({breedersId: req.user.role.includes('employee')  ? req.user.breederId :  req.user._id}).populate('categoryId')               
                 .exec(function (error, result ) {
                     Form.populate(result, {path: 'categoryId.parentId'}, (err, resultForm) => {
                         console.log(resultForm);

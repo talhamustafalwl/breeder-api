@@ -443,7 +443,7 @@ class AnimalController {
         animaldata.save().then((_) => {
           return res.status(200).json({
             status: 200,
-            message: "Animals gallery images deleted successfully",
+            message: "Images deleted successfully",
           });
         });
       });
@@ -727,6 +727,9 @@ class AnimalController {
       async
         .eachSeries(animalArr, function updateObj(obj, done) {
           Animal.findById(obj.animalId).then((animalResult) => {
+            console.log(animalResult);
+            console.log(' ==== > animal result');
+            console.log(obj)
             const isBuyerAvailable = animalResult.buyer
               .map((e) => e.id)
               .includes(buyer);
@@ -747,6 +750,8 @@ class AnimalController {
               if (isBuyerAvailable) {
                 Animal.findOne({ sellerAnimalId: obj.animalId }).then(
                   (partnerAnimal) => {
+                    console.log('partner animal===> ');
+                    console.log(partnerAnimal);
                     partnerAnimal.aliveQuantity =
                       parseInt(partnerAnimal.aliveQuantity) +
                       parseInt(obj.quantity);
@@ -778,6 +783,7 @@ class AnimalController {
                 console.log(animalResult);
                 const newAnimal = new Animal({
                   ...animalResult,
+                  buyer: [],
                   breederId: buyer,
                   aliveQuantity: parseInt(obj.quantity),
                   soldQuantity: 0,
