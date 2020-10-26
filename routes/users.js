@@ -45,8 +45,7 @@ router.get('/breeders/all', auth, allowAdmin, allowBreeder,allowEmployee, authen
 
 router.get('/employee/:id', auth, allowAdmin, allowBreeder, authenticateRole, UserController.getEmployeeById);
 router.get('/breeder/employees', (req, res, next) => {console.log('calling breeder/employees');  return next();}, auth, allowBreeder, authenticateRole, UserController.getEmployeeByBreeder);
-router.post('/employee/changePassword', auth , UserController.changePasswordEmp);
-
+router.post('/employee/changePassword', auth , allowEmployee, allowBreeder, allowAdmin, authenticateRole, UserController.changePasswordEmp);
 
 
 router.post('/setupwizard', auth, allowBreeder, authenticateRole, UserController.setupWizard)
