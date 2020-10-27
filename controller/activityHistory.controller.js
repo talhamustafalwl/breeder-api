@@ -69,21 +69,21 @@ class ActivityController {
             const cleaning = await ActivityHistory.aggregate([
                 { $match: conditions },
                 {
-                $lookup: {
-                    from: tableName,
-                    localField: matchedBy,
-                    foreignField: "_id",
-                    as: matchedBy,
+                  $lookup: {
+                      from: tableName,
+                      localField: matchedBy,
+                      foreignField: "_id",
+                      as: matchedBy,
+                  },
                 },
-                },
-                { $unwind: { path: `$${matchedBy}` } },
+                // { $unwind: { path: `$${matchedBy}` } },
                 {
-                $lookup: {
-                    from: "users",
-                    localField: "addedBy",
-                    foreignField: "_id",
-                    as: "addedBy",
-                },
+                  $lookup: {
+                      from: "users",
+                      localField: "addedBy",
+                      foreignField: "_id",
+                      as: "addedBy",
+                  },
                 },
                 { $unwind: { path: `$addedBy` } },
                 {
