@@ -22,11 +22,8 @@ const { registerUserWithRole } = require('../controller/user.controller');
 
 
 
-router.get('/allusers', (req, res) => {
-  User.find().then(result => {
-    res.status(200).send({ status: 200, result });
-  });
-});
+router.get('/allusers', auth, allowAdmin, authenticateRole, UserController.getAllUsers);
+router.get('/detail/:id', auth, allowAdmin, authenticateRole, UserController.getUserDetailById);
 
 
 

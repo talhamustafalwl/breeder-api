@@ -5,6 +5,120 @@ const { User } = require("../models/User");
 const { Expo }=require('expo-server-sdk');
 const { validateNotificationInput } = require("../validation/notification");
 const userController = require("./user.controller");
+const moment = require('moment');
+const cron = require('node-cron');
+const { Activity } = require("../models/Activity/Activity");
+
+
+      async function getDayFunc() {
+        var d = new Date();
+        var weekday = new Array(7);
+        weekday[0] = "Sun";
+        weekday[1] = "Mon";
+        weekday[2] = "Tue";
+        weekday[3] = "Wed";
+        weekday[4] = "Thu";
+        weekday[5] = "Fri";
+        weekday[6] = "Sat";
+
+        var n = weekday[d.getDay()];
+      return n
+      }
+
+
+
+      async function getMonthFunc() {
+        var d = new Date();
+        var month = new Array();
+        month[0] = "Jan";
+        month[1] = "Feb";
+        month[2] = "Mar";
+        month[3] = "Apr";
+        month[4] = "May";
+        month[5] = "Jun";
+        month[6] = "July";
+        month[7] = "Aug";
+        month[8] = "Sep";
+        month[9] = "Oct";
+        month[10] = "Nov";
+        month[11] = "Dec";
+        var n = month[d.getMonth()];
+      return n
+      }
+
+    async function calDateDiff(time,timePeriod) {
+      let create=false;
+      let date=new Date()
+      let tp=timePeriod === "A.M" ? "am" :"pm"
+      time.map((e)=>{
+      var startTime = moment(`${date.getHours()+2 }:${date.getMinutes()}} pm`, "HH:mm a");
+        var endTime = moment(`${e} ${tp}`, "HH:mm a");
+
+        var duration = moment.duration(endTime.diff(startTime));
+        var hours = parseInt(duration.asHours());
+        var minutes = parseInt(duration.asMinutes())%60;
+        console.log(hours + ' hour and '+ minutes+' minutes.')
+        if(hours === 0 && (minutes > 0 && minutes > -20)){
+          console.log("create==>",hours + ' hour and '+ minutes+' minutes.')
+          create=true
+        }
+      })
+      return create
+    }
+
+    async function ReminderNotificationCheck(data) {
+      let create,date=new Date();
+      switch (data.period) {
+        case "Yearly":
+          if(!data.years.includes(date.getFullYear())){
+            console.log("year not matched")
+            return false;
+           }
+        case "Montly":
+          let month=await getMonthFunc()
+          if(!data.months.includes(month)){
+            console.log("month not matched")
+            return false;
+           }
+  
+        case "Weekly":
+          let day=await getDayFunc()
+         if(!data.days.includes(day)){
+           console.log("week not matched")
+           return false;
+         }
+         case "Daily":
+          case "Once":
+          create=await calDateDiff( data.time, data.timePeriod)
+          console.log("===>>>>",create,"==>>",data._id)
+          return create
+        default:
+          return false;
+      }
+    }
+
+  cron.schedule('*/5  * * * *',async () => {
+    let create;
+    let obj=new NotificationController()
+    console.log('running a task every 5 min');
+    try{
+    let data=await Activity.find({}).populate("employeeId","deviceToken")
+    if(data.length > 0){
+      data.map(async (e)=>{
+        create=await ReminderNotificationCheck(e)
+        console.log(create)
+        if(create){
+          obj.reminderNotificationUpdated(e)
+        }
+      })
+       
+    }
+    }
+    catch{
+      console.log("error")
+    }
+  });
+
 
 class NotificationController {
   constructor() {
@@ -242,6 +356,39 @@ class NotificationController {
   }
 
 
+    //breeder reminders
+    async reminderNotificationUpdated(req, res) {
+      console.log(req)
+      try {
+        const data={
+          title: req.categoryName, //req.categoryType
+          description: req.description,
+          userId: req.breederId,
+          breederId: req.breederId,
+          notificationType: "employee",
+          notificationSubType: "reminder",
+          categoryType:req.categoryType,
+          assignToType:req.assignToType,
+          animalId:req.animalId,
+          groupId:req.groupId,
+        }
+        let allEmployees=req.employeeId.map(e=> e._id)
+        let tokens=req.employeeId.map(e=> e.deviceToken)
+        await this.ExpoNotification(tokens,data)
+        try {      
+          const notification= await new Notification({...data,...{allEmployees},...{animalId:req.animalId}})
+          await notification.save()
+          console.log( "Reminder Notification created successfully")
+            } catch (err) {
+              console.log( "Reminder Notification error",err)
+      }
+      }
+      catch(err) {
+        console.log( "Reminder error",err)
+      }
+
+    }
+
 
    //breeder create notifications
    async addNotificationUpdated(req, res) {
@@ -304,12 +451,13 @@ class NotificationController {
 
       
     async ExpoNotification(tokens,data){
+      console.log("ExpoNotification")
       let expo = new Expo();
       let messages = [];
       //let arrayOfTokens=["ExponentPushToken[mn1etSOV8gRoj0sNXQ4_0o]","ExponentPushToken[KTCVnDN-dNjqLlD02M3xuR]"]
       for (let pushToken of tokens) {
         if (!Expo.isExpoPushToken(pushToken)) {
-          //console.error(`Push token ${pushToken} is not a valid Expo push token`);
+          console.error(`Push token ${pushToken} is not a valid Expo push token`);
           continue;
         }
       

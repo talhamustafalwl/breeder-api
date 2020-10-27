@@ -217,15 +217,17 @@ class ProductController {
     }
   }
 
-  async updatebyId(req, res) {
-    //const {name,active}=req.body
-console.log("--->>",req.body)
+  async updatebyId(req, res, next) {
+    console.log("<<===",req.body);
+    if (req.file) {
+      req.body.image = req.file.filename;
+    }
+    req.body.data = JSON.parse(req.body.data);
     try {
-      const products = await Product.updateOne(
+      const products = await Product.findOneAndUpdate(
         { _id: req.params.id },
-        req.body
+        req.body, {new: true}
       );
-
       return res.status(200).json({
         status: 200,
         message: "Product updated successfully",

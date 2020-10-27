@@ -1,21 +1,50 @@
 const { Subscription } = require("../models/Subscription/Subscription");
 const { validateSubscriptionInput } = require("../validation/subscription");
+const config = require("../config/key");
+
 class SubscriptionController {
     constructor() { }
 
     //breeder and employee can create
-    async create(req,res){
+    async create(req,res) {
+      console.log('creating subscription..');
       const { errors, isValid } = validateSubscriptionInput(req.body);
       // Check validation
       if (!isValid) {
         return res.json({ status: 400, message: "errors present", errors: errors, data: {} });
       }
 
-        try {      
-            const animal = await new Subscription(req.body)
-            const doc=await animal.save()
-            return res.status(200).json({ status: 200, message: "Subscription  created successfully", data: doc });
+        try {    
+          console.log(req.body);  
+            if(req.body.defaultPackage === 'true') {
+              Subscription.findOne({defaultPackage: true}).then(async result => {
+                if(result) return res.json({ status: 400, message: "Default Package is already exist!", data: {} });
+                const animal = await new Subscription(
+                  {
+                    ...req.body,
+                    icon: req.file ? req.file.filename: null, 
+                    currency: 'USD',
+      
+                  }
+                  )
+                  const doc=await animal.save()
+                  return res.status(200).json({ status: 200, message: "Subscription  created successfully", data: doc });
+              })
+            } else {
+              const animal = await new Subscription(
+                {
+                  ...req.body,
+                  icon: req.file ? req.file.filename: null, 
+                  currency: 'USD',
+    
+                }
+                )
+                const doc=await animal.save()
+                return res.status(200).json({ status: 200, message: "Subscription  created successfully", data: doc });
+            }
+           
         } catch (err) {
+          console.log(err);
             return res.json({ status: 400, message: "Error in creating Subscription ", errors: err, data: {} });
         }
     }
@@ -24,7 +53,7 @@ class SubscriptionController {
     async getall(req, res) {
         try {
           const feed = await Subscription.find({});
-          return res.status(200).json({ status: 200, message: "All Subscriptions", data: feed });
+          return res.status(200).json({ status: 200, message: "All Subscriptions", data: feed.map(e=>e.toObject()).map(e => ({...e,   icon: e.icon ?  `${config.baseImageURL}${e.icon}` : null,})) });
         } catch (err) {
           return res.json({ status: 400, message: "Error in get Subscriptions", errors: err, data: {} });
         }

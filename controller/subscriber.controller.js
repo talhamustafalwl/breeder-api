@@ -11,6 +11,33 @@ class SubscriberController {
   constructor() {}
 
 
+  async initialSubscribeBreeder (breederId) {
+      return new Promise((resolve, reject) => {
+        Subscription.findOne({defaultPackage: true}).then((result) => {
+          console.log(result);
+          // subscribe package monthly..
+          const subscriber = new Subscriber({
+            userType: "breeder",
+            userId: breederId,
+            fromDate: new Date(),
+            // toDate: new Date(Date.now() +  * 24 * 60 * 60 * 1000),
+            toDate: new Date(new Date().setMonth(new Date().getMonth()+1)),
+            subscriptionId: result._id,
+            type: 'monthly'
+          });
+  
+  
+          subscriber.save().then(subscriberResult => {
+            resolve(subscriberResult);
+          }).catch(error => {
+            reject(error);
+          });
+        });
+      });    
+  }
+
+
+
 
   async createCard(req, res) {
     // PaymentSesrvice.createCardToken('4242424242424242', 10, 2021,'314').then(result => {

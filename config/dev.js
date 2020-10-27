@@ -3,32 +3,31 @@ module.exports = {
   //   mongoURI:'mongodb://localhost:27017/breeder_official'
 
 
-  // Server: 'https://breeder-livewireapps-api.herokuapp.com',
-  // webServer: 'https://breeder-dev.herokuapp.com',
-  // baseAPIUrl: 'https://breeder-livewireapps-api.herokuapp.com/',
-  // baseImageURL: 'https://breeder-livewireapps-api.herokuapp.com/uploads/images/',
-  // serverURL: 'https://breeder-livewireapps-api.herokuapp.com',
-  // imageURL: 'https://breeder-livewireapps-api.herokuapp.com/uploads/images/form/',
-  // baseDocumentURL: 'https://breeder-livewireapps-api.herokuapp.com/uploads/documents/',
-
+  // Server: 'http://192.168.137.36:5000',
+  // webServer: 'http://192.168.137.36:5000',
+  // baseAPIUrl: 'http://192.168.137.36:5000/',
+  // baseImageURL: 'http://192.168.137.36:5000/api/uploads/images/',
+  // serverURL: 'http://192.168.137.36:5000',
+  // imageURL: 'http://192.168.137.36:5000/uploads/images/form/',
+  // baseDocumentURL: 'http://192.168.137.36:5000/api/uploads/documents/',
   
 
   // Server: 'http://192.168.88.129:5000',
   // webServer: 'http://192.168.88.129:5000',
   // baseAPIUrl: 'http://192.168.88.129:5000/',
-  // baseImageURL: 'http://192.168.88.129:5000/uploads/images/',
+  // baseImageURL: 'http://192.168.88.129:5000/api/uploads/images/',
   // serverURL: 'http://192.168.88.129:5000',
   // imageURL: 'http://192.168.88.129:5000/uploads/images/form/',
-  // baseDocumentURL: 'http://192.168.88.129:5000/uploads/documents/',
+  // baseDocumentURL: 'http://192.168.88.129:5000/api/uploads/documents/',
 
 
-  // Server: 'http://localhost:5000',
+  // Server: 'http://localhost:5000/api',
   // webServer: 'http://localhost:3000',
-  // baseAPIUrl: 'http://localhost:5000/',
-  // baseImageURL: 'http://localhost:5000/uploads/images/',
-  // serverURL: 'http://localhost:5000',
-  // imageURL: 'http://localhost:5000/uploads/images/form/',
-  // baseDocumentURL: 'http://localhost:5000/uploads/documents/',
+  // baseAPIUrl: 'http://localhost:5000/api/',
+  // baseImageURL: 'http://localhost:5000/api/uploads/images/',
+  // serverURL: 'http://localhost:5000/api',
+  // imageURL: 'http://localhost:5000/api/uploads/images/form/',
+  // baseDocumentURL: 'http://localhost:5000/api/uploads/documents/',
 
   // Server: 'https://breeder-api.herokuapp.com',
   // webServer: 'https://breeder-dev.herokuapp.com',

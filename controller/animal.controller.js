@@ -8,6 +8,8 @@ const { baseImageURL, baseAPIUrl } = require("../config/key");
 const animal = require("../validation/animal");
 var async = require("async");
 const formController = require("./form.controller");
+const groupController = require("./group.controller");
+const { isForgotTokenActive } = require("./user.controller");
 
 class AnimalController {
   constructor() {}
@@ -18,7 +20,14 @@ class AnimalController {
       const animals = await Animal.find({});
       return res
         .status(200)
-        .json({ status: 200, message: "All Animals", data: animals });
+        .json({ status: 200, message: "All Animals", data: animals.map(e => ({
+          ...e.toObject(),
+          ...{
+            image: e.toObject().image
+              ? `${config.baseImageURL}${e.toObject().image}`
+              : null,
+          },
+        })) });
     } catch (err) {
       return res.json({
         status: 400,
@@ -183,18 +192,31 @@ class AnimalController {
   //only breeder owner and admin can delete animal
   async deleteanimal(req, res) {
     try {
-      const data = await Animal.findOne({ _id: req.params.id });
-      await LogicController.deleteqr(data);
-      // await LogicController.delete
-      const animal = await Animal.deleteOne({
-        _id: req.params.id,
-        breederId: req.user._id,
+      console.log('delete animal');
+      groupController.isAnimalAvailable(req.params.id).then(async resultGroup => {
+        console.log(resultGroup);
+          if(resultGroup)  return res.json({
+            status: 400,
+            message: "Can not remove! Animal is assign to group.",
+            data: {},
+          });
+          const data = await Animal.findOne({ _id: req.params.id });
+            await LogicController.deleteqr(data, data, (nextRes) => {
+              console.log(nextRes);
+            });
+            // await LogicController.delete
+            const animal = await Animal.deleteOne({
+              _id: req.params.id,
+              ...req.user.role.includes('admin') ? {}: {breederId: req.user._id},
+            });
+            return res.status(200).json({
+              status: 200,
+              message: "Animal deleted successfully",
+              data: animal,
+            });
       });
-      return res.status(200).json({
-        status: 200,
-        message: "Animal deleted successfully",
-        data: animal,
-      });
+
+      
     } catch (err) {
       console.log(err);
       return res.json({
@@ -443,7 +465,7 @@ class AnimalController {
         animaldata.save().then((_) => {
           return res.status(200).json({
             status: 200,
-            message: "Animals gallery images deleted successfully",
+            message: "Images deleted successfully",
           });
         });
       });
@@ -727,6 +749,9 @@ class AnimalController {
       async
         .eachSeries(animalArr, function updateObj(obj, done) {
           Animal.findById(obj.animalId).then((animalResult) => {
+            console.log(animalResult);
+            console.log(' ==== > animal result');
+            console.log(obj)
             const isBuyerAvailable = animalResult.buyer
               .map((e) => e.id)
               .includes(buyer);
@@ -747,6 +772,8 @@ class AnimalController {
               if (isBuyerAvailable) {
                 Animal.findOne({ sellerAnimalId: obj.animalId }).then(
                   (partnerAnimal) => {
+                    console.log('partner animal===> ');
+                    console.log(partnerAnimal);
                     partnerAnimal.aliveQuantity =
                       parseInt(partnerAnimal.aliveQuantity) +
                       parseInt(obj.quantity);
@@ -778,6 +805,7 @@ class AnimalController {
                 console.log(animalResult);
                 const newAnimal = new Animal({
                   ...animalResult,
+                  buyer: [],
                   breederId: buyer,
                   aliveQuantity: parseInt(obj.quantity),
                   soldQuantity: 0,

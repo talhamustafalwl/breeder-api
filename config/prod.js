@@ -21,13 +21,13 @@ module.exports = {
 
     
 
-    // Server: 'http://localhost:5000',
+    // Server: 'http://localhost:5000/api',
     // webServer: 'http://localhost:3000',
-    // baseAPIUrl: 'http://localhost:5000/',
-    // baseImageURL: 'http://localhost:5000/uploads/images/',
-    // serverURL: 'http://localhost:5000',
-    // imageURL: 'http://localhost:5000/uploads/images/form/',
-    // baseDocumentURL: 'http://localhost:5000/uploads/documents/',
+    // baseAPIUrl: 'http://localhost:5000/api/',
+    // baseImageURL: 'http://localhost:5000/api/uploads/images/',
+    // serverURL: 'http://localhost:5000/api',
+    // imageURL: 'http://localhost:5000/api/uploads/images/form/',
+    // baseDocumentURL: 'http://localhost:5000/api/uploads/documents/',
 
     // Server: 'https://breeder-api.herokuapp.com',
     // webServer: 'https://breeder-dev.herokuapp.com',
