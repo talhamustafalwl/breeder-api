@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { auth } = require("../middleware/auth");
+const { auth, allowAdmin, authenticateRole, allowBreeder, allowEmployee } = require("../middleware/auth");
 const { adminauth } = require("../middleware/adminauth");
 const SubscriptionController = require('../controller/subscription.controller');
 
+const {upload} = require('../middleware/multerimage');
 
-router.route('/').post(adminauth,SubscriptionController.create)
+router.route('/').post(auth, allowAdmin, authenticateRole, upload.single('file'), SubscriptionController.create)
   .delete(adminauth,SubscriptionController.deleteall)
-  .get(auth,SubscriptionController.getall)
+  .get(auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SubscriptionController.getall)
 
 
 //for see/delete/update subscription by id

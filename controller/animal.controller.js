@@ -18,7 +18,14 @@ class AnimalController {
       const animals = await Animal.find({});
       return res
         .status(200)
-        .json({ status: 200, message: "All Animals", data: animals });
+        .json({ status: 200, message: "All Animals", data: animals.map(e => ({
+          ...e.toObject(),
+          ...{
+            image: e.toObject().image
+              ? `${config.baseImageURL}${e.toObject().image}`
+              : null,
+          },
+        })) });
     } catch (err) {
       return res.json({
         status: 400,

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { adminauth } = require("../middleware/adminauth");
-const { auth, allowBreeder, authenticateRole,allowEmployee } = require("../middleware/auth");
+const { auth, allowBreeder, authenticateRole,allowEmployee, allowAdmin } = require("../middleware/auth");
 const { animalsubscriber } = require("../middleware/animalsubscriber");
 const AnimalController = require('../controller/animal.controller');
 const {upload, uploadDocument} = require('../middleware/multerimage');
@@ -22,7 +22,7 @@ router.get('/qrcode/:id', AnimalController.getQRCodeOfAnimal);
 // })
 
 //for admin crud can view all/delete all
-router.route('/all').get(adminauth, AnimalController.getall)
+router.route('/all').get(auth, allowAdmin, allowBreeder, authenticateRole, AnimalController.getall)
   .delete(adminauth,AnimalController.deleteall)
 
 

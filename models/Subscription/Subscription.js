@@ -7,10 +7,12 @@ const SubscriptionSchema = mongoose.Schema({
     type: {type: String},
     allowedAnimal: {type: Number,required:true},//quantity of allowed animals
     allowedEmp: {type: Number,required:true},//quantity of allowed employees
+    allowedProduct: {type: Number,required:true},//quantity of allowed products
     isActive: {type: Boolean,default:true},//false hide this
-    period: {type: Number,required:true},//number of days
     currency:{type:String,required:true},
-    price:{type:Number,required:true},
+    monthlyPrice:{type:Number,required:true},
+    yearlyPrice:{type:Number,required:true},
+    icon: {type: String},
     defaultPackage:{type:Boolean,default:false},
 }, { timestamps: true })
 

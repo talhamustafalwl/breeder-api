@@ -36,7 +36,7 @@ class UserController {
         try {
             return res.status(200).json({
                 status: 200, message: "auth user success", isAuth: true,
-                isAdmin: req.user.role === "admin" ? true : false,
+                isAdmin: req.user.role[0] === "admin" ? true : false,
                 data: {
                     _id: req.user._id,
                     email: req.user.email,
