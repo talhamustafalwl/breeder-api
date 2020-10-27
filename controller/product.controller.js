@@ -224,11 +224,10 @@ class ProductController {
     }
     req.body.data = JSON.parse(req.body.data);
     try {
-      const products = await Product.updateOne(
+      const products = await Product.findOneAndUpdate(
         { _id: req.params.id },
-        req.body
+        req.body, {new: true}
       );
-
       return res.status(200).json({
         status: 200,
         message: "Product updated successfully",

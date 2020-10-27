@@ -7,8 +7,8 @@ const NotificationSchema = mongoose.Schema({
     title:{type:String},
     description:{type:String,required:true},
     date:{type:Date,default:Date.now()},
-    animalId: {type: Schema.Types.ObjectId,
-        ref: 'Animal'},
+    animalId: [{type: Schema.Types.ObjectId,
+        ref: 'Animal'}],
     breederId: {type: Schema.Types.ObjectId,
         ref: 'User'},
     employeeId: [{type: Schema.Types.ObjectId,
@@ -20,6 +20,7 @@ const NotificationSchema = mongoose.Schema({
     type:{type:String,required:true, default: "staffnotification", enum: ["mynotification", "staffnotification"]},
     notificationType: {type:String,required:true, default: "employee", enum: ["breeder", "employee"]},
     notificationSubType: {type:String,required:true, default: "announcement", enum: ["reminder", "announcement"]},
+    categoryType: {type:String},//for reminder Activity
     priority:{type:String,required:true,default:"normal",
     enum: ["normal", "urgent","low"]}, 
 
