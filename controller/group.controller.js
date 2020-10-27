@@ -3,6 +3,18 @@ const { validateGroupInput } = require("../validation/group");
 class GroupController {
     constructor() { }
 
+
+    async isAnimalAvailable(animalId) {
+      console.log('animal available');
+      return new Promise((resolve, reject) => {
+        Group.find({animals: {$elemMatch: {id: animalId}}}).then(result => {
+          if(result[0]) resolve(true);
+          resolve(false);
+        });
+      });
+    }
+
+
     async create(req,res){
         const { errors, isValid } = validateGroupInput(req.body);
         if (!isValid) {

@@ -8,6 +8,8 @@ const { baseImageURL, baseAPIUrl } = require("../config/key");
 const animal = require("../validation/animal");
 var async = require("async");
 const formController = require("./form.controller");
+const groupController = require("./group.controller");
+const { isForgotTokenActive } = require("./user.controller");
 
 class AnimalController {
   constructor() {}
@@ -18,7 +20,14 @@ class AnimalController {
       const animals = await Animal.find({});
       return res
         .status(200)
-        .json({ status: 200, message: "All Animals", data: animals });
+        .json({ status: 200, message: "All Animals", data: animals.map(e => ({
+          ...e.toObject(),
+          ...{
+            image: e.toObject().image
+              ? `${config.baseImageURL}${e.toObject().image}`
+              : null,
+          },
+        })) });
     } catch (err) {
       return res.json({
         status: 400,
@@ -183,18 +192,31 @@ class AnimalController {
   //only breeder owner and admin can delete animal
   async deleteanimal(req, res) {
     try {
-      const data = await Animal.findOne({ _id: req.params.id });
-      await LogicController.deleteqr(data);
-      // await LogicController.delete
-      const animal = await Animal.deleteOne({
-        _id: req.params.id,
-        breederId: req.user._id,
+      console.log('delete animal');
+      groupController.isAnimalAvailable(req.params.id).then(async resultGroup => {
+        console.log(resultGroup);
+          if(resultGroup)  return res.json({
+            status: 400,
+            message: "Can not remove! Animal is assign to group.",
+            data: {},
+          });
+          const data = await Animal.findOne({ _id: req.params.id });
+            await LogicController.deleteqr(data, data, (nextRes) => {
+              console.log(nextRes);
+            });
+            // await LogicController.delete
+            const animal = await Animal.deleteOne({
+              _id: req.params.id,
+              ...req.user.role.includes('admin') ? {}: {breederId: req.user._id},
+            });
+            return res.status(200).json({
+              status: 200,
+              message: "Animal deleted successfully",
+              data: animal,
+            });
       });
-      return res.status(200).json({
-        status: 200,
-        message: "Animal deleted successfully",
-        data: animal,
-      });
+
+      
     } catch (err) {
       console.log(err);
       return res.json({
