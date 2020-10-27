@@ -41,6 +41,7 @@ class UserController {
                     _id: req.user._id,
                     email: req.user.email,
                     name: req.user.name,
+                    breederId:  req.user.breederId,
                     image: req.user.image ?  `${config.baseImageURL}${req.user.image}` : null,
                     setupWizardCompleted: req.user.setupWizardCompleted,
                     notificationSettings : req.user.notificationSettings,
