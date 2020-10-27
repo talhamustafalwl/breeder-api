@@ -217,9 +217,12 @@ class ProductController {
     }
   }
 
-  async updatebyId(req, res) {
-    //const {name,active}=req.body
-console.log("--->>",req.body)
+  async updatebyId(req, res, next) {
+    console.log("<<===",req.body);
+    if (req.file) {
+      req.body.image = req.file.filename;
+    }
+    req.body.data = JSON.parse(req.body.data);
     try {
       const products = await Product.updateOne(
         { _id: req.params.id },
