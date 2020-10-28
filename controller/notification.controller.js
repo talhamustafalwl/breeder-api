@@ -1,13 +1,14 @@
 const { sendMessage, sendBulkMessage } = require("../misc/fcm");
 const { Notification } = require("../models/Notification/Notification");
 const { User } = require("../models/User");
-
+const mongoose = require("mongoose");
 const { Expo }=require('expo-server-sdk');
 const { validateNotificationInput } = require("../validation/notification");
 const userController = require("./user.controller");
 const moment = require('moment');
 const cron = require('node-cron');
 const { Activity } = require("../models/Activity/Activity");
+const { query } = require("express");
 
 
       async function getDayFunc() {
@@ -51,14 +52,14 @@ const { Activity } = require("../models/Activity/Activity");
       let date=new Date()
       let tp=timePeriod === "A.M" ? "am" :"pm"
       time.map((e)=>{
-      var startTime = moment(`${date.getHours()+2 }:${date.getMinutes()}} pm`, "HH:mm a");
+      var startTime = moment(`${date.getHours() }:${date.getMinutes()}} pm`, "HH:mm a");
         var endTime = moment(`${e} ${tp}`, "HH:mm a");
 
         var duration = moment.duration(endTime.diff(startTime));
         var hours = parseInt(duration.asHours());
         var minutes = parseInt(duration.asMinutes())%60;
-        console.log(hours + ' hour and '+ minutes+' minutes.')
-        if(hours === 0 && (minutes > 0 && minutes > -20)){
+        //console.log(hours + ' hour and '+ minutes+' minutes.')
+        if(hours === 0 && (minutes >= 0 && minutes < 11)){
           console.log("create==>",hours + ' hour and '+ minutes+' minutes.')
           create=true
         }
@@ -97,16 +98,17 @@ const { Activity } = require("../models/Activity/Activity");
       }
     }
 
-  cron.schedule('*/5  * * * *',async () => {
+  cron.schedule('*/10 * * * *',async () => {
     let create;
     let obj=new NotificationController()
-    console.log('running a task every 5 min');
+    //console.log('running a task every 10 min');
     try{
     let data=await Activity.find({}).populate("employeeId","deviceToken")
+    .populate("groupId","employees")
     if(data.length > 0){
       data.map(async (e)=>{
         create=await ReminderNotificationCheck(e)
-        console.log(create)
+        //console.log(create)
         if(create){
           obj.reminderNotificationUpdated(e)
         }
@@ -227,14 +229,21 @@ class NotificationController {
 
 
     async getAll(req, res) {
+      let queryCreate={}
       const breederId =req.user.role == "employee" ? req.user.breederId : req.user._id;
-      console.log(req.query)
+      console.log("employee",req.user.role == "employee",req.query)
+      if(req.user.role == "employee"){
+         queryCreate={employeeId : mongoose.Types.ObjectId(req.user._id)}
+      }
+      console.log(queryCreate)
         try {
           const notifications= await Notification.find({breederId : breederId,
-             type: req.query &&  req.query.type ? req.query.type : "staffnotification"});
-          if(notifications== '') {
-            return res.json({ status: 400, message: "Invalid Id",  data: {} }); 
-          }
+             type: req.query &&  req.query.type ? req.query.type : "staffnotification",
+             ...queryCreate
+            });
+          // if(notifications== '') {
+          //   return res.json({ status: 200, message: "No Notification",  data: {} }); 
+          // }
           return res.status(200).json({ status: 200, message: "Notification",data: notifications});
         } catch (err) {
           return res.json({ status: 400, message: "Error in get Notification", errors: err, data: {} });
@@ -299,7 +308,7 @@ class NotificationController {
                 // ...(req.body.notificationType === "animal" ? {animalId: } : {}),
                 // ...(req.body.notificationType === "employee" ? employeeId : {}),
               }));
-              console.log(data);
+              //console.log(data);
 
               this.createMultiple(data, true).then(resultNotif => {
                 return res.status(200).json({
@@ -358,10 +367,24 @@ class NotificationController {
 
     //breeder reminders
     async reminderNotificationUpdated(req, res) {
-      console.log(req)
+      //console.log(req)
       try {
+        
+        let allEmployees,tokens;
+        if(req.assignToType === "Group"){
+          //console.log("-->>",req.groupId.map(e=> e.employees.map(e => e.id))[0])
+          allEmployees=req.groupId.map(e=> e.employees.map(e => e.id))[0]
+          tokens=await User.find({ _id: { $in:allEmployees }}).then(result => result.map(e => e.deviceToken))
+        }
+        else if(req.assignToType === "Animal"){
+         allEmployees=req.employeeId.map(e=> e._id)
+         tokens=req.employeeId.map(e=> e.deviceToken)
+        }
+        else{
+          return
+        }
         const data={
-          title: req.categoryName, //req.categoryType
+          title: req.categoryName,
           description: req.description,
           userId: req.breederId,
           breederId: req.breederId,
@@ -370,13 +393,14 @@ class NotificationController {
           categoryType:req.categoryType,
           assignToType:req.assignToType,
           animalId:req.animalId,
-          groupId:req.groupId,
+          employeeId:allEmployees,
+          groupId:req.groupId.map(e => e._id),
         }
-        let allEmployees=req.employeeId.map(e=> e._id)
-        let tokens=req.employeeId.map(e=> e.deviceToken)
+        
         await this.ExpoNotification(tokens,data)
-        try {      
-          const notification= await new Notification({...data,...{allEmployees},...{animalId:req.animalId}})
+        try {   
+          //console.log("data==>>",data,data.notificationSubType)   
+          const notification= await new Notification(data)
           await notification.save()
           console.log( "Reminder Notification created successfully")
             } catch (err) {
@@ -454,6 +478,7 @@ class NotificationController {
       console.log("ExpoNotification")
       let expo = new Expo();
       let messages = [];
+      console.log("tokens==>>",tokens)
       //let arrayOfTokens=["ExponentPushToken[mn1etSOV8gRoj0sNXQ4_0o]","ExponentPushToken[KTCVnDN-dNjqLlD02M3xuR]"]
       for (let pushToken of tokens) {
         if (!Expo.isExpoPushToken(pushToken)) {
