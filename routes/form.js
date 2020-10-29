@@ -9,9 +9,9 @@ router.get('/all/forms', auth, allowBreeder, allowAdmin, authenticateRole, FormC
 router.get('/byBreeder', auth, allowBreeder,allowEmployee, authenticateRole, FormController.getRegisteredFormsOfBreeder);
 
 router.get('/category/:categoryId', FormController.getFormByCategory)
-.get('/', auth, allowBreeder, authenticateRole, FormController.getAllForms)
+.get('/', auth, allowBreeder, allowAdmin, authenticateRole, FormController.getAllForms)
     .post('/', adminauth, FormController.addForm)
-    .put('/:id', auth, FormController.modifyForm)
+    .put('/:id', auth, allowAdmin, authenticateRole, FormController.modifyForm)
     .delete('/category/:categoryId/:id', auth, allowBreeder, allowAdmin, allowEmployee, authenticateRole, FormController.deleteFormByCategory);
 
 

@@ -13,6 +13,9 @@ const NotificationSchema = mongoose.Schema({
         ref: 'User'},
     employeeId: [{type: Schema.Types.ObjectId,
         ref: 'User'}],
+
+    groupId: [{type: Schema.Types.ObjectId,ref: 'Group'}],//for activityHistory
+    
     userId: {type: Schema.Types.ObjectId,
         ref: 'User'},
     locationId: {type: Schema.Types.ObjectId,
@@ -26,6 +29,8 @@ const NotificationSchema = mongoose.Schema({
 
     addedBy:{type:String,required:true,default:"breeder",
     enum: ["breeder", "admin"],},
+
+    assignToType:{type:String,enum: ["Animal", "Group"],},//for activityHistory
     
     status:{type:String,default:"unread",required:true,
         enum: ["unread", "read","deleted"]},

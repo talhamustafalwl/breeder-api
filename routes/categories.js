@@ -3,9 +3,11 @@ const router = express.Router();
 const { adminauth } = require("../middleware/adminauth");
 const { auth, allowBreeder, allowAdmin, allowEmployee, authenticateRole } = require("../middleware/auth");
 const CategoryController = require('../controller/category.controller');
+const {uploadCategory} = require('../middleware/multerimage');
+
 
 //create,delete category only by admin
-router.post("/", auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, CategoryController.create)
+router.post("/", auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, uploadCategory.single('file'), CategoryController.create)
 
 router.put('/addtype/:id', CategoryController.addType)
 
@@ -19,6 +21,7 @@ router.route('/:id').get(auth,CategoryController.getbyId)
   .delete(auth, allowBreeder, allowAdmin, authenticateRole ,CategoryController.deletebyId)
 .patch(auth, allowBreeder, allowAdmin, authenticateRole,CategoryController.updatebyId)
 
+router.patch('/update/:id', auth, allowAdmin, authenticateRole, uploadCategory.single('file'), CategoryController.updateCategoryById);
 
 
 // Inventory Section

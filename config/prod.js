@@ -45,7 +45,6 @@ module.exports = {
     imageURL: 'http://3.21.129.23/api/uploads/images/form/',
     baseDocumentURL: 'http://3.21.129.23/api/uploads/documents/',
 
-
     mailthrough: 'bilal@livewirelabs.co',
     sendgridAPIKey: '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',
     //stripe

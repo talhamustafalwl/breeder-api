@@ -19,6 +19,11 @@ const InvoiceSchema = mongoose.Schema({
         ref: 'User',
         required: true
     }, //belongs to which user
+    breederId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }, //belongs to which breederId
     isRemoved: {
         type: Boolean,
         default: false,
