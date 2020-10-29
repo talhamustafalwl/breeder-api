@@ -52,7 +52,7 @@ const { query } = require("express");
       let date=new Date()
       let tp=timePeriod === "A.M" ? "am" :"pm"
       time.map((e)=>{
-      var startTime = moment(`${date.getHours() }:${date.getMinutes()}} pm`, "HH:mm a");
+      var startTime = moment(`${date.getHours() }:${date.getMinutes()} pm`, "HH:mm a");
         var endTime = moment(`${e} ${tp}`, "HH:mm a");
 
         var duration = moment.duration(endTime.diff(startTime));
@@ -101,10 +101,10 @@ const { query } = require("express");
   cron.schedule('*/10 * * * *',async () => {
     let create;
     let obj=new NotificationController()
-    //console.log('running a task every 10 min');
+    console.log('running a task every 10 min',new Date);
     try{
     let data=await Activity.find({}).populate("employeeId","deviceToken")
-    .populate("groupId","employees")
+    .populate("groupId","employees animals")
     if(data.length > 0){
       data.map(async (e)=>{
         create=await ReminderNotificationCheck(e)
@@ -240,7 +240,7 @@ class NotificationController {
           const notifications= await Notification.find({breederId : breederId,
              type: req.query &&  req.query.type ? req.query.type : "staffnotification",
              ...queryCreate
-            });
+            }).sort({ createdAt: -1 });
           // if(notifications== '') {
           //   return res.json({ status: 200, message: "No Notification",  data: {} }); 
           // }
@@ -372,6 +372,8 @@ class NotificationController {
         
         let allEmployees,tokens;
         if(req.assignToType === "Group"){
+         
+          req.animalId=req.groupId.map(e=> e.animals.map(e => e.id))[0]
           //console.log("-->>",req.groupId.map(e=> e.employees.map(e => e.id))[0])
           allEmployees=req.groupId.map(e=> e.employees.map(e => e.id))[0]
           tokens=await User.find({ _id: { $in:allEmployees }}).then(result => result.map(e => e.deviceToken))

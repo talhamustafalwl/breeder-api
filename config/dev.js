@@ -3,21 +3,21 @@ module.exports = {
   //   mongoURI:'mongodb://localhost:27017/breeder_official'
 
 
-  // Server: 'http://192.168.137.36:5000',
-  // webServer: 'http://192.168.137.36:5000',
-  // baseAPIUrl: 'http://192.168.137.36:5000/',
+  // Server: 'http://192.168.137.36:5000/api',
+  // webServer: 'http://192.168.137.36:5000/api',
+  // baseAPIUrl: 'http://192.168.137.36:5000/api',
   // baseImageURL: 'http://192.168.137.36:5000/api/uploads/images/',
-  // serverURL: 'http://192.168.137.36:5000',
-  // imageURL: 'http://192.168.137.36:5000/uploads/images/form/',
+  // serverURL: 'http://192.168.137.36:5000/api',
+  // imageURL: 'http://192.168.137.36:5000/api/uploads/images/form/',
   // baseDocumentURL: 'http://192.168.137.36:5000/api/uploads/documents/',
   
 
-  Server: 'http://192.168.88.129:5000',
-  webServer: 'http://192.168.88.129:5000',
-  baseAPIUrl: 'http://192.168.88.129:5000/',
+  Server: 'http://192.168.88.129:5000/api',
+  webServer: 'http://192.168.88.129:5000/api',
+  baseAPIUrl: 'http://192.168.88.129:5000/api',
   baseImageURL: 'http://192.168.88.129:5000/api/uploads/images/',
-  serverURL: 'http://192.168.88.129:5000',
-  imageURL: 'http://192.168.88.129:5000/uploads/images/form/',
+  serverURL: 'http://192.168.88.129:5000/api',
+  imageURL: 'http://192.168.88.129:5000/api/uploads/images/form/',
   baseDocumentURL: 'http://192.168.88.129:5000/api/uploads/documents/',
 
 

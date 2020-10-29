@@ -5,7 +5,7 @@ const { auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole } = requ
 
 
 router.get('/breederListSimple', auth, allowBreeder, allowEmployee, authenticateRole, SaleControoler.getAllBreederListSimple)
-router.get('/breederSalesList/:buyerId', auth, allowBreeder, allowEmployee, authenticateRole, SaleControoler.getAllBreederSaleList)
+router.get('/breederSalesList/:buyerId', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SaleControoler.getAllBreederSaleList)
 router.get('/breederList', auth, allowBreeder, allowEmployee, authenticateRole, SaleControoler.getAllBreederList)
 
 

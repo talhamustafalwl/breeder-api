@@ -16,6 +16,14 @@ class SalesController {
     // Manage sales, installment and invoice.. 
 
     async saleAnimal(req, res, next) {
+        const getRandomId = (min = 0, max = 50000) => {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            const num =  Math.floor(Math.random() * (max - min + 1)) + min;
+            return num.toString().padStart(5, "0")
+          };
+
+
         try {
             const { buyerId, animals, installments, amount, tax, downpayment } = req.body;
             const {errors, isValid, isInstallment} = SaleValidation.validateSales(req.body);
@@ -36,7 +44,7 @@ class SalesController {
                 totalPrice: amount.totalPrice,
                 price: amount.subTotal,
                 isPaid: false,
-                saleUniqueId: '0000F',
+                saleUniqueId:  getRandomId(),
                 animals,
                 isInstallment, 
                 downpayment
@@ -44,10 +52,11 @@ class SalesController {
             sale.save().then(result => {
                 console.log('Sales added Successfully');
                 console.log(result);
+              
                 Promise.all([new Promise((resolve, reject) => {
                     // create invoice 
                     console.log('calling Add invoice');
-                    InvoiceController.addInvoice('sale', result._id, '0000', buyerId, req.user._id).then(resolve);
+                    InvoiceController.addInvoice('sale', result._id, getRandomId(), buyerId, req.user._id,breederId).then(resolve);
                 }),
                 new Promise((resolve, reject) => {
                     // updatemany animals
@@ -135,8 +144,10 @@ class SalesController {
     }
 
     async getAllBreederSaleList (req, res, next) {
+        //console.log("getAllBreederSaleList==>>")
+        let breederId;
         try {
-        const breeerId = (req.user.role[0] === 'breeder') ? req.user._id : req.user.breederId;
+            breederId = (req.user.role[0] === 'breeder') ? req.user._id : req.user.breederId;
         Sale.find({ breederId:breederId,buyerId: req.params.buyerId}).then(result => {
             return res.status(200).json({ status: 200, message: "Sales fetched successfully", data: result})
         })
@@ -190,16 +201,17 @@ class SalesController {
     async getSales(req, res, next) {
         try {
             const { type } = req.query;
+            const breederId = (req.user.role[0] === 'breeder') ? req.user._id : req.user.breederId;
             if(type === 'upcomming') {
-                Sale.find({isPaid: false, sellerId: req.user._id, }).populate('buyerId').then(resultSale => {
+                Sale.find({isPaid: false, breederId: breederId, }).sort({ createdAt: -1 }).populate('buyerId').then(resultSale => {
                     return res.status(200).json({ status: 200, message: "Sales Found successfully", data: resultSale });                        
                 });
             } else if(type === 'history') {
-                Sale.find({ sellerId: req.user._id, }).populate('buyerId').then(resultSale => {
+                Sale.find({ breederId: breederId, }).sort({ createdAt: -1 }).populate('buyerId').then(resultSale => {
                     return res.status(200).json({ status: 200, message: "Sales Found successfully", data: resultSale });                        
                 });
             } else if(type === 'invoice') {
-                InvoiceController.getAllInvoiceByBreeder(req.user._id).then(resultInvoice => {
+                InvoiceController.getAllInvoiceByBreeder(breederId).then(resultInvoice => {
                     // Sale.populate(resultInvoice, {path: 'saleId.animals.animalId'}).then(finalRes => {
                         return res.status(200).json({ status: 200, message: "Sales Invoice Found successfully", data: resultInvoice });                        
                     // })
