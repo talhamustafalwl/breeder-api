@@ -8,6 +8,7 @@ const { imageURL, baseImageURL } = require("../config/dev");
 const productController = require("./product.controller");
 const animalController = require("./animal.controller");
 const formController = require("./form.controller");
+const { removeQuote } = require("../middleware/constant");
 class CategoryController {
   constructor() {
     this.getInventoryByBreeder = this.getInventoryByBreeder.bind(this);
@@ -23,6 +24,7 @@ class CategoryController {
   //only admin
   async create(req, res) {
     const { name, active, parentId, type, icon, breeds } = req.body;
+    console.log(req.body);
     console.log(name);
     if (!name) {
       return res.json({
@@ -40,14 +42,21 @@ class CategoryController {
           message: "Category already exist!",
           data: {},
         });
+        if(req.body.type === 'animal') {
+          req.body.breeds = JSON.parse(req.body.breeds);
+          req.body.traits = JSON.parse(req.body.traits);
+        }
+        console.log(req.body );
         const animal = await new Category({
-          name,
-          active,
-          type,
-          parentId: parentId ? parentId : null,
-          icon: icon ? icon : null,
-          // breeds: breeds ? breeds.map(e => ({name: e, value: e.replace(/[\s,-]/g, "")})) : [],
-          breeds: breeds ? breeds : [],
+          ...req.body,
+          icon: req.file.filename,
+          // name,
+          // active,
+          // type,
+          // parentId: parentId ? parentId : null,
+          // icon: icon ? icon : null,
+          // // breeds: breeds ? breeds.map(e => ({name: e, value: e.replace(/[\s,-]/g, "")})) : [],
+          // breeds: breeds ? breeds : [],
           addedBy: req.user._id,
         });
         const doc = await animal.save();

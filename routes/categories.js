@@ -3,9 +3,11 @@ const router = express.Router();
 const { adminauth } = require("../middleware/adminauth");
 const { auth, allowBreeder, allowAdmin, allowEmployee, authenticateRole } = require("../middleware/auth");
 const CategoryController = require('../controller/category.controller');
+const {uploadCategory} = require('../middleware/multerimage');
+
 
 //create,delete category only by admin
-router.post("/", auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, CategoryController.create)
+router.post("/", auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, uploadCategory.single('file'), CategoryController.create)
 
 router.put('/addtype/:id', CategoryController.addType)
 
