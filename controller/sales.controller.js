@@ -4,6 +4,7 @@ const AnimalController = require('./animal.controller');
 const InstallmentController = require('./installment.controller');
 const SaleValidation = require('../validation/sals');
 const { User } = require("../models/User");
+const { baseImageURL } = require("../config/key");
 
 class SalesController {
 
@@ -236,10 +237,10 @@ class SalesController {
         try {
             Sale.findById(req.params.id).populate('buyerId').populate('animals.animalId').exec().then(resultSale => resultSale.toObject()).then(resultSale => {
                 if(!resultSale.isInstallment)  
-                return res.status(200).json({ status: 200, message: "Sales Found successfully", data: resultSale });                        
+                return res.status(200).json({ status: 200, message: "Sales Found successfully", data: {...{...resultSale, animals: resultSale.animals.map(e=> ({...e, animalId: {...e.animalId, image: e.image ? `${config.baseImageURL}${e.image}` : null}}))}} });                        
                 
                 InstallmentController.getSaleIntallment(req.params.id).then(resultInstallment => {
-                    return res.status(200).json({ status: 200, message: "Sales Found successfully", data: {...resultSale, installmentData: resultInstallment} });                        
+                    return res.status(200).json({ status: 200, message: "Sales Found successfully", data: {...{...resultSale, animals: resultSale.animals.map(e=> ({...e, animalId: {...e.animalId, image: e.image ? `${config.baseImageURL}${e.image}` : null}}))}, installmentData: resultInstallment} });                        
                 });
            
             });
