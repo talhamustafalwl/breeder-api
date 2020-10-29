@@ -1,14 +1,24 @@
 const { Category } = require("../models/Animal/Category");
 const { Animal } = require("../models/Animal/Animal");
 const { Product } = require("../models/Product");
+const { Form } = require("../models/Form/Form");
 
 const { restart } = require("nodemon");
 const { imageURL, baseImageURL } = require("../config/dev");
 const productController = require("./product.controller");
+const animalController = require("./animal.controller");
+const formController = require("./form.controller");
 class CategoryController {
   constructor() {
     this.getInventoryByBreeder = this.getInventoryByBreeder.bind(this);
+    this.deletebyId = this.deletebyId.bind(this);
   }
+
+
+
+
+
+
 
   //only admin
   async create(req, res) {
@@ -67,6 +77,7 @@ class CategoryController {
       console.log("getting categories");
       const category = await Category.find({
         ...req.query.type ? { type: req.query.type } : {},
+        ...(req.query.type==='animalproduct') ? {type: {$in: ['animal', 'product']}}: {},
         ...(req.query.type==="contact" || req.query.type==="activity") ? {addedBy: breederId}: {},
         }
       )
@@ -139,17 +150,82 @@ class CategoryController {
     }
   }
 
+  async isAnimalAvailableByCategory(categoryId) {
+    return new Promise((resolve, reject) => {
+      Animal.find({categoryId}).then(result => {
+        if(result[0]) resolve(true);
+        resolve(false);
+      });
+    });
+  }
+
+  async isProductAvailableByCategory(categoryId) {
+    return new Promise((resolve, reject) => {
+      Product.find({categoryId}).then(result => {
+        if(result[0]) resolve(true);
+        resolve(false);
+      })
+    });
+  }
+
+  async deleteFormByCategoryId(categoryId) {
+    return new Promise((resolve, reject) => {
+        Form.deleteOne({categoryId}).then(() => {
+           resolve(); 
+        }).catch((error) => {
+            reject(error);
+        })
+    });
+}
+
   async deletebyId(req, res) {
     try {
-      const category = await Category.deleteOne({ _id: req.params.id });
-      return res
-        .status(200)
-        .json({
-          status: 200,
-          message: "Category deleted successfully",
-          data: category,
+      Category.findById(req.params.id).then(async categoryResult => {
+        if(categoryResult.type === 'animal') {
+          let isAvailable = await this.isAnimalAvailableByCategory(req.params.id);
+          console.log('already available animal');
+          if(isAvailable)  return res.json({
+            status: 400,
+            message: "Can not remove! Animal is registered in this category.",
+            data: {},
+          });
+        } else if(categoryResult.type === 'product') {
+          let isAvailable = await this.isProductAvailableByCategory(req.params.id);
+          console.log('already available product');
+          if(isAvailable)  return res.json({
+            status: 400,
+            message: "Can not remove! Product is registered in this category.",
+            data: {},
+          });
+        }
+        console.log('then called delete !!!');
+        const category = await Category.deleteOne({ _id: req.params.id });
+        const form = await this.deleteFormByCategoryId(req.params.id).catch(error => {
+          console.log(error);
         });
+          
+        return res
+          .status(200)
+          .json({
+            status: 200,
+            message: "Category deleted successfully",
+            data: category,
+          });
+      });
+
+     
+
+      // animalController.isAnimalAvailableByCategory(req.params.id).then(isAvailable => {
+      //   if(isAvailable)  return res.json({
+      //     status: 400,
+      //     message: "Can not remove! Animal is registered in this category.",
+      //     data: {},
+      //   });
+       
+      // })
+     
     } catch (err) {
+      console.log (err);
       return res.json({
         status: 400,
         message: "Error in deleting Category",
@@ -158,6 +234,35 @@ class CategoryController {
       });
     }
   }
+
+
+  async updateCategoryById(req, res) {
+   
+  
+    try {
+      const category = await Category.updateOne(
+        { _id: req.params.id },
+        req.body
+      );
+
+      return res
+        .status(200)
+        .json({
+          status: 200,
+          message: "Category updated successfully",
+          data: category,
+        });
+    
+    } catch (err) {
+      return res.json({
+        status: 400,
+        message: "Error in updating Category",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
 
   async updatebyId(req, res) {
     const { name, active } = req.body;

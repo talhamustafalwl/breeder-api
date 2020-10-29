@@ -5,6 +5,17 @@ const configKey = require("../config/key");
 class ProductController {
   constructor() {}
 
+
+  
+  async isProductAvailableByCategory(categoryId) {
+    return new Promise((resolve, reject) => {
+      Product.find({categoryId}).then(result => {
+        if(result[0]) resolve(true);
+        resolve(false);
+      })
+    });
+  }
+
   async create(req, res, next) {
     console.log("<<===",req.body);
     const { errors, isValid } = validateProductInput(req.body);

@@ -19,6 +19,7 @@ router.route('/:id').get(auth,CategoryController.getbyId)
   .delete(auth, allowBreeder, allowAdmin, authenticateRole ,CategoryController.deletebyId)
 .patch(auth, allowBreeder, allowAdmin, authenticateRole,CategoryController.updatebyId)
 
+router.patch('/update/:id', auth, allowAdmin, authenticateRole, CategoryController.updateCategoryById);
 
 
 // Inventory Section
