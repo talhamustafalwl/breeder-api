@@ -28,6 +28,7 @@ const categorySchema = mongoose.Schema({
     },
     subType: [{type: String}],
     breeds: [{name: {type: String}, value: {type: String}}],
+    traits: [{name: {type: String}, value: {type: String}, breed: {type: String}}],
     subCategories: [{name: {type: String}, value: {type: String}}],
 }, { timestamps: true })
 

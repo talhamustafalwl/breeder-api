@@ -14,7 +14,18 @@ const { isForgotTokenActive } = require("./user.controller");
 class AnimalController {
   constructor() {}
 
+
+  async isAnimalAvailableByCategory(categoryId) {
+    return new Promise((resolve, reject) => {
+      Animal.find({categoryId}).then(result => {
+        if(result[0]) resolve(true);
+        resolve(false);
+      })
+    });
+  }
+
   //admin get delete all animals
+  
   async getall(req, res) {
     try {
       const animals = await Animal.find({});

@@ -95,7 +95,8 @@ class FormController {
                 });  
             } else  {
                 Form.find().populate('categoryId').exec().then(result => {
-                    return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data: result });
+                    const finalRes = result.map(e => ({...e.toObject(), ...{categoryId: {...e.categoryId.toObject(), ...{icon: `${config.imageURL}${e.categoryId.toObject().icon}` }}}}));
+                    return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data: finalRes });
                 });
             }
         } catch (err) {
@@ -276,6 +277,17 @@ class FormController {
         } catch(error) {
 
         }
+    }
+
+
+    async deleteFormByCategoryId(categoryId) {
+        return new Promise((resolve, reject) => {
+            Form.deleteOne({categoryId}).then(() => {
+               resolve(); 
+            }).catch((error) => {
+                reject(error);
+            })
+        });
     }
 
 
