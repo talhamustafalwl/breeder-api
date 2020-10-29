@@ -45,11 +45,13 @@ class CategoryController {
         if(req.body.type === 'animal') {
           req.body.breeds = JSON.parse(req.body.breeds);
           req.body.traits = JSON.parse(req.body.traits);
+        } else if(req.body.type === 'product') {
+          req.body.subCategories = JSON.parse(req.body.subCategories);
         }
         console.log(req.body );
         const animal = await new Category({
           ...req.body,
-          icon: req.file.filename,
+          icon: req.file ? req.file.filename : null,
           // name,
           // active,
           // type,
@@ -249,9 +251,16 @@ class CategoryController {
    
   
     try {
+      // if(req.body.type === 'animal') {
+      //   req.body.breeds = JSON.parse(req.body.breeds);
+      //   req.body.traits = JSON.parse(req.body.traits);
+      // } else if(req.body.type === 'product') {
+      //   req.body.subCategories = JSON.parse(req.body.subCategories);
+      // }
+      req.body.data = JSON.parse(req.body.data);
       const category = await Category.updateOne(
         { _id: req.params.id },
-        req.body
+        {...req.body.data, ...req.file ? {icon: req.file.filename} : {}},
       );
 
       return res
