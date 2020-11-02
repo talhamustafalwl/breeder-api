@@ -34,6 +34,7 @@ class SubscriptionController {
               const animal = await new Subscription(
                 {
                   ...req.body,
+                  defaultPackage: false,
                   icon: req.file ? req.file.filename: null, 
                   currency: 'USD',
     
