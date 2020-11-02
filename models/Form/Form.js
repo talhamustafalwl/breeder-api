@@ -35,6 +35,7 @@ const formStructureSchema = mongoose.Schema({
     minLength: { type: Number },
     maxLength: { type: Number },
     allowNumber: { type: Boolean },
+    allowString: { type: Boolean },
     decimalPlacesLength: { type: Number },
     allowString: { type: Boolean },
     allowSpecialCharacter: { type: Boolean },
