@@ -113,7 +113,7 @@ async getallbreeder(req, res) {
       return new Promise(async (resolve, reject) => {
         const invoice = await new Invoice({type, saleId, invoiceNumber, buyerId, sellerId,breederId});
         console.log('in add in voice resolve');
-        invoice.save().then(resolve).catch(reject);
+        invoice.save().then((reuslAddInvoice) => { console.log('addInvoice added Done'); resolve(); }).catch(reject);
       });
     }
 

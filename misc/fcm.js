@@ -55,4 +55,9 @@ module.exports.sendBulkMessage = (data=[]) => {
     // });
 }
 
+module.exports.sendSingleMessage = (value) => {
+    this.sendMessage(value.token, value.title, value.description, value.data);
+    return;
+}
+
 

@@ -8,6 +8,7 @@ class ActivityController {
   constructor() {}
 
   async create(req, res) {
+
     const { errors, isValid } = await validateActivity(req.body);
     // Check validation
     if (!isValid) {

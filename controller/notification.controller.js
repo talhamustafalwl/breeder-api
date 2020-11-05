@@ -1,126 +1,129 @@
-const { sendMessage, sendBulkMessage } = require("../misc/fcm");
+const {
+  sendMessage,
+  sendBulkMessage,
+  sendSingleMessage,
+} = require("../misc/fcm");
 const { Notification } = require("../models/Notification/Notification");
 const { User } = require("../models/User");
 const mongoose = require("mongoose");
-const { Expo }=require('expo-server-sdk');
+const { Expo } = require("expo-server-sdk");
 const { validateNotificationInput } = require("../validation/notification");
 const userController = require("./user.controller");
-const moment = require('moment');
-const cron = require('node-cron');
+const moment = require("moment");
+const cron = require("node-cron");
 const { Activity } = require("../models/Activity/Activity");
 const { query } = require("express");
 
+async function getDayFunc() {
+  var d = new Date();
+  var weekday = new Array(7);
+  weekday[0] = "Sun";
+  weekday[1] = "Mon";
+  weekday[2] = "Tue";
+  weekday[3] = "Wed";
+  weekday[4] = "Thu";
+  weekday[5] = "Fri";
+  weekday[6] = "Sat";
 
-      async function getDayFunc() {
-        var d = new Date();
-        var weekday = new Array(7);
-        weekday[0] = "Sun";
-        weekday[1] = "Mon";
-        weekday[2] = "Tue";
-        weekday[3] = "Wed";
-        weekday[4] = "Thu";
-        weekday[5] = "Fri";
-        weekday[6] = "Sat";
+  var n = weekday[d.getDay()];
+  return n;
+}
 
-        var n = weekday[d.getDay()];
-      return n
-      }
+async function getMonthFunc() {
+  var d = new Date();
+  var month = new Array();
+  month[0] = "Jan";
+  month[1] = "Feb";
+  month[2] = "Mar";
+  month[3] = "Apr";
+  month[4] = "May";
+  month[5] = "Jun";
+  month[6] = "July";
+  month[7] = "Aug";
+  month[8] = "Sep";
+  month[9] = "Oct";
+  month[10] = "Nov";
+  month[11] = "Dec";
+  var n = month[d.getMonth()];
+  return n;
+}
 
+async function calDateDiff(time, timePeriod) {
+  let create = false;
+  let date = new Date();
+  let tp = timePeriod === "A.M" ? "am" : "pm";
+  time.map((e) => {
+    var startTime = moment(
+      `${date.getHours()}:${date.getMinutes()} pm`,
+      "HH:mm a"
+    );
+    var endTime = moment(`${e} ${tp}`, "HH:mm a");
 
-
-      async function getMonthFunc() {
-        var d = new Date();
-        var month = new Array();
-        month[0] = "Jan";
-        month[1] = "Feb";
-        month[2] = "Mar";
-        month[3] = "Apr";
-        month[4] = "May";
-        month[5] = "Jun";
-        month[6] = "July";
-        month[7] = "Aug";
-        month[8] = "Sep";
-        month[9] = "Oct";
-        month[10] = "Nov";
-        month[11] = "Dec";
-        var n = month[d.getMonth()];
-      return n
-      }
-
-    async function calDateDiff(time,timePeriod) {
-      let create=false;
-      let date=new Date()
-      let tp=timePeriod === "A.M" ? "am" :"pm"
-      time.map((e)=>{
-      var startTime = moment(`${date.getHours() }:${date.getMinutes()} pm`, "HH:mm a");
-        var endTime = moment(`${e} ${tp}`, "HH:mm a");
-
-        var duration = moment.duration(endTime.diff(startTime));
-        var hours = parseInt(duration.asHours());
-        var minutes = parseInt(duration.asMinutes())%60;
-        //console.log(hours + ' hour and '+ minutes+' minutes.')
-        if(hours === 0 && (minutes >= 0 && minutes < 11)){
-          console.log("create==>",hours + ' hour and '+ minutes+' minutes.')
-          create=true
-        }
-      })
-      return create
-    }
-
-    async function ReminderNotificationCheck(data) {
-      let create,date=new Date();
-      switch (data.period) {
-        case "Yearly":
-          if(!data.years.includes(date.getFullYear())){
-            console.log("year not matched")
-            return false;
-           }
-        case "Montly":
-          let month=await getMonthFunc()
-          if(!data.months.includes(month)){
-            console.log("month not matched")
-            return false;
-           }
-  
-        case "Weekly":
-          let day=await getDayFunc()
-         if(!data.days.includes(day)){
-           console.log("week not matched")
-           return false;
-         }
-         case "Daily":
-          case "Once":
-          create=await calDateDiff( data.time, data.timePeriod)
-          console.log("===>>>>",create,"==>>",data._id)
-          return create
-        default:
-          return false;
-      }
-    }
-
-  cron.schedule('*/10 * * * *',async () => {
-    let create;
-    let obj=new NotificationController()
-    console.log('running a task every 10 min',new Date);
-    try{
-    let data=await Activity.find({}).populate("employeeId","deviceToken")
-    .populate("groupId","employees animals")
-    if(data.length > 0){
-      data.map(async (e)=>{
-        create=await ReminderNotificationCheck(e)
-        //console.log(create)
-        if(create){
-          obj.reminderNotificationUpdated(e)
-        }
-      })
-       
-    }
-    }
-    catch{
-      console.log("error")
+    var duration = moment.duration(endTime.diff(startTime));
+    var hours = parseInt(duration.asHours());
+    var minutes = parseInt(duration.asMinutes()) % 60;
+    //console.log(hours + ' hour and '+ minutes+' minutes.')
+    if (hours === 0 && minutes >= 0 && minutes < 11) {
+      console.log("create==>", hours + " hour and " + minutes + " minutes.");
+      create = true;
     }
   });
+  return create;
+}
 
+async function ReminderNotificationCheck(data) {
+  let create,
+    date = new Date();
+  switch (data.period) {
+    case "Yearly":
+      if (!data.years.includes(date.getFullYear())) {
+        console.log("year not matched");
+        return false;
+      }
+    case "Montly":
+      let month = await getMonthFunc();
+      if (!data.months.includes(month)) {
+        console.log("month not matched");
+        return false;
+      }
+
+    case "Weekly":
+      let day = await getDayFunc();
+      if (!data.days.includes(day)) {
+        console.log("week not matched");
+        return false;
+      }
+    case "Daily":
+    case "Once":
+      create = await calDateDiff(data.time, data.timePeriod);
+      console.log("===>>>>", create, "==>>", data._id);
+      return create;
+    default:
+      return false;
+  }
+}
+
+cron.schedule("*/10 * * * *", async () => {
+  let create;
+  let obj = new NotificationController();
+  console.log("running a task every 10 min", new Date());
+  try {
+    let data = await Activity.find({})
+      .populate("employeeId", "deviceToken")
+      .populate("groupId", "employees animals");
+    if (data.length > 0) {
+      data.map(async (e) => {
+        create = await ReminderNotificationCheck(e);
+        //console.log(create)
+        if (create) {
+          obj.reminderNotificationUpdated(e);
+        }
+      });
+    }
+  } catch {
+    console.log("error");
+  }
+});
 
 class NotificationController {
   constructor() {
@@ -129,7 +132,6 @@ class NotificationController {
     this.createMultiple = this.createMultiple.bind(this);
     this.addNotification = this.addNotification.bind(this);
     this.addNotificationUpdated = this.addNotificationUpdated.bind(this);
-    
   }
 
   transformData(data) {
@@ -158,8 +160,8 @@ class NotificationController {
     //   animalIdoremployeeId,
     // }
     return new Promise(async (resolve, reject) => {
-      if (isPush) sendBu(this.transformData(data));
-
+      if (isPush && data.token) sendSingleMessage(data);
+      // resolve(true);
       const notifications = await new Notification(data);
       await notifications
         .save()
@@ -172,26 +174,35 @@ class NotificationController {
     });
   }
 
-  async createMultiple(data, isPush) {  
+  async createMultiple(data, isPush) {
     return new Promise(async (resolve, reject) => {
-      console.log('Transforming data: ');
-      console.log(this.transformData(data));
-      if (isPush) sendBulkMessage(data.map(e => ({token: e.deviceToken, title: e.title, description: e.description, data: e.data})));
+      // console.log("Transforming data: ");
+      console.log('data is ===== > ', data);
+      // console.log(this.transformData(data));
+      if (isPush)
+        sendBulkMessage(
+          data.map((e) => ({
+            token: e.deviceToken,
+            title: e.title,
+            description: e.description,
+            data: e.data,
+          }))
+        );
       Notification.insertMany(data, (error, result) => {
-
-        if (error) reject(error);
-        resolve(result);
+        if (error) {
+          console.log(error);
+          reject(error);
+        }
+          resolve(result);
       });
     });
   }
-
 
   async NotifTest() {
     return new Promise(async (resolve, reject) => {
       sendBulkMessage([
         {
-          token:
-            "ExponentPushToken[mn1etSOV8gRoj0sNXQ4_0o]",
+          token: "ExponentPushToken[mn1etSOV8gRoj0sNXQ4_0o]",
           title: "Test notification from server",
           description: "This is test notification from the server",
           data: {},
@@ -210,7 +221,7 @@ class NotificationController {
 
   async createNotif(req, res) {
     console.log("in create notif");
-    this.testExpoNotification()
+    this.testExpoNotification();
     this.NotifTest().then((result) => {
       return res
         .status(200)
@@ -218,44 +229,50 @@ class NotificationController {
     });
   }
 
-
-
-
-
-
-
-
-
-
-
-    async getAll(req, res) {
-      let queryCreate={}
-      const breederId =req.user.role == "employee" ? req.user.breederId : req.user._id;
-      console.log("employee",req.user.role == "employee",req.query)
-      if(req.user.role == "employee"){
-         queryCreate={employeeId : mongoose.Types.ObjectId(req.user._id)}
-      }
-      console.log(queryCreate)
-        try {
-          const notifications= await Notification.find({breederId : breederId,
-             type: req.query &&  req.query.type ? req.query.type : "staffnotification",
-             ...queryCreate
-            }).sort({ createdAt: -1 });
-          // if(notifications== '') {
-          //   return res.json({ status: 200, message: "No Notification",  data: {} }); 
-          // }
-          return res.status(200).json({ status: 200, message: "Notification",data: notifications});
-        } catch (err) {
-          return res.json({ status: 400, message: "Error in get Notification", errors: err, data: {} });
-        }
+  async getAll(req, res) {
+    let queryCreate = {};
+    const breederId =
+      req.user.role == "employee" ? req.user.breederId : req.user._id;
+    console.log("employee", req.user.role == "employee", req.query);
+    if (req.user.role == "employee") {
+      queryCreate = { employeeId: mongoose.Types.ObjectId(req.user._id) };
     }
-
-
-
-
-
-
-
+    console.log(queryCreate);
+    try {
+      if (req.user.isAdmin) {
+        const notifications = await Notification.find({
+          type:
+            req.query && req.query.type ? req.query.type : "adminnotification",
+        }).sort({ createdAt: -1 });
+        // if(notifications== '') {
+        //   return res.json({ status: 200, message: "No Notification",  data: {} });
+        // }
+        return res
+          .status(200)
+          .json({ status: 200, message: "Notification", data: notifications });
+      } else {
+        const notifications = await Notification.find({
+          breederId: breederId,
+          type:
+            req.query && req.query.type ? req.query.type : "staffnotification",
+          ...queryCreate,
+        }).sort({ createdAt: -1 });
+        // if(notifications== '') {
+        //   return res.json({ status: 200, message: "No Notification",  data: {} });
+        // }
+        return res
+          .status(200)
+          .json({ status: 200, message: "Notification", data: notifications });
+      }
+    } catch (err) {
+      return res.json({
+        status: 400,
+        message: "Error in get Notification",
+        errors: err,
+        data: {},
+      });
+    }
+  }
 
   // Notificaiton routes...
 
@@ -280,7 +297,7 @@ class NotificationController {
           //   this.create(employee._id, 'mynotification',  'employee', 'Employee Registered Successfully', 'You have registered a new employee', req.user._id, null, success.data._id, req.user.deviceToken, true).then(resultNotifCreate => { });
           // });
 
-          User.find({ breederId:req.user._id, role: "employee" })
+          User.find({ breederId: req.user._id, role: "employee" })
             .then((allEmployees) => {
               // console.log(allEmployees);
 
@@ -295,29 +312,33 @@ class NotificationController {
               //   animalIdoremployeeId,
               // }
 
-              const data = allEmployees.map(e => e.toObject()).map((e) => ({
-                ...e,
-                title: req.body.title,
-                description: req.body.description,
-                userId: req.user._id,
-                breederId: req.user._id,
-                notificationType: req.body.notificationType,
-                notificationSubType: req.body.notificationSubType,
-                data: {},
-                employeeId: e._id,
-                // ...(req.body.notificationType === "animal" ? {animalId: } : {}),
-                // ...(req.body.notificationType === "employee" ? employeeId : {}),
-              }));
+              const data = allEmployees
+                .map((e) => e.toObject())
+                .map((e) => ({
+                  ...e,
+                  title: req.body.title,
+                  description: req.body.description,
+                  userId: req.user._id,
+                  breederId: req.user._id,
+                  notificationType: req.body.notificationType,
+                  notificationSubType: req.body.notificationSubType,
+                  data: {},
+                  employeeId: e._id,
+                  // ...(req.body.notificationType === "animal" ? {animalId: } : {}),
+                  // ...(req.body.notificationType === "employee" ? employeeId : {}),
+                }));
               //console.log(data);
 
-              this.createMultiple(data, true).then(resultNotif => {
-                return res.status(200).json({
-                  status: 200,
-                  message: "Notification created successfully",
+              this.createMultiple(data, true)
+                .then((resultNotif) => {
+                  return res.status(200).json({
+                    status: 200,
+                    message: "Notification created successfully",
+                  });
+                })
+                .catch((error) => {
+                  console.log(error);
                 });
-              }).catch(error => {
-                console.log(error);
-              });
 
               // this.sendNotifToAllEmployees(
               //   allEmployees,
@@ -364,60 +385,54 @@ class NotificationController {
     }
   }
 
+  //breeder reminders
+  async reminderNotificationUpdated(req, res) {
+    //console.log(req)
+    try {
+      let allEmployees, tokens;
+      if (req.assignToType === "Group") {
+        req.animalId = req.groupId.map((e) => e.animals.map((e) => e.id))[0];
+        //console.log("-->>",req.groupId.map(e=> e.employees.map(e => e.id))[0])
+        allEmployees = req.groupId.map((e) => e.employees.map((e) => e.id))[0];
+        tokens = await User.find({
+          _id: { $in: allEmployees },
+        }).then((result) => result.map((e) => e.deviceToken));
+      } else if (req.assignToType === "Animal") {
+        allEmployees = req.employeeId.map((e) => e._id);
+        tokens = req.employeeId.map((e) => e.deviceToken);
+      } else {
+        return;
+      }
+      const data = {
+        title: req.categoryName,
+        description: req.description,
+        userId: req.breederId,
+        breederId: req.breederId,
+        notificationType: "employee",
+        notificationSubType: "reminder",
+        categoryType: req.categoryType,
+        assignToType: req.assignToType,
+        animalId: req.animalId,
+        employeeId: allEmployees,
+        groupId: req.groupId.map((e) => e._id),
+      };
 
-    //breeder reminders
-    async reminderNotificationUpdated(req, res) {
-      //console.log(req)
+      await this.ExpoNotification(tokens, data);
       try {
-        
-        let allEmployees,tokens;
-        if(req.assignToType === "Group"){
-         
-          req.animalId=req.groupId.map(e=> e.animals.map(e => e.id))[0]
-          //console.log("-->>",req.groupId.map(e=> e.employees.map(e => e.id))[0])
-          allEmployees=req.groupId.map(e=> e.employees.map(e => e.id))[0]
-          tokens=await User.find({ _id: { $in:allEmployees }}).then(result => result.map(e => e.deviceToken))
-        }
-        else if(req.assignToType === "Animal"){
-         allEmployees=req.employeeId.map(e=> e._id)
-         tokens=req.employeeId.map(e=> e.deviceToken)
-        }
-        else{
-          return
-        }
-        const data={
-          title: req.categoryName,
-          description: req.description,
-          userId: req.breederId,
-          breederId: req.breederId,
-          notificationType: "employee",
-          notificationSubType: "reminder",
-          categoryType:req.categoryType,
-          assignToType:req.assignToType,
-          animalId:req.animalId,
-          employeeId:allEmployees,
-          groupId:req.groupId.map(e => e._id),
-        }
-        
-        await this.ExpoNotification(tokens,data)
-        try {   
-          //console.log("data==>>",data,data.notificationSubType)   
-          const notification= await new Notification(data)
-          await notification.save()
-          console.log( "Reminder Notification created successfully")
-            } catch (err) {
-              console.log( "Reminder Notification error",err)
+        //console.log("data==>>",data,data.notificationSubType)
+        const notification = await new Notification(data);
+        await notification.save();
+        console.log("Reminder Notification created successfully");
+      } catch (err) {
+        console.log("Reminder Notification error", err);
       }
-      }
-      catch(err) {
-        console.log( "Reminder error",err)
-      }
-
+    } catch (err) {
+      console.log("Reminder error", err);
     }
+  }
 
-
-   //breeder create notifications
-   async addNotificationUpdated(req, res) {
+  //breeder and admin create notifications
+  async addNotificationUpdated(req, res) {
     console.log(req.body);
     const { errors, isValid } = validateNotificationInput(req.body);
     // Check validation
@@ -430,39 +445,87 @@ class NotificationController {
       });
     }
     try {
-      if (req.user.role.includes("breeder")) {
-        let allEmployees;
-        if (req.body.employees === "all") {
-          allEmployees=await User.find({ breederId:req.user._id, role: "employee"})
-        }
-        else{
-          allEmployees=await User.find({ _id:req.body.employees})
-        }
-          const data={
-            title: req.body.title,
-            description: req.body.description,
-            userId: req.user._id,
-            breederId: req.user._id,
-            notificationType: req.body.notificationType,
-            notificationSubType: req.body.notificationSubType,
+      // if (req.user.role.includes("breeder")) {
+        let allUsers;
+        if (req.body.users === "all") {
+          if(req.user.isAdmin) {
+            allUsers = await User.find({
+              role: "breeder",
+            });
+          } else {
+            allUsers = await User.find({
+              breederId: req.user._id,
+              role: "employee",
+            });
           }
-          let employeeId=allEmployees.map(e=> e._id)
-          let tokens=allEmployees.map(e=> e.deviceToken)
-          await this.ExpoNotification(tokens,data)
-          try {      
-            const notification= await new Notification({...data,...{employeeId}})
-            const doc=await notification.save()
-            return res.status(200).json({ status: 200, message: "Notification created successfully", data: doc });
-        } catch (err) {
-            return res.json({ status: 400, message: "Notification created error", errors: err, data: {} });
+         
+        } else {
+          allUsers = await User.find({ _id: {$in: req.body.users} });
         }
-        }
+        const data = {
+          title: req.body.title,
+          description: req.body.description,
+          userId: req.user._id,
+          breederId: req.user._id,
+          notificationType: req.body.notificationType,
+          notificationSubType: req.body.notificationSubType,
+          type: req.body.type,
+        };
+        let usersId = allUsers.map(e=> e.toObject()).map((e) => e._id);
+        let tokens = allUsers.map(e=> e.toObject()).map((e) => e.deviceToken);
+        console.log(usersId);
+        if(req.user.isAdmin) {
 
-        else{
-          console.log("admin");
-          return
+          this.createMultiple(usersId.map(e => ({...data, breederId: e._id, deviceToken: e.deviceToken, data: {} })), true).then(notificationResult => {
+            return res
+            .status(200)
+            .json({
+              status: 200,
+              message: "Notification created successfully",
+            });
+          }).catch(error => {
+            console.log(error);
+            return res.json({
+              status: 400,
+              message: "Notification created error",
+              errors: error,
+              data: {},
+            });
+          })
+          
+        } else {
+          await this.ExpoNotification(tokens, data);
+          try {
+            const notification = await new Notification({
+              ...data,
+              ...{ employeeId: usersId },
+            });
+            const doc = await notification.save();
+            return res
+              .status(200)
+              .json({
+                status: 200,
+                message: "Notification created successfully",
+                data: doc,
+              });
+          } catch (err) {
+            return res.json({
+              status: 400,
+              message: "Notification created error",
+              errors: err,
+              data: {},
+            });
+          }
         }
-    
+        
+      // } else {
+      //   if(req.user.isAdmin) {
+
+      //   } else {
+      //     console.log("admin");
+      //     return;
+      //   }
+      // }
     } catch (err) {
       console.log(err);
       return res.json({
@@ -474,43 +537,40 @@ class NotificationController {
     }
   }
 
-
-      
-    async ExpoNotification(tokens,data){
-      console.log("ExpoNotification")
-      let expo = new Expo();
-      let messages = [];
-      console.log("tokens==>>",tokens)
-      //let arrayOfTokens=["ExponentPushToken[mn1etSOV8gRoj0sNXQ4_0o]","ExponentPushToken[KTCVnDN-dNjqLlD02M3xuR]"]
-      for (let pushToken of tokens) {
-        if (!Expo.isExpoPushToken(pushToken)) {
-          console.error(`Push token ${pushToken} is not a valid Expo push token`);
-          continue;
-        }
-      
-        messages.push({
-          to: pushToken,sound: 'default',
-          title: data.title,
-          body: data.description,
-          data: data,
-        })
-      }
-      let chunks = expo.chunkPushNotifications(messages);
-      let tickets = [];
-      (async () => {
-        for (let chunk of chunks) {
-          try {
-            let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
-           // console.log(ticketChunk);
-            tickets.push(...ticketChunk);
-          } catch (error) {
-            console.error(error);
-          }
-        }
-      })();
-
+  async ExpoNotification(tokens, data) {
+    console.log("ExpoNotification");
+    let expo = new Expo();
+    let messages = [];
+    console.log("tokens==>>", tokens);
+    //let arrayOfTokens=["ExponentPushToken[mn1etSOV8gRoj0sNXQ4_0o]","ExponentPushToken[KTCVnDN-dNjqLlD02M3xuR]"]
+    for (let pushToken of tokens) {
+      if (!Expo.isExpoPushToken(pushToken)) {
+        console.error(`Push token ${pushToken} is not a valid Expo push token`);
+        continue;
       }
 
+      messages.push({
+        to: pushToken,
+        sound: "default",
+        title: data.title,
+        body: data.description,
+        data: data,
+      });
+    }
+    let chunks = expo.chunkPushNotifications(messages);
+    let tickets = [];
+    (async () => {
+      for (let chunk of chunks) {
+        try {
+          let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+          // console.log(ticketChunk);
+          tickets.push(...ticketChunk);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    })();
+  }
 }
 
 module.exports = new NotificationController();
