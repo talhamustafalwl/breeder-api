@@ -93,9 +93,9 @@ class InstallmentController {
     }
   }
 
-  async addSaleInstallment(invoiceId, salesId, installment) {
+  async addSaleInstallment(salesId, installment) {
     return new Promise((resolve, reject) => {
-      const data = installment.map(e => ({ ...{ invoiceId, salesId }, ...e }));
+      const data = installment.map(e => ({ ...{ salesId }, ...e }));
       console.log('Adding sale installmnt');
       console.log(data);
       // installment contains amount startDate endDate isPaid and reminded
@@ -107,10 +107,37 @@ class InstallmentController {
     });
   }
 
+  async addSingleSaleInstallment(salesId, installment) {
+    return new Promise((resolve, reject) => {
+      // installment contains amount startDate endDate isPaid and reminded
+      console.log(installment);
+      Installment.create({ ...{ salesId }, ...installment }, (err, result) => {
+        console.log(err);
+        console.log(result);
+        if(err) return reject(true);
+        return resolve(result);
+      });
+    });
+  }
+
   async getSaleIntallment(salesId) {
     return new Promise((resolve, reject) => {
       Installment.find({salesId}).exec().then(resolve).catch(reject);
     });  
+  }
+
+  async payIntallment(req, res, next) {
+    try {
+      const {id} = req.params;
+      console.log(id);
+      Installment.updateOne({_id: id}, {$set: {isPaid: true}}).then(resultInstallment => {
+        return res.status(200).json({ status: 200, message: "Installment paid successfully", data: resultInstallment });
+      }).catch(error => {
+        return res.json({ status: 400, message: "Error in updating Installment", errors: error, data: {} });
+      });
+    } catch(error) {
+      return next(error);
+    }
   }
 
 };

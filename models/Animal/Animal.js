@@ -89,6 +89,10 @@ const AnimalSchema = mongoose.Schema({
         type: Number,
         default: 0,
     },
+    soldQuantityPending:  {
+        type: Number,
+        default: 0,
+    },
     deadQuantity: {
         type: Number,
         default: 0,

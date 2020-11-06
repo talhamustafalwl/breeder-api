@@ -1,4 +1,5 @@
 const { Sale } = require('../models/Sales');
+const { Animal } = require("../models/Animal/Animal");
 const InvoiceController = require('./invoice.controller');
 const AnimalController = require('./animal.controller');
 const InstallmentController = require('./installment.controller');
@@ -28,6 +29,7 @@ class SalesController {
         try {
             const { buyerId, animals, installments, amount, tax, downpayment } = req.body;
             const {errors, isValid, isInstallment} = SaleValidation.validateSales(req.body);
+            console.log(installments);
             if(!isValid)  return res.json({ status: 400, message: "errors present", errors: errors });
             
             // if (!(animals && animals[0])) {
@@ -54,33 +56,42 @@ class SalesController {
                 console.log('Sales added Successfully');
                 console.log(result);
               
-                Promise.all([new Promise((resolve, reject) => {
-                    // create invoice 
-                    console.log('calling Add invoice');
-                    InvoiceController.addInvoice('sale', result._id, getRandomId(), buyerId, req.user._id,breederId).then(resolve);
-                }),
-                new Promise((resolve, reject) => {
-                    // updatemany animals
-                    console.log('calling update animal after sales')
-                    AnimalController.updateAnimalAfterSale(animals, buyerId, req.user._id ).then(resolve);
-                    
-                })
-                ]).then(([resInvoice, resAnimal]) => {
+                // Promise.all([
+                // new Promise((resolve, reject) => {
+                //     // updatemany animals
+                //     console.log('calling update animal after sales')
+                   
+                // })
+                // ])
+                
+                AnimalController.updateAnimalAfterSale(animals, buyerId, req.user._id ).then((resultAnimal) => {
                     // Create installment if any..
-                    console.log(resAnimal);
                     console.log('result animal and is installment available');
                     console.log(isInstallment);
                     if(isInstallment) {
+                        console.log('in installments ========================== > ');
                         // trigger email with installment..
-                        InstallmentController.addSaleInstallment(resInvoice._id, result._id,  installments).then(resInstallment => {
-                            return res.status(200).json({ status: 200, message: "Installment and sales added successfully" });
-                        }).catch(errorInstallment => {
-                            console.log(errorInstallment);
-                            return res.json({ status: 400, message: "Error in adding installments", errors: errorInstallment, data: {} });
-                        })
+                        for(let installment of installments) {
+                            console.log('installment isss ================= ');
+                            console.log(installment);
+                            InstallmentController.addSingleSaleInstallment(result._id,  installment).then(resInstallment => {
+                                InvoiceController.addInvoice( 'sale', result._id, getRandomId(), buyerId, req.user._id, (req.user.role[0] === 'employee') ? req.user.breederId : req.user._id, resInstallment._id,).then(resolve => {
+                                    return res.status(200).json({ status: 200, message: "Sales added successfully" });  
+                                });
+                            }).catch(errorInstallment => {
+                                console.log(errorInstallment);
+                                // return res.json({ status: 400, message: "Error in adding installments", errors: errorInstallment, data: {} });
+                            })
+                        }
+                        return res.status(200).json({ status: 200, message: "Installment and sales added successfully" });
+                        
                     } else {
                         // trigger email without installment..
-                        return res.status(200).json({ status: 200, message: "Sales added successfully" });                        
+
+                        InvoiceController.addInvoice('sale', result._id, getRandomId(), buyerId, req.user._id, (req.user.role[0] === 'employee') ? req.user.breederId : req.user._id).then(resolve => {
+                            return res.status(200).json({ status: 200, message: "Sales added successfully" });  
+                        });
+                                              
                     }
                 });
             }).catch(error => {
@@ -92,6 +103,89 @@ class SalesController {
             return next(error);
         }
     }
+
+
+
+
+
+
+
+    // async saleAnimal(req, res, next) {
+    //     const getRandomId = (min = 0, max = 50000) => {
+    //         min = Math.ceil(min);
+    //         max = Math.floor(max);
+    //         const num =  Math.floor(Math.random() * (max - min + 1)) + min;
+    //         return num.toString().padStart(5, "0")
+    //       };
+
+
+    //     try {
+    //         const { buyerId, animals, installments, amount, tax, downpayment } = req.body;
+    //         const {errors, isValid, isInstallment} = SaleValidation.validateSales(req.body);
+    //         if(!isValid)  return res.json({ status: 400, message: "errors present", errors: errors });
+            
+    //         // if (!(animals && animals[0])) {
+    //         //     return res.status(400).send({ status: 400, message: "At least one animal entry required!" });
+    //         // }
+
+    //         // add sale with animal array
+    //         console.log(amount.subTotal);
+    //         const sale = new Sale({ 
+    //             sellerRole: req.user.role[0] ? req.user.role[0] : req.user.role, 
+    //             sellerId: req.user._id, 
+    //             breederId: (req.user.role[0] === 'employee') ? req.user.breederId : req.user._id,
+    //             buyerId,
+    //             tax,
+    //             totalPrice: amount.totalPrice,
+    //             price: amount.subTotal,
+    //             isPaid: false,
+    //             saleUniqueId:  getRandomId(),
+    //             animals,
+    //             isInstallment, 
+    //             downpayment
+    //         });
+    //         sale.save().then(result => {
+    //             console.log('Sales added Successfully');
+    //             console.log(result);
+              
+    //             Promise.all([new Promise((resolve, reject) => {
+    //                 // create invoice 
+    //                 console.log('calling Add invoice');
+    //                 InvoiceController.addInvoice('sale', result._id, getRandomId(), buyerId, req.user._id,breederId).then(resolve);
+    //             }),
+    //             new Promise((resolve, reject) => {
+    //                 // updatemany animals
+    //                 console.log('calling update animal after sales')
+    //                 AnimalController.updateAnimalAfterSale(animals, buyerId, req.user._id ).then(resolve);
+                    
+    //             })
+    //             ]).then(([resInvoice, resAnimal]) => {
+    //                 // Create installment if any..
+    //                 console.log(resAnimal);
+    //                 console.log('result animal and is installment available');
+    //                 console.log(isInstallment);
+    //                 if(isInstallment) {
+    //                     // trigger email with installment..
+    //                     InstallmentController.addSaleInstallment(resInvoice._id, result._id,  installments).then(resInstallment => {
+    //                         return res.status(200).json({ status: 200, message: "Installment and sales added successfully" });
+    //                     }).catch(errorInstallment => {
+    //                         console.log(errorInstallment);
+    //                         return res.json({ status: 400, message: "Error in adding installments", errors: errorInstallment, data: {} });
+    //                     })
+    //                 } else {
+    //                     // trigger email without installment..
+    //                     return res.status(200).json({ status: 200, message: "Sales added successfully" });                        
+    //                 }
+    //             });
+    //         }).catch(error => {
+    //             return res.json({ status: 400, message: "Error in Adding Sales", errors: error, data: {} });
+
+    //         });
+    //     } catch (error) {
+    //         console.log(error);
+    //         return next(error);
+    //     }
+    // }
 
 
     getStaticsForUserBreeder(data, id) {
@@ -127,8 +221,9 @@ class SalesController {
     }
 
 
-    getStaticsForUserAdmin(data) {
+    getStaticsForUserAdmin(data, animalCount) {
         console.log('in data');
+        console.log(animalCount);
         const result = {
             totalSale: data.length,
             get mytotalSalePercentage() {
@@ -139,8 +234,9 @@ class SalesController {
             totalAnimals: data.map(e => e.animals).flat(1),
             totalAnimalsSold: data.map(e => e.animals).flat(1).reduce((acc, cv) => parseInt(cv.quantity)+acc, 0),
             get myAnimalSoldPercentage() {
-                if(!this.totalAnimals) return 0;
-                return Math.round((parseInt(this.totalAnimalsSold*100))/parseInt(this.totalAnimals));
+                // if(!this.totalAnimals) return 0;
+                // return Math.round((parseInt(this.totalAnimalsSold*100))/parseInt(this.totalAnimals));
+                return 5;
             },
             totalSaleAmount: data.reduce((acc, cv) => acc+(parseInt(cv.price)+(parseInt(cv.price)*(parseInt(cv.tax)/100))),0),
             totalAmountReceived: data.filter(e => e.isPaid).reduce((acc, cv) => acc+(parseInt(cv.price)+(parseInt(cv.price)*(parseInt(cv.tax)/100))),0),
@@ -148,7 +244,6 @@ class SalesController {
                 if(!this.totalSaleAmount) return 0;
                 return Math.round((parseInt(this.totalAmountReceived*100))/parseInt(this.totalSaleAmount));
             },
-        
         }
         return result;
     }
@@ -169,12 +264,13 @@ class SalesController {
                 console.log('admin in else if condition');
                 Sale.find({breederId}).then(result => result.map(e => e.toObject())).then(result => {
                     console.log(result);
-                    return res.status(200).json({ status: 200, message: "Sales fetched successfully", data: this.getStaticsForUserAdmin(result, id)});                        
+                    Animal.find({breederId}).then(resultAnimals => {
+                        return res.status(200).json({ status: 200, message: "Sales fetched successfully", data: this.getStaticsForUserAdmin(result, resultAnimals.reduce((acc, cv) => acc+parseInt(cv.aliveQuantity), 0))});                        
+                    });
                 }).catch(error => {
                     return res.json({ status: 400, message: "Error in fetching Sales", errors: error });
                 })
             }
-            
         } catch(error) {
             return next(error);
         }
