@@ -5,6 +5,7 @@ const { auth, allowBreeder, authenticateRole, allowEmployee, allowAdmin } = requ
 const FormController = require('../controller/form.controller');
 
 
+router.delete('/delete/:id', auth,  allowAdmin, authenticateRole, FormController.deleteFormAdmin);
 router.get('/all/forms', auth, allowBreeder, allowAdmin, authenticateRole, FormController.getForms);
 router.get('/byBreeder', auth, allowBreeder,allowEmployee, authenticateRole, FormController.getRegisteredFormsOfBreeder);
 
@@ -13,6 +14,7 @@ router.get('/category/:categoryId', FormController.getFormByCategory)
     .post('/', auth, allowAdmin, authenticateRole, FormController.addForm)
     .put('/:id', auth, allowAdmin,allowBreeder, authenticateRole, FormController.modifyForm)
     .delete('/category/:categoryId/:id', auth, allowBreeder, allowAdmin, allowEmployee, authenticateRole, FormController.deleteFormByCategory);
+    
 
 
 // router.delete('/:id/breeder/:breederId', FormController.excludeBreederForm)

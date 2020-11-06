@@ -48,7 +48,7 @@ class FormController {
             const { categoryId } = req.params;
             if (!categoryId) return res.json({ status: 400, message: "Category Required", data: {} });
 
-            Form.findOne({ categoryId }).then(formResult => {
+            Form.findOne({ categoryId }).sort({ createdAt: -1 }).then(formResult => {
                 return res.status(200).json({ status: 200, message: "Data Fetched Successfully", data: formResult });
             }).catch(err => {
                 return res.json({ status: 400, message: "Error Fetching form Data", errors: err, data: {} });
@@ -61,7 +61,7 @@ class FormController {
     getForms(req, res, next) {
         try {
             console.log('get form called');
-            Form.find().populate('categoryId').exec(function (error, result ) {
+            Form.find().sort({ createdAt: -1 }).populate('categoryId').exec(function (error, result ) {
                 console.log(result);
                 if(req.query.type) {
                     
@@ -86,7 +86,7 @@ class FormController {
             console.log(req.user.role);
             if(req.user.role.includes('breeder')) {
                 console.log('calling breeder form')
-                Form.find({breedersId: req.user._id}).populate('categoryId')               
+                Form.find({breedersId: req.user._id,published:true}).sort({ createdAt: -1 }).populate('categoryId')               
                 .exec(function (error, result ) {
                     console.log(result);
                     // const finalRes = result.map(e => {return {e, ...{categoryId: {...e.categoryId, ...{icon: `${config.imageURL}${e.categoryId.icon}` }}}}});
@@ -94,7 +94,7 @@ class FormController {
                     return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data:  finalRes});
                 });  
             } else  {
-                Form.find().populate('categoryId').exec().then(result => {
+                Form.find().sort({ createdAt: -1 }).populate('categoryId').exec().then(result => {
                     const finalRes = result.map(e => ({...e.toObject(), ...{categoryId: {...e.categoryId.toObject(), ...{icon: `${config.imageURL}${e.categoryId.toObject().icon}` }}}}));
                     return res.status(200).json({ status: 200, message: 'Data Fetched Successfully', data: finalRes });
                 });
@@ -288,6 +288,17 @@ class FormController {
                 reject(error);
             })
         });
+    }
+
+    async deleteFormAdmin(req, res, next) {  
+        try { 
+                Form.findByIdAndDelete(req.params.id).then(() => {
+                        return res.status(200).json({ status: 200, message: "Form removed successfully" });
+                  
+                })
+        } catch(error) {
+            return next(error);
+        }
     }
 
 
