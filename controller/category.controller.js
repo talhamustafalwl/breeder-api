@@ -91,7 +91,7 @@ class CategoryController {
         ...(req.query.type==='animalproduct') ? {type: {$in: ['animal', 'product']}}: {},
         ...(req.query.type==="contact" || req.query.type==="activity") ? {addedBy: breederId}: {},
         }
-      )
+      ).sort({ createdAt: -1 })
       //removed (.populate("parentId");)
       return res
         .status(200)
