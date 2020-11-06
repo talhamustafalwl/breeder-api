@@ -11,7 +11,7 @@ router.get('/byBreeder', auth, allowBreeder,allowEmployee, authenticateRole, For
 router.get('/category/:categoryId', FormController.getFormByCategory)
 .get('/', auth, allowBreeder, allowAdmin, authenticateRole, FormController.getAllForms)
     .post('/', auth, allowAdmin, authenticateRole, FormController.addForm)
-    .put('/:id', auth, allowAdmin, authenticateRole, FormController.modifyForm)
+    .put('/:id', auth, allowAdmin,allowBreeder, authenticateRole, FormController.modifyForm)
     .delete('/category/:categoryId/:id', auth, allowBreeder, allowAdmin, allowEmployee, authenticateRole, FormController.deleteFormByCategory);
 
 
