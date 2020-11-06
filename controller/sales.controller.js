@@ -94,18 +94,20 @@ class SalesController {
     }
 
 
-    getStaticsForUser(data, id) {
+    getStaticsForUserBreeder(data, id) {
         console.log('in data');
         const result = {
             totalSale: data.length,
             mytotalSale: data.filter(e => (e.sellerId==id)).length,
             get mytotalSalePercentage() {
+                if(!this.totalSale) return 0;
                 return Math.round((parseInt(this.mytotalSale*100))/parseInt(this.totalSale));
             },
             totalAnimals: data.map(e => e.animals).flat(1),
             totalAnimalsSold: data.map(e => e.animals).flat(1).reduce((acc, cv) => parseInt(cv.quantity)+acc, 0),
             myAnimalsSold: data.filter(e => (e.sellerId==id)).map(e => e.animals).flat(1).reduce((acc, cv) => parseInt(cv.quantity)+acc, 0),
             get myAnimalSoldPercentage() {
+                if(!this.totalAnimalsSold) return 0;
                 return Math.round((parseInt(this.myAnimalsSold*100))/parseInt(this.totalAnimalsSold));
             },
             totalSaleAmount: data.reduce((acc, cv) => acc+(parseInt(cv.price)+(parseInt(cv.price)*(parseInt(cv.tax)/100))),0),
@@ -113,7 +115,38 @@ class SalesController {
             totalAmountReceived: data.filter(e => e.isPaid).reduce((acc, cv) => acc+(parseInt(cv.price)+(parseInt(cv.price)*(parseInt(cv.tax)/100))),0),
             myTotalAmountReceived: data.filter(e => (e.sellerId==id)).filter(e => e.isPaid).reduce((acc, cv) => acc+(parseInt(cv.price)+(parseInt(cv.price)*(parseInt(cv.tax)/100))),0),
             get myTotalAmountReceivedPercentage() {
+                // console.log('in myTotalAmountReceivedPercentage ');
+                // console.log(Math.round((parseInt(this.myTotalAmountReceived*100))));
+                // console.log(this.myTotalSaleAmount);
+                if(!this.myTotalSaleAmount) return 0;
                 return Math.round((parseInt(this.myTotalAmountReceived*100))/parseInt(this.myTotalSaleAmount));
+            },
+        
+        }
+        return result;
+    }
+
+
+    getStaticsForUserAdmin(data) {
+        console.log('in data');
+        const result = {
+            totalSale: data.length,
+            get mytotalSalePercentage() {
+                // if(!this.totalSale) return 0;
+                // return Math.round((parseInt(this.mytotalSale*100))/parseInt(this.totalSale));
+                return 5;
+            },
+            totalAnimals: data.map(e => e.animals).flat(1),
+            totalAnimalsSold: data.map(e => e.animals).flat(1).reduce((acc, cv) => parseInt(cv.quantity)+acc, 0),
+            get myAnimalSoldPercentage() {
+                if(!this.totalAnimals) return 0;
+                return Math.round((parseInt(this.totalAnimalsSold*100))/parseInt(this.totalAnimals));
+            },
+            totalSaleAmount: data.reduce((acc, cv) => acc+(parseInt(cv.price)+(parseInt(cv.price)*(parseInt(cv.tax)/100))),0),
+            totalAmountReceived: data.filter(e => e.isPaid).reduce((acc, cv) => acc+(parseInt(cv.price)+(parseInt(cv.price)*(parseInt(cv.tax)/100))),0),
+            get myTotalAmountReceivedPercentage() {
+                if(!this.totalSaleAmount) return 0;
+                return Math.round((parseInt(this.totalAmountReceived*100))/parseInt(this.totalSaleAmount));
             },
         
         }
@@ -122,14 +155,26 @@ class SalesController {
 
     async getSaleByUser(req, res, next) {
         try {
-            const { id, breederId } = req.params;
-            console.log(id);
-            Sale.find({breederId}).then(result => result.map(e => e.toObject())).then(result => {
-                console.log(result);
-                return res.status(200).json({ status: 200, message: "Sales fetched successfully", data: this.getStaticsForUser(result, id)});                        
-            }).catch(error => {
-                return res.json({ status: 400, message: "Error in fetching Sales", errors: error });
-            })
+            const { id, breederId} = req.params;
+            const {type} = req.query;
+            if(type === 'breeder') {
+                console.log(id);
+                Sale.find({breederId}).then(result => result.map(e => e.toObject())).then(result => {
+                    console.log(result);
+                    return res.status(200).json({ status: 200, message: "Sales fetched successfully", data: this.getStaticsForUserBreeder(result, id)});                        
+                }).catch(error => {
+                    return res.json({ status: 400, message: "Error in fetching Sales", errors: error });
+                })
+            } else if(type==='admin') {
+                console.log('admin in else if condition');
+                Sale.find({breederId}).then(result => result.map(e => e.toObject())).then(result => {
+                    console.log(result);
+                    return res.status(200).json({ status: 200, message: "Sales fetched successfully", data: this.getStaticsForUserAdmin(result, id)});                        
+                }).catch(error => {
+                    return res.json({ status: 400, message: "Error in fetching Sales", errors: error });
+                })
+            }
+            
         } catch(error) {
             return next(error);
         }

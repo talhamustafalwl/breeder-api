@@ -135,8 +135,15 @@ const userSchema = mongoose.Schema({
         breederRegister: {type: Boolean, default: true}, // admin
         
     },
+
     businessInfoSettings: {
         tax: {type: Number, default: 0},
+    },
+    socialLinks: {
+        facebook: {type: String},
+        twitter: {type: String},
+        linkedin: {type: String},
+        instagram: {type: String},
     },
     deviceToken: {type: String},
     setupWizardCompleted: {
