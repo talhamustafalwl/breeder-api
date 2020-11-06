@@ -20,8 +20,8 @@ const NotificationSchema = mongoose.Schema({
         ref: 'User'},
     locationId: {type: Schema.Types.ObjectId,
         ref: 'Location'},
-    type:{type:String,required:true, default: "staffnotification", enum: ["mynotification", "staffnotification"]},
-    notificationType: {type:String,required:true, default: "employee", enum: ["breeder", "employee"]},
+    type:{type:String,required:true, default: "staffnotification", enum: ["mynotification", "staffnotification", "adminnotification", "adminstaffnotification"]},
+    notificationType: {type:String,required:true, default: "employee", enum: ["breeder", "employee", "admin"]},
     notificationSubType: {type:String,required:true, default: "announcement", enum: ["reminder", "announcement"]},
     categoryType: {type:String},//for reminder Activity
     priority:{type:String,required:true,default:"normal",

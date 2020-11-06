@@ -68,6 +68,8 @@ class SalesController {
                 ]).then(([resInvoice, resAnimal]) => {
                     // Create installment if any..
                     console.log(resAnimal);
+                    console.log('result animal and is installment available');
+                    console.log(isInstallment);
                     if(isInstallment) {
                         // trigger email with installment..
                         InstallmentController.addSaleInstallment(resInvoice._id, result._id,  installments).then(resInstallment => {

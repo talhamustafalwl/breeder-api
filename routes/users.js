@@ -169,7 +169,7 @@ router.post("/login", (req, res) => {
 
 router.get("/logout", auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, (req, res) => {
   console.log('logout called');
-  User.updateOne({ _id: req.user._id }, { token: "", tokenExp: "" }, (err, doc) => {
+  User.updateOne({ _id: req.user._id }, { token: "", tokenExp: "", deviceToken: "" }, (err, doc) => {
     if (err) return res.json({ success: false, status: 400, err });
     return res.clearCookie('w_auth').status(200).json({
       success: true, status: 200, message: "logout successfully", data: {}
