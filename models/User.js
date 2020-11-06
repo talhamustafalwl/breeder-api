@@ -129,11 +129,21 @@ const userSchema = mongoose.Schema({
 
 
     notificationSettings: {
-        employeeLogin: {type: Boolean, default: true},
-        formPublish: {type: Boolean, default: true},
+        employeeLogin: {type: Boolean, default: true},  //breeder
+        formPublish: {type: Boolean, default: true},  // breeder
+        employeeRegister: {type: Boolean, default: true}, // admin/breeder
+        breederRegister: {type: Boolean, default: true}, // admin
+        
     },
+
     businessInfoSettings: {
         tax: {type: Number, default: 0},
+    },
+    socialLinks: {
+        facebook: {type: String},
+        twitter: {type: String},
+        linkedin: {type: String},
+        instagram: {type: String},
     },
     deviceToken: {type: String},
     setupWizardCompleted: {
@@ -143,8 +153,11 @@ const userSchema = mongoose.Schema({
     activeSubscription: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Subscriber'
+    },
+    addedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }
-
 
 }, {
     timestamps: true

@@ -93,8 +93,8 @@ function validateRegisterInputBreeder(data) {
   data.phone = !isEmpty(data.phone) ? data.phone : '';
   data.city = !isEmpty(data.city) ? data.city : '';
   data.state = !isEmpty(data.state) ? data.state : '';
-  data.businessName = !isEmpty(data.businessName) ? data.businessName : '';
-  data.noOfEmployees = !isEmpty(data.noOfEmployees) ? data.noOfEmployees : '';
+  // data.businessName = !isEmpty(data.businessName) ? data.businessName : '';
+  // data.noOfEmployees = !isEmpty(data.noOfEmployees) ? data.noOfEmployees : '';
 
 
   if (Validator.isEmpty(data.name)) {
@@ -121,13 +121,13 @@ function validateRegisterInputBreeder(data) {
     errors.state = "State field is required";
   }
 
-  if (Validator.isEmpty(data.businessName)) {
-    errors.businessName = "Business Name field is required";
-  }
+  // if (Validator.isEmpty(data.businessName)) {
+  //   errors.businessName = "Business Name field is required";
+  // }
 
-  if (Validator.isEmpty(data.noOfEmployees)) {
-    errors.noOfEmployees = "No of Employees field is required";
-  }
+  // if (Validator.isEmpty(data.noOfEmployees)) {
+  //   errors.noOfEmployees = "No of Employees field is required";
+  // }
 
 
   return {

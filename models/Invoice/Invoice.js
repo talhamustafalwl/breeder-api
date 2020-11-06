@@ -27,6 +27,10 @@ const InvoiceSchema = mongoose.Schema({
     isRemoved: {
         type: Boolean,
         default: false,
+    },
+    installmentId : {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Installment',
     }
 }, { timestamps: true })
 

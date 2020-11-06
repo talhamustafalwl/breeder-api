@@ -324,6 +324,34 @@ class UserController {
     }
   }
 
+
+  // async getAllbreeders(req, res) {
+  //   try {
+  //     User.find({ role: "breeder"}).then(result => {
+  //       return res.status(200).json({
+  //         status: 200,
+  //         message: "Breeder found successfully",
+  //         data: result.map((e) => ({
+  //           ...e.toObject(),
+  //           ...{
+  //             image: e.toObject().image
+  //               ? `${config.baseImageURL}${e.toObject().image}`
+  //               : null,
+  //           },
+  //         })),
+  //       });
+  //     })
+  //   } catch(error) {
+  //     return res.json({
+  //       status: 400,
+  //       message: "Error fetching breeder",
+  //       errors: error,
+  //       data: {},
+  //     });
+  //   }
+  // }
+
+
   async getBreederForSales(req, res) {
     try {
       const keyword = req.query.keyword.replace(/['"]+/g, "");
@@ -331,7 +359,7 @@ class UserController {
         salesController
           .getBreederSalesList(req.user._id)
           .then((resultSales) => {
-            User.find({ role: "breeder", _id: { $in: resultSales } })
+            User.find({$or: [{ role: "breeder", _id: { $in: resultSales } }, { role: "breeder", addedBy: req.user._id }]})
               .then((result) => {
                 return res.status(200).json({
                   status: 200,
@@ -930,7 +958,7 @@ class UserController {
               charset: "numeric",
             });
 
-            this.registerUserWithRole(req.body, "breeder", true)
+            this.registerUserWithRole(req.body, "breeder", req.body.verified ? false: true)
               .then((success) => {
                 console.log("success result ===> ");
                 console.log(success);
@@ -942,6 +970,22 @@ class UserController {
                       { _id: success.data._id },
                       { activeSubscription: resultSubscriber._id }
                     ).then((userSuccess) => {
+                      
+                      // Send Notification to admin..
+                      User.findOne({isAdmin: true}).then(reusltAdmin => {
+                        const notifData = {
+                          token: reusltAdmin.deviceToken, 
+                          title: 'Breeder Registered!',
+                          description: 'Breeder has beeen registered.',
+                          data: {},
+                          userId: reusltAdmin.userId,
+                          notificationType: 'admin',
+                          type: 'adminnotification',
+                          breederId: success.data._id,
+                        }
+                        notificationController.create(notifData, true);
+                      })
+
                       return res.status(200).send(success);
                     });
                   });
@@ -1053,6 +1097,9 @@ class UserController {
               html
             );
             console.log("sending email");
+          } else if(role==="breeder") {
+              // email for breeder when added by breeder..... 
+
           }
           return resolve({
             status: 200,
@@ -1065,14 +1112,29 @@ class UserController {
   }
 
   async testSendMail(req, res, next) {
-    const html = registeremail("token", config.Server, "breeder");
-    mailer.sendEmail(
-      config.mailthrough,
-      "khatribilal5@gmail.com",
-      "Please verify your email!",
-      html
-    );
-    console.log("sending email");
+    // const html = registeremail("token", config.Server, "breeder");
+    // mailer.sendEmail(
+    //   config.mailthrough,
+    //   "khatribilal5@gmail.com",
+    //   "Please verify your email!",
+    //   html
+    // );
+    // console.log("sending email");
+
+    User.findOne({isAdmin: true}).then(reusltAdmin => {
+      const notifData = {
+        token: reusltAdmin.deviceToken, 
+        title: 'Breeder Registered!',
+        description: 'Breeder has beeen registered.',
+        data: {},
+        userId: '12312312312312312312312312',
+        notificationType: 'admin',
+        type: 'adminnotification',
+        breederId: '12312312313',
+      }
+      console.log(notifData);
+      notificationController.create(notifData, true);
+    })
     res.status(200).json({ status: 200, message: "email is send" });
   }
 

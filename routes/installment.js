@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { adminauth } = require("../middleware/adminauth");
-const { auth } = require("../middleware/auth");
+const { auth, allowAdmin, allowBreeder, authenticateRole } = require("../middleware/auth");
 const InstallmentController = require('../controller/installment.controller');
 
 
@@ -18,5 +18,7 @@ router.route('/all').delete(adminauth,InstallmentController.deleteall)
 router.route('/:id').get(auth,InstallmentController.getbyId)
     .delete(auth,InstallmentController.deletebyId)
     .patch(auth,InstallmentController.updatebyId)
+
+router.put('/pay/:id', auth, allowAdmin, allowBreeder, authenticateRole, InstallmentController.payIntallment);
 
 module.exports=router

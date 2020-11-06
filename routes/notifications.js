@@ -5,7 +5,7 @@ const { auth, allowBreeder, allowAdmin, allowEmployee, authenticateRole } = requ
 const NotificationController = require('../controller/notification.controller');
 
 router.route('/').post(auth, allowAdmin, allowEmployee, allowBreeder, authenticateRole, NotificationController.addNotificationUpdated)
-   .get(auth, allowBreeder, allowAdmin, allowEmployee, allowBreeder, authenticateRole, NotificationController.getAll)
+   .get(auth, allowBreeder, allowAdmin, allowEmployee, allowBreeder, authenticateRole, NotificationController.getAll);
 
 router.get('/pushNotif', NotificationController.createNotif);
 

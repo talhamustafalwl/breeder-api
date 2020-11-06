@@ -37,7 +37,6 @@ class SubscriptionController {
                   defaultPackage: false,
                   icon: req.file ? req.file.filename: null, 
                   currency: 'USD',
-    
                 }
                 )
                 const doc=await animal.save()
