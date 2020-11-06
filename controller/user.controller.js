@@ -359,7 +359,7 @@ class UserController {
         salesController
           .getBreederSalesList(req.user._id)
           .then((resultSales) => {
-            User.find({ role: "breeder", _id: { $in: resultSales } })
+            User.find({$or: [{ role: "breeder", _id: { $in: resultSales } }, { role: "breeder", addedBy: req.user._id }]})
               .then((result) => {
                 return res.status(200).json({
                   status: 200,
@@ -958,7 +958,7 @@ class UserController {
               charset: "numeric",
             });
 
-            this.registerUserWithRole(req.body, "breeder", true)
+            this.registerUserWithRole(req.body, "breeder", req.body.verified ? false: true)
               .then((success) => {
                 console.log("success result ===> ");
                 console.log(success);
@@ -1097,6 +1097,9 @@ class UserController {
               html
             );
             console.log("sending email");
+          } else if(role==="breeder") {
+              // email for breeder when added by breeder..... 
+
           }
           return resolve({
             status: 200,

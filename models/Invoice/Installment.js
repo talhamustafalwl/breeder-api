@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const InstallmentSchema = mongoose.Schema({
-    invoiceId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Invoice',required:true
-    },
+    // invoiceId: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Invoice',required:true
+    // },
 
     // removed contact id i.e contactId...
 

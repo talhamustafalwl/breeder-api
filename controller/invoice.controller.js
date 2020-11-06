@@ -108,10 +108,10 @@ async getallbreeder(req, res) {
     }
 
 
-    async addInvoice(type, saleId, invoiceNumber,  buyerId, sellerId,breederId) {
+    async addInvoice(type, saleId, invoiceNumber,  buyerId, sellerId,breederId, installmentId=null) {
       console.log(' in add invoice');
       return new Promise(async (resolve, reject) => {
-        const invoice = await new Invoice({type, saleId, invoiceNumber, buyerId, sellerId,breederId});
+        const invoice = await new Invoice({installmentId, type, saleId, invoiceNumber, buyerId, sellerId,breederId});
         console.log('in add in voice resolve');
         invoice.save().then((reuslAddInvoice) => { console.log('addInvoice added Done'); resolve(); }).catch(reject);
       });
@@ -119,7 +119,7 @@ async getallbreeder(req, res) {
 
     async getAllInvoiceByBreeder(breederId) {
       return new Promise((resolve, reject) => {
-        Invoice.find({breederId: breederId}).populate('buyerId').populate({path: 'saleId', populate: {path: 'animals.animalId'}} ).exec().then(resultInvoice => {
+        Invoice.find({breederId: breederId}).populate('buyerId').populate('installmentId').populate({path: 'saleId', populate: {path: 'animals.animalId'}} ).exec().then(resultInvoice => {
           resolve(resultInvoice);
         }).catch(error => {
           reject(error);
