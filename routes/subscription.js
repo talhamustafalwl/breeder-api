@@ -7,13 +7,13 @@ const SubscriptionController = require('../controller/subscription.controller');
 const {upload} = require('../middleware/multerimage');
 
 router.route('/').post(auth, allowAdmin, authenticateRole, upload.single('file'), SubscriptionController.create)
-  .delete(adminauth,SubscriptionController.deleteall)
+  .delete(auth, allowAdmin, allowBreeder, authenticateRole,SubscriptionController.deleteall)
   .get(auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SubscriptionController.getall)
 
 
 //for see/delete/update subscription by id
 router.route('/:id').get(auth,SubscriptionController.getbyId)
-  .delete(adminauth,SubscriptionController.deletebyId)
+  .delete(auth, allowAdmin, allowBreeder, authenticateRole,SubscriptionController.deletebyId)
 .patch(adminauth,SubscriptionController.updatebyId)
 
 module.exports=router

@@ -48,8 +48,9 @@ class FormController {
             const { categoryId } = req.params;
             if (!categoryId) return res.json({ status: 400, message: "Category Required", data: {} });
 
-            Form.findOne({ categoryId }).sort({ createdAt: -1 }).then(formResult => {
-                return res.status(200).json({ status: 200, message: "Data Fetched Successfully", data: formResult });
+            Form.findOne({ categoryId }).populate('categoryId').then(formResult => {
+                const reusltData = {...formResult.toObject(), formStructure: formResult.toObject().formStructure.map(e => (e.name==='breed' ? {...e, values: formResult.toObject().categoryId.breeds} : (e.name==='traits') ? {...e, values: formResult.toObject().categoryId.traits} : e )) }
+                return res.status(200).json({ status: 200, message: "Data Fetched Successfully", data: reusltData });
             }).catch(err => {
                 return res.json({ status: 400, message: "Error Fetching form Data", errors: err, data: {} });
             })
