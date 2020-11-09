@@ -4,6 +4,7 @@ const InvoiceController = require('./invoice.controller');
 const AnimalController = require('./animal.controller');
 const InstallmentController = require('./installment.controller');
 const SaleValidation = require('../validation/sals');
+const constant = require('../middleware/constant');
 const { User } = require("../models/User");
 const { baseImageURL } = require("../config/key");
 
@@ -273,6 +274,39 @@ class SalesController {
             }
         } catch(error) {
             return next(error);
+        }
+    }
+
+
+
+    async getGraphData(req, res, next) {
+        try {
+            console.log(req.query.type);
+            const { type } = req.query;
+            if(constant.removeQuote(type) === 'custom') {
+                let { startDate, endDate } = req.query;
+                console.log(startDate);
+                console.log(endDate);
+                startDate = new Date(constant.removeQuote(startDate));
+                endDate = new Date(constant.removeQuote(endDate) + 'T23:23:23.000Z');
+                console.log('Start Date : ', startDate);
+                console.log('End Date : ', endDate);
+                Sale.aggregate([{
+                    $match : {
+                        createdAt : {
+                            $gte: startDate,
+                            $lte: endDate,
+                        }
+                    },
+                    
+                }]).then(result => {
+                    return res.status(200).json({ status: 200, message: "Sales fetched successfully", data: result});
+                }).catch(error => {
+                    return res.json({ status: 400, message: "Error fetching data", errors: error, data: {} });
+                })
+            } 
+        } catch(error) {
+            return res.json({ status: 400, message: "Error fetching data", errors: error, data: {} });
         }
     }
 
