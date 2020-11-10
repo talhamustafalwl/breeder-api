@@ -14,7 +14,7 @@ router.get('/', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole,
 router.get('/:id', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SaleControoler.getSaleDetail);
 router.put('/changePaidStatus/:id', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SaleControoler.changePaidStatus);
 router.get('/user/:id/:breederId', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SaleControoler.getSaleByUser);
-router.get('/graphdata/:breederId',SaleControoler.getGraphData);
+router.get('/graphdata/:breederId', SaleControoler.getGraphData);
 
 
 module.exports = router;

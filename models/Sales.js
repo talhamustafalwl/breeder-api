@@ -34,9 +34,10 @@ const SalesSchema = mongoose.Schema({
     animals: [SaleAnimalSchema],
     // {type: Schema.Types.ObjectId,
     //     ref: 'Animal'}, // can sell to the multiple animal...
-    totalPrice: { type: Number },
+   
     tax: {type: Number},
     price: {type: Number},
+    totalPrice: { type: Number },
     isPaid: {type: Boolean},
     isInstallment: {type: Boolean, required: false },
     downpayment: {type: Number},
