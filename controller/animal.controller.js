@@ -779,6 +779,114 @@ class AnimalController {
   }
 
 
+
+  async transferAnimal(req, res, next) {
+    try {
+      const {animalId, quantity,  buyerId, sellerId, breederId } = req.body;
+      Animal.findById(animalId).then(animalResult => {
+        console.log(animalResult);
+        console.log(' ==== > animal result');
+        const isBuyerAvailable = animalResult.buyer
+          .map((e) => e.id)
+          .includes(buyerId) || animalResult.transferBreeder.map((e) => e.id).includes(buyerId);
+        console.log('This is is buyer available : ', isBuyerAvailable);
+        animalResult.aliveQuantity = parseInt(animalResult.aliveQuantity) - parseInt(quantity);
+        animalResult.healthyQuantity =
+          parseInt(animalResult.healthyQuantity) - parseInt(quantity);
+        animalResult.transferQuantity =
+          parseInt(animalResult.transferQuantity) + parseInt(quantity);
+        animalResult.transferBreeder = [
+          ...animalResult.transferBreeder,
+          ...[{ id: buyerId, quantity: quantity, date: new Date() }],
+        ];
+        animalResult.save((_) => {
+          animalResult = animalResult.toObject();
+          const currentSellerAnimalId = animalResult._id;
+          delete animalResult._id;
+          delete animalResult.transferBreeder;
+          if(isBuyerAvailable) {
+            Animal.findOne({ sellerAnimalId: animalId, breederId: sellerId }).then(
+              (partnerAnimal) => {
+
+
+                console.log('partner animal===> ');
+                console.log(partnerAnimal);
+                partnerAnimal.aliveQuantity =
+                  parseInt(partnerAnimal.aliveQuantity) +
+                  parseInt(quantity);
+                partnerAnimal.healthyQuantity =
+                  parseInt(partnerAnimal.healthyQuantity) +
+                  parseInt(quantity);
+                partnerAnimal.transferBreederReceived = [
+                  ...partnerAnimal.transferBreederReceived,
+                  ...[
+                    {
+                      id: sellerId,
+                      quantity: quantity,
+                      date: new Date(),
+                    },
+                  ],
+                ];
+                partnerAnimal.save().then((_) => {
+                  formController
+                    .addBreederInForm(
+                      buyerId,
+                      animalResult.categoryId,
+                      sellerId
+                    )
+                    .then((all_done) => {
+                      return res.status(200).json({
+                        status: 200,
+                        message: "Animals transfered successfully",
+                      });
+                    });
+                });
+
+              });
+          } else {
+            console.log(animalResult);
+            const newAnimal = new Animal({
+              ...animalResult,
+              buyer: [],
+              breederId: buyerId,
+              aliveQuantity: parseInt(quantity),
+              soldQuantity: 0,
+              deadQuantity: 0,
+              healthyQuantity: parseInt(quantity),
+              sickQuantity: 0,
+              pregnantQuantity: 0,
+              sellerAnimalId: currentSellerAnimalId,
+              seller: [],
+              transferBreederReceived: [
+                { id: sellerId, quantity: quantity, date: new Date() },
+              ]
+            });
+            newAnimal.save().then((_) => {
+              formController
+                .addBreederInForm(buyerId, animalResult.categoryId, sellerId)
+                .then(_ => {
+                  return res.status(200).json({
+                    status: 200,
+                    message: "Animals transfered successfully",
+                  });
+                });
+            });
+          }
+
+        });
+    
+      })
+    } catch(error) {
+      return res.json({
+        status: 400,
+        message: "Error in transfer animal",
+        errors: error,
+        data: {},
+      });
+    }
+  }
+
+
   async updateAnimalAfterPaid(animalArr, buyer, seller) {
     // animalId, price, quantity
     return new Promise((resolve, reject) => {
@@ -811,7 +919,7 @@ class AnimalController {
               const currentSellerAnimalId = animalResult._id;
               delete animalResult._id;
               if (isBuyerAvailable) {
-                Animal.findOne({ sellerAnimalId: obj.animalId }).then(
+                Animal.findOne({ sellerAnimalId: obj.animalId, breederId: seller }).then(
                   (partnerAnimal) => {
                     console.log('partner animal===> ');
                     console.log(partnerAnimal);
