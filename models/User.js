@@ -145,6 +145,12 @@ const userSchema = mongoose.Schema({
         linkedin: {type: String},
         instagram: {type: String},
     },
+    socialConnects: {
+        facebook: {type: Object},
+        twitter: {type: Object},
+        linkedin: {type: Object},
+        instagram: {type: Object},
+    },
     deviceToken: {type: String},
     setupWizardCompleted: {
         type: Boolean, default: false,
