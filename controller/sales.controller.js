@@ -60,7 +60,7 @@ class SalesController {
           req.user.role[0] === "employee" ? req.user.breederId : req.user._id,
         buyerId,
         tax,
-        totalPrice: amount.totalPrice,
+        totalPrice: amount.totalAmount,
         price: amount.subTotal,
         isPaid: false,
         saleUniqueId: getRandomId(),
@@ -75,7 +75,9 @@ class SalesController {
           req.user.role[0] === "employee" ? req.user.breederId : req.user._id,
         buyerId,
         tax,
-        totalPrice: amount.totalPrice,
+        totalPrice: amount.totalAmount,
+        discount: amount.discount,
+        priceWithoutDiscount: amount.priceWithoutDiscount,
         price: amount.subTotal,
         isPaid: false,
         saleUniqueId: getRandomId(),
@@ -503,6 +505,16 @@ class SalesController {
           },
         ])
           .then((result) => {
+
+            // const mapData = (data) => {
+            //   if (constant.getDiffDate(startDate, endDate) >= 10) {
+            //     return {...data, name: `${data._id.day} ${constants.months[data._id.month]}`, count: data.amount};
+            //   }
+            //   else {
+                
+            //   }
+            // }
+        
             return res.status(200).json({
               status: 200,
               message: "Sales fetched successfully",

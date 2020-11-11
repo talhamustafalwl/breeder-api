@@ -36,6 +36,8 @@ const SalesSchema = mongoose.Schema({
     //     ref: 'Animal'}, // can sell to the multiple animal...
    
     tax: {type: Number},
+    discount: {type: Number},
+    priceWithoutDiscount: {type: Number},
     price: {type: Number},
     totalPrice: { type: Number },
     isPaid: {type: Boolean},
