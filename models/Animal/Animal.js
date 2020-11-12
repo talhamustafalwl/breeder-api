@@ -89,6 +89,10 @@ const AnimalSchema = mongoose.Schema({
         type: Number,
         default: 0,
     },
+    transferQuantity:  {
+        type: Number,
+        default: 0,
+    },
     soldQuantityPending:  {
         type: Number,
         default: 0,
@@ -138,6 +142,14 @@ const AnimalSchema = mongoose.Schema({
         ref: 'User',
     }, quantity: Number, date: Date}],
     seller: [{id: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    }, quantity: Number, date: Date}],
+    transferBreeder: [{id: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    }, quantity: Number, date: Date}],
+    transferBreederReceived: [{id: {
         type: Schema.Types.ObjectId,
         ref: 'User',
     }, quantity: Number, date: Date}],

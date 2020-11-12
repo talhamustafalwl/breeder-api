@@ -62,7 +62,7 @@ class FormController {
     getForms(req, res, next) {
         try {
             console.log('get form called');
-            Form.find().sort({ createdAt: -1 }).populate('categoryId').exec(function (error, result ) {
+            Form.find({published:true}).sort({ createdAt: -1 }).populate('categoryId').exec(function (error, result ) {
                 console.log(result);
                 if(req.query.type) {
                     

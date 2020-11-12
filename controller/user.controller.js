@@ -174,6 +174,7 @@ class UserController {
           notificationSettings: req.user.notificationSettings,
           creditCard: req.user.creditCard,
           businessInfoSettings: req.user.businessInfoSettings,
+          socialConnects: req.user.socialConnects,
         },
       });
     } catch (err) {
