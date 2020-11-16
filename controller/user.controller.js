@@ -702,7 +702,7 @@ class UserController {
   async editEmployee(req, res, next) {
     try {
       console.log("edit employee called");
-      console.log(req.body);
+      //console.log(req.body);
       User.findByIdAndUpdate(
         req.params.id,
         { ...req.body, ...(req.file ? { image: req.file.filename } : {}) },
