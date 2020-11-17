@@ -439,13 +439,17 @@ class SalesController {
       console.log(breederId);
     //   if (constant.removeQuote(type) === "custom") {
         let groupQuery = {};
+        let matchQuery = {};
         let { startDate, endDate } = req.query;
         console.log(startDate);
         console.log(endDate);
-        startDate = new Date(constant.removeQuote(startDate));
-        endDate = new Date(constant.removeQuote(endDate) + 'T23:23:23.000Z');
-        console.log(constant.getDiffDate(startDate, endDate));
-        if (constant.getDiffDate(startDate, endDate) >= 10) {
+      
+        if(constant.removeQuote(type) === "all") {
+          matchQuery =  {
+            $match: {
+              breederId:  mongoose.Types.ObjectId(breederId)
+            },
+          },
           groupQuery = {
             $group: {
               _id: {
@@ -467,30 +471,10 @@ class SalesController {
             },
           };
         } else {
-          groupQuery = {
-            $project: {
-              _id: {
-                day: { $dayOfMonth: "$createdAt" },
-                month: { $month: "$createdAt" },
-                year: { $year: "$createdAt" },
-                saleUniqueId: "$saleUniqueId",
-              },
-              amount: {
-                $add: [
-                  "$price",
-                  { $divide: [{ $multiply: ["$price", "$tax"] }, 100] },
-                ],
-              },
-              price: "$price",
-              tax: "$tax",
-              date: "$createdAt",
-            },
-          };
-        }
-        console.log("Start Date : ", startDate);
-        console.log("End Date : ", endDate);
-        Sale.aggregate([
-          {
+          startDate = new Date(constant.removeQuote(startDate));
+          endDate = new Date(constant.removeQuote(endDate) + 'T23:23:23.000Z');
+          console.log(constant.getDiffDate(startDate, endDate));
+          matchQuery =  {
             $match: {
               createdAt: {
                 $gte: startDate,
@@ -499,6 +483,75 @@ class SalesController {
               breederId:  mongoose.Types.ObjectId(breederId)
             },
           },
+          groupQuery = {
+            $group: {
+              _id: {
+                day: { $dayOfMonth: "$createdAt" },
+                month: { $month: "$createdAt" },
+                year: { $year: "$createdAt" },
+              },
+              amount: {
+                $sum: {
+                  $add: [
+                    "$price",
+                    { $divide: [{ $multiply: ["$price", "$tax"] }, 100] },
+                  ],
+                },
+              },
+              date: { $first: "$createdAt" },
+              data: { $push: { price: "$price", tax: "$tax" } },
+              count: { $sum: 1 },
+            },
+          };
+        }
+        
+      
+        // if (constant.getDiffDate(startDate, endDate) >= 10) {
+        //   groupQuery = {
+        //     $group: {
+        //       _id: {
+        //         day: { $dayOfMonth: "$createdAt" },
+        //         month: { $month: "$createdAt" },
+        //         year: { $year: "$createdAt" },
+        //       },
+        //       amount: {
+        //         $sum: {
+        //           $add: [
+        //             "$price",
+        //             { $divide: [{ $multiply: ["$price", "$tax"] }, 100] },
+        //           ],
+        //         },
+        //       },
+        //       date: { $first: "$createdAt" },
+        //       data: { $push: { price: "$price", tax: "$tax" } },
+        //       count: { $sum: 1 },
+        //     },
+        //   };
+        // } else {
+        //   groupQuery = {
+        //     $project: {
+        //       _id: {
+        //         day: { $dayOfMonth: "$createdAt" },
+        //         month: { $month: "$createdAt" },
+        //         year: { $year: "$createdAt" },
+        //         saleUniqueId: "$saleUniqueId",
+        //       },
+        //       amount: {
+        //         $add: [
+        //           "$price",
+        //           { $divide: [{ $multiply: ["$price", "$tax"] }, 100] },
+        //         ],
+        //       },
+        //       price: "$price",
+        //       tax: "$tax",
+        //       date: "$createdAt",
+        //     },
+        //   };
+        // }
+        console.log("Start Date : ", startDate);
+        console.log("End Date : ", endDate);
+        Sale.aggregate([
+          matchQuery,
           groupQuery,
           {
             $sort: { date: 1 },
@@ -643,11 +696,24 @@ class SalesController {
 
   async getSales(req, res, next) {
     try {
-      const { type } = req.query;
+      let { type, time, startDate, endDate } = req.query;
+      let query = {};
+      console.log('Time is =======> ', time);
+      if(!(time === "all")) {
+        startDate = new Date(constant.removeQuote(startDate));
+        endDate = new Date(constant.removeQuote(endDate) + 'T23:23:23.000Z');
+        query = {
+          createdAt: {
+            $gte: startDate,
+            $lte: endDate,
+          },
+        }
+      }
+      console.log(query);
       const breederId =
         req.user.role[0] === "breeder" ? req.user._id : req.user.breederId;
       if (type === "upcomming") {
-        Sale.find({ isPaid: false, breederId: breederId })
+        Sale.find({ isPaid: false, breederId: breederId, ...query })
           .sort({ createdAt: -1 })
           .populate("buyerId")
           .then((resultSale) => {
@@ -658,7 +724,7 @@ class SalesController {
             });
           });
       } else if (type === "history") {
-        Sale.find({ breederId: breederId })
+        Sale.find({ breederId: breederId,  ...query })
           .sort({ createdAt: -1 })
           .populate("buyerId")
           .then((resultSale) => {
