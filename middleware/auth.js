@@ -24,7 +24,7 @@ let auth = (req, res, next) => {
     //console.log(user);
     if (err) throw err;
     if (!user)
-      return res.json({
+      return res.status(202).json({
         status:400,isAuth: false,message:"auth token is invalid",data:{}
       });
 
