@@ -249,7 +249,7 @@ class CategoryController {
 
   async updateCategoryById(req, res) {
    
-  
+    console.log(req.file && req.file.filename)
     try {
       // if(req.body.type === 'animal') {
       //   req.body.breeds = JSON.parse(req.body.breeds);
@@ -260,7 +260,7 @@ class CategoryController {
       req.body.data = JSON.parse(req.body.data);
       const category = await Category.updateOne(
         { _id: req.params.id },
-        {...req.body.data, ...req.file ? {icon: req.file.filename} : {}},
+        {...req.body.data, ...req.file && req.file.filename ? {icon: req.file.filename} : {}},
       );
 
       return res

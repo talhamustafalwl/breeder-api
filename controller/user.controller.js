@@ -164,6 +164,7 @@ class UserController {
         isAdmin: req.user.role[0] === "admin" ? true : false,
         data: {
           _id: req.user._id,
+          uid:req.user.uid,
           email: req.user.email,
           name: req.user.name,
           breederId: req.user.breederId,
