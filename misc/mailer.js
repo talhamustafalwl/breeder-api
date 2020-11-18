@@ -35,7 +35,7 @@ module.exports = {
         // from: 'faizan@livewireapps.com',
 
         // from: 'bilal@livewirelabs.co',
-        from: 'talha@livewirelabs.co',
+        from: 'faizan@livewireapps.com',
         subject,
         // text: 'and easy to do anywhere, even with Node.js',
         html,

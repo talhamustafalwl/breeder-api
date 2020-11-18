@@ -189,7 +189,9 @@ userSchema.pre('save', function (next) {
 });
 
 userSchema.pre('findOneAndUpdate', function (next) {
+    if(this._update.password.length < 30){
     this._update.password = bcrypt.hashSync(this._update.password, saltRounds)
+    }
     next();
 })
 
