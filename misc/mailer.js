@@ -33,8 +33,6 @@ module.exports = {
       const msg = {
         to,
         // from: 'faizan@livewireapps.com',
-
-        // from: 'bilal@livewirelabs.co',
         from: 'faizan@livewireapps.com',
         subject,
         // text: 'and easy to do anywhere, even with Node.js',

@@ -50,11 +50,15 @@ module.exports = {
 
 
 
-  mailthrough: 'faizan@livewireapps.com',
+  mailthrough: 'admin@logly.com',
   // sendgridAPIKey: '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',
   // sendgridAPIKey: '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',
   //sendgridAPIKey: "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",
+<<<<<<< HEAD
   sendgridAPIKey: "", //faizan@livewireapps.com
+=======
+  sendgridAPIKey: "", //talha@livewirelabs.co
+>>>>>>> 051ee5916779e65deba37f3c41acb7afb97eaf1b
 
   //stripe
   // stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",

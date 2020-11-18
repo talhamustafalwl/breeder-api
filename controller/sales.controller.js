@@ -698,8 +698,7 @@ class SalesController {
     try {
       let { type, time, startDate, endDate } = req.query;
       let query = {};
-      console.log('Time is =======> ', time);
-      if(!(time === "all")) {
+      if(time && !(time === "all")) {
         startDate = new Date(constant.removeQuote(startDate));
         endDate = new Date(constant.removeQuote(endDate) + 'T23:23:23.000Z');
         query = {
