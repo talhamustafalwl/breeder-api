@@ -63,7 +63,7 @@ router.put("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, up
 // Register Breeder only .. Using portal
 router.post("/breeder/register", UserController.registerBreeder);
 router.get("/breeder/getTax", auth, allowBreeder, allowEmployee, allowAdmin, authenticateRole, UserController.getTaxofBreeder)
-
+router.delete("/breeder/:id", auth, allowAdmin, allowBreeder, authenticateRole, UserController.deleteBreeder);
 
 router.post('/gallery/upload', auth, allowBreeder, allowEmployee, authenticateRole, upload.array('file', 10),  UserController.uploadGalleryImage )
 router.put('/gallery/delete', auth, allowBreeder, allowEmployee, authenticateRole, UserController.deleteGallaryImage)
@@ -141,7 +141,7 @@ router.post("/login", (req, res) => {
       return res.json({
         status: 400, message: "Email not found", data: {}
       });
-
+      console.log(user.verified)
     if (!user.verified)
       return res.json({
         status: 400, message: "Kindly verify your email", data: {}

@@ -15,6 +15,7 @@ const { Sale } = require("../models/Sales");
 const config = require("../config/key");
 const registeremail = require("../emails/register");
 const employeeEmail = require("../emails/employeeRegister");
+const RegisterNewBreeder = require("../emails/RegisterNewBreeder");
 
 const forgetpasswordemail = require("../emails/forgetpassword");
 // const formController = require("./form.controller");
@@ -218,6 +219,26 @@ class UserController {
               message: "Please enter your valid email",
               data: {},
             });
+            console.log(user.isEmployeeActive,user.canAccessMobileApp)
+            if(!user.isEmployeeActive)
+            return res.status(202).json({
+              status:400,message:"Breeder removed your account",data:{}
+            })
+        
+            if(!user.canAccessMobileApp)
+            return res.status(202).json({
+              status:400,message:"Breeder blocked your account",data:{}
+            })
+
+            if(user.isblocked)
+            return res.status(202).json({
+              status:400,message:"Admin blocked your account",data:{}
+            })
+
+            if(!user.active)
+              return res.status(202).json({
+                status:400,message:"Breeder disabled your account",data:{}
+              })
 
           User.findOne(
             { _id: user.breederId, uid: req.body.uid },
@@ -265,7 +286,8 @@ class UserController {
   }
 
   async isblocked(req, res) {
-    if (!req.body.isblocked) {
+    console.log(req.body)
+    if (!req.body) {
       return res.json({
         status: 400,
         message: "isblocked field is required",
@@ -280,7 +302,37 @@ class UserController {
       );
       return res.status(200).json({
         status: 200,
-        message: "Breeder and all its emp blocked successfully",
+        message: `Breeder and all its employees ${req.body.isblocked === false ? "Active" : "Block"} successfully`,
+        data: user,
+      });
+    } catch (err) {
+      return res.json({
+        status: 400,
+        message: "Error in blocking Breeder and all its emp",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
+
+  async deleteBreeder(req, res) {
+    console.log(req.params.id)
+    if (!req.params.id ) {
+      return res.json({
+        status: 400,
+        message: "Breeder Id  is required",
+        errors: { file: "Breeder Id is required" },
+        data: {},
+      });
+    }
+    try {
+      const user = await User.deleteMany(
+        { $or: [{ _id: req.params.id }, { breederId: req.params.id }] }
+      );
+      return res.status(200).json({
+        status: 200,
+        message: `Breeder and all its employees deleted successfully`,
         data: user,
       });
     } catch (err) {
@@ -603,7 +655,7 @@ class UserController {
           email: req.body.email,
           role: "employee",
           breederId: req.user._id,
-          isEmployeeActive: true,
+          //isEmployeeActive: true,
         }).then((resultUser) => {
           console.log(resultUser + " user");
           if (!resultUser) {
@@ -1101,6 +1153,13 @@ class UserController {
             console.log("sending email");
           } else if(role==="breeder") {
               // email for breeder when added by breeder..... 
+              console.log(body.email,body.password)
+              const html = RegisterNewBreeder(
+               body.email,body.password);
+              mailer.sendEmail(
+                config.mailthrough,body.email,"Email for logly Breeder",
+                html
+              );
 
           }
           return resolve({

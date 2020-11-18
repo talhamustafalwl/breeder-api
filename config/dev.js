@@ -41,7 +41,7 @@ module.exports = {
 
 
   Server: 'http://3.21.129.23/api',
-  webServer: 'https://breeder-dev.herokuapp.com',
+  webServer: 'http://3.21.129.23',
   baseAPIUrl: 'http://3.21.129.23/api/',
   baseImageURL: 'http://3.21.129.23/api/uploads/images/',
   serverURL: 'http://3.21.129.23/api',
@@ -50,10 +50,11 @@ module.exports = {
 
 
 
-  mailthrough: 'bilal@livewirelabs.co',
+  mailthrough: 'faizan@livewireapps.com',
   // sendgridAPIKey: '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',
   // sendgridAPIKey: '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',
-  sendgridAPIKey: "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",
+  //sendgridAPIKey: "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",
+  sendgridAPIKey: "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", //faizan@livewireapps.com
 
   //stripe
   // stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",

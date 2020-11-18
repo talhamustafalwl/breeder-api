@@ -16,7 +16,7 @@ let auth = (req, res, next) => {
   //console.log(token);
   
   if (!token)
-    {return res.status(205).send({ status: 400, message: 'No token provided header(auth).',data:{} });}
+    {return res.send({ status: 400, message: 'No token provided header(auth).',data:{} });}
 
   User.findOne({token}, async (err, user) => {
     //console.log(token);
@@ -32,9 +32,24 @@ let auth = (req, res, next) => {
     req.user = user;
     req.isAuthenticate = false;
     if(user.isAdmin) return next();
+    if(user.role == "employee" && !user.isEmployeeActive)
+    return res.status(202).json({
+      status:400,message:"Breeder removed your account",data:{}
+    })
+
+    if(user.role == "employee" && !user.canAccessMobileApp)
+    return res.status(202).json({
+      status:400,message:"Breeder blocked your account",data:{}
+    })
+
+    if(user.role == "employee" && !user.active)
+    return res.status(202).json({
+      status:400,message:"Breeder disabled your account",data:{}
+    })
+    
 
     if (user.isblocked)
-    return res.json({status: 400,message: "blocked by admin",
+    return res.status(202).json({status: 400,message: "Admin blocked your account",
       data: {}});
       
       
