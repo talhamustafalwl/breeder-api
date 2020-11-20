@@ -2,7 +2,8 @@ const nodemailer = require('nodemailer');
 const path = require('path');
 const sgMail = require('@sendgrid/mail');
 const config = require('../config/key');
-sgMail.setApiKey(config.sendgridAPIKey);
+require('dotenv').config()
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 //const transport = nodemailer.createTransport({
 //  service: 'Mailgun',

@@ -46,8 +46,6 @@ module.exports = {
     baseDocumentURL: 'http://3.21.129.23/api/uploads/documents/',
 
     mailthrough: 'admin@logly.com',
-    // sendgridAPIKey: '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',
-    //sendgridAPIKey: "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", //
     sendgridAPIKey: "", //talha@livewirelabs.co
     //stripe
     // stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",
