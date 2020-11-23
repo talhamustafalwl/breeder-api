@@ -9,6 +9,8 @@ const config  = require('../config/key');
 const { Animal } = require("../models/Animal/Animal");
 const { Product } = require("../models/Product");
 const { serverURL } = require("../config/dev");
+const { FormValueRequest } = require("../models/Form/FormValueRequest");
+
 class FormController {
     constructor() {
         this.addForm = this.addForm.bind(this);
@@ -203,7 +205,8 @@ class FormController {
 
 
     // Only breeder can modify values of any fields here ..
-    async modifyValuesRequest(req, res, next) {
+    async modifyValuesRequestB(req, res, next) {
+        console.log(req.body)
         try {
             const { formId, formStructureId, data } = req.body;
             Form.findById(formId).then(resultForm => {
@@ -221,6 +224,75 @@ class FormController {
     }
 
 
+    async modifyValuesRequest(req, res, next) {
+        
+        req.body.value=req.body.data.value
+        req.body.breederId=req.user.role.includes('employee')  ? req.user.breederId :  req.user._id
+        req.body.requestedBy=req.user._id
+        console.log(req.body)
+        try {
+            FormValueRequest.findOne({formStructureId: req.body.formStructureId,formId:req.body.formId,value:req.body.value}).then(match =>{
+                if(!match){
+                    FormValueRequest.create(req.body).then(result =>{
+                        return res.status(200).send({status: 200, user: result, message: 'Request has been successfully send to admin'});
+                    })
+                }
+            else{
+                return res.send({status: 200, user: [], message: 'Same item request has already been send'});
+            }
+          
+        })      
+           
+        } catch(error) {
+            console.log(error);
+        }
+    }
+
+
+
+    async modifyValuesRequestGet(req, res, next) {
+        console.log(req.body)
+        try {FormValueRequest.find({status:"pending"}).populate("formId")
+        .populate("requestedBy","name").populate("categoryId","name")
+        .sort({createdAt:-1})
+        .then(resultForm => {
+                    return res.status(200).send({status: 200, data: resultForm, message: 'Pending Requests'});
+                });               
+           
+        } catch(error) {
+            console.log(error);
+            return res.status(400).send({status: 400, data: [], message: 'Error in getting Pending Requests'});
+        }
+    }
+
+
+    async modifyValuesRequestAdd(req, res, next) {
+        try {
+            FormValueRequest.findOne({_id:req.body._id,status:"pending"})
+            .then(async result => {
+                if(result){
+                    result.status="approved"
+                    await result.save()
+                    await Form.findById(req.body.formId).then(resultForm => {
+                        var individualForm = resultForm.formStructure.id(req.body.formStructureId)
+                        individualForm.values.push({...individualForm.values, ...{name: result.value, value:result.value}})
+                        resultForm.save().then(_ => {
+                            return res.status(200).send({status: 200, user: resultForm, message: 'Field is Added Successfully'});
+                        });            
+                    })
+                }
+                else{
+                    return res.send({status: 200, data: [], message: 'Error in Request approval (Not Found)'});
+                }
+                    
+                });               
+           
+        } catch(error) {
+            console.log(error);
+            return res.status(400).send({status: 400, data: [], message: 'Error in Request approval'});
+        }
+    }
+    
 
     async getRegisteredFormsOfBreeder(req, res, next) {
         try {

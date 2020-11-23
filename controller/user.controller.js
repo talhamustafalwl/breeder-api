@@ -345,6 +345,35 @@ class UserController {
     }
   }
 
+
+  async approveBreeder(req, res) {
+    console.log(req.params.id)
+    if (!req.params.id ) {
+      return res.json({
+        status: 400,message: "Breeder Id  is required",
+        errors: { file: "Breeder Id is required" },data: {},});
+    }
+    try {
+      const user = await User.findOne({ _id: req.params.id }, { isverified: false } )
+      if (!user) {
+        return res.json({ status: 404, message: "Breeder not found / Already approved", data: {} });
+      }
+      user.verified = true;
+      user.secretToken = '';
+      await user.save();
+      return res.status(200).json({ status: 200, message: "Breeder verified successfully", data: {} });
+
+    } catch (err) {
+      return res.json({
+        status: 400,
+        message: "Error in verifing breeder",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
+
   async getAllEmployees(req, res) {
     try {
       User.find({

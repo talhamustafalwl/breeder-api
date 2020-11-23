@@ -1,3 +1,6 @@
+require('dotenv').config();
+
+
 module.exports = {
   mongoURI: 'mongodb+srv://breeder:GtmwECDdd3sL26N3@breederdb-vruiv.mongodb.net/breeder?retryWrites=true&w=majority',
   //   mongoURI:'mongodb://localhost:27017/breeder_official'
@@ -51,11 +54,8 @@ module.exports = {
 
 
   mailthrough: 'admin@logly.com',
-  // sendgridAPIKey: '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',
-  // sendgridAPIKey: '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',
-  //sendgridAPIKey: "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",
+  sendgridAPIKey: "", //talha@livewirelabs.co
 
-  sendgridAPIKey: "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", //faizan@livewireapps.com
   //stripe
   // stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",
   // stripe_private:"sk_test_Cozb0IU8FFmiHpepGUVqQCUM00gNg0NJRk",
@@ -82,7 +82,7 @@ module.exports = {
   // baseAPIUrl: 'http://localhost:3000/',
 
   // sendgridAPIKey: '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',
-  // sendgridAPIKey: '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',
+  sendgridAPIKey: process.env.SENDGRID_API_KEY,
 
-  
+
 }

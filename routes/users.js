@@ -64,6 +64,7 @@ router.put("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, up
 router.post("/breeder/register", UserController.registerBreeder);
 router.get("/breeder/getTax", auth, allowBreeder, allowEmployee, allowAdmin, authenticateRole, UserController.getTaxofBreeder)
 router.delete("/breeder/:id", auth, allowAdmin, allowBreeder, authenticateRole, UserController.deleteBreeder);
+router.get("/approve/breeder/:id", auth, allowAdmin,  authenticateRole, UserController.approveBreeder);
 
 router.post('/gallery/upload', auth, allowBreeder, allowEmployee, authenticateRole, upload.array('file', 10),  UserController.uploadGalleryImage )
 router.put('/gallery/delete', auth, allowBreeder, allowEmployee, authenticateRole, UserController.deleteGallaryImage)
