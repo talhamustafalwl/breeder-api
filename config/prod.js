@@ -5,6 +5,7 @@
 //     mailthrough:process.env.mailthrough,
     
 // }
+require('dotenv').config();
 
 module.exports = {
     mongoURI: 'mongodb+srv://breeder:GtmwECDdd3sL26N3@breederdb-vruiv.mongodb.net/breeder?retryWrites=true&w=majority',
@@ -60,7 +61,7 @@ module.exports = {
     paypalId:"",
     paypalSecret:"",
 
-
+    sendgridAPIKey: process.env.SENDGRID_API_KEY,
 
 
     // imageURL: 'http://192.168.88.129:5000/uploads/images/form/',

@@ -1,3 +1,6 @@
+require('dotenv').config();
+
+
 module.exports = {
   mongoURI: 'mongodb+srv://breeder:GtmwECDdd3sL26N3@breederdb-vruiv.mongodb.net/breeder?retryWrites=true&w=majority',
   //   mongoURI:'mongodb://localhost:27017/breeder_official'
@@ -79,7 +82,7 @@ module.exports = {
   // baseAPIUrl: 'http://localhost:3000/',
 
   // sendgridAPIKey: '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',
-  // sendgridAPIKey: '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',
+  sendgridAPIKey: process.env.SENDGRID_API_KEY,
 
-  
+
 }
