@@ -495,9 +495,11 @@ async getInventoryByBreeder(req, res, next) {
     if(type === 'animal') {
       console.log('animal inventory finding');
       match = await this.getAnimalForInventory(breederId);
+     
       // console.log(animalResult.map(e => e.categoryId));
     } else {
       match = await this.getProductForInventory(breederId);
+      console.log(match);
     }
 
     // const categoryReducer  = (acc, currValue) => {
@@ -531,17 +533,17 @@ async getInventoryByBreeder(req, res, next) {
     const categoryReducer  = (acc, currValue) => {
       currValue.items = currValue.items.map(e => {
         const status = {
-          alive: match.reduce((a, cv)=> (cv.data.breed.toString()===e.breed.value.toString()) ? a+cv.aliveQuantity : a ,0),
-          sold: match.reduce((a, cv)=> (cv.data.breed.toString()===e.breed.value.toString()) ? a+cv.soldQuantity : a ,0),
-          died: match.reduce((a, cv)=> (cv.data.breed.toString()===e.breed.value.toString()) ? a+cv.deadQuantity : a ,0),
-          pregnant: match.reduce((a, cv)=> (cv.data.breed.toString()===e.breed.value.toString()) ? a+cv.pregnantQuantity : a ,0),
+          alive: match.reduce((a, cv)=> (cv.data.breed.toString()===e.breed.name.toString()) ? a+cv.aliveQuantity : a ,0),
+          sold: match.reduce((a, cv)=> (cv.data.breed.toString()===e.breed.name.toString()) ? a+cv.soldQuantity : a ,0),
+          died: match.reduce((a, cv)=> (cv.data.breed.toString()===e.breed.name.toString()) ? a+cv.deadQuantity : a ,0),
+          pregnant: match.reduce((a, cv)=> (cv.data.breed.toString()===e.breed.name.toString()) ? a+cv.pregnantQuantity : a ,0),
         }
         return {
         ...e,
         ...status,
         total: status.alive + status.sold
       }
-      })
+      }).filter(e => (e.alive + e.sold + e.died + e.pregnant)>0);
 
       return [...acc, 
         {
@@ -556,12 +558,17 @@ async getInventoryByBreeder(req, res, next) {
     } 
 
     const productReducer  = (acc, currValue) => {
+      // quantity: 90,
+      // damagedQuantity: 0,
+      // expiredQuantity: 0,
+      // goodConditionQuantity: 90,
+      // soldQuantity: 0,
       currValue.items = currValue.items.map(e => {
         const status = {
-          instock: match.reduce((a, cv)=> (cv.data.subCategory.toString()===e.subCategory.value.toString()) ? a+cv.goodConditionQuantity : a ,0),
-          sold: match.reduce((a, cv)=> (cv.data.subCategory.toString()===e.subCategory.value.toString()) ? a+cv.soldQuantity : a ,0),
-          damaged: match.reduce((a, cv)=> (cv.data.subCategory.toString()===e.subCategory.value.toString()) ? a+cv.damagedQuantity : a ,0),
-          expired: match.reduce((a, cv)=> (cv.data.subCategory.toString()===e.subCategory.value.toString()) ? a+cv.expiredQuantity : a ,0),
+          instock: match.reduce((a, cv)=> (cv.data.subCategory.toString()===e.subCategory.name.toString()) ? a+cv.goodConditionQuantity : a ,0),
+          sold: match.reduce((a, cv)=> (cv.data.subCategory.toString()===e.subCategory.name.toString()) ? a+cv.soldQuantity : a ,0),
+          damaged: match.reduce((a, cv)=> (cv.data.subCategory.toString()===e.subCategory.name.toString()) ? a+cv.damagedQuantity : a ,0),
+          expired: match.reduce((a, cv)=> (cv.data.subCategory.toString()===e.subCategory.name.toString()) ? a+cv.expiredQuantity : a ,0),
         }
         console.log(status);
         return {
@@ -569,7 +576,7 @@ async getInventoryByBreeder(req, res, next) {
         ...status,
         total: status.instock + status.sold
       }
-      });
+      }).filter(e => (e.instock + e.sold + e.damaged + e.expired)>0);
 
       console.log(currValue.items);
 
@@ -610,24 +617,50 @@ async getInventoryByBreeder(req, res, next) {
     //     }];
     // }
 // subCategories: {$addToSet: { id: '$_id', name: '$name', type: '$type', icon: '$icon' }}
-
-
-    Category.find({"breeds.value" : {$in: match.map(e => e.data.breed)}}).then(reusltCategory => {
-      console.log('resultcategory ===> ');
-      let data = (type === 'animal') ? reusltCategory.map(category => ({...category.toObject(), category: category.toObject(), items: category.toObject().breeds.map(e => ({breed: e, name: e.name})) }))
-      : reusltCategory.map(category => ({...category.toObject(), category: category.toObject(), items: category.toObject().subCategories.map(e => ({subCategory: e, name: e.name})) }))
-      const finalRes = data.reduce((type==='animal') ? categoryReducer : productReducer, [])
-      return res
-      .status(200)
-      .json({
-        status: 200,
-        message: "Result found successfully",
-        data: finalRes,
-      });
-    }).catch((error) => {
-      console.log(error);
-      return res.json({ status: 400, message: "Error in finding result" });
+if(type === 'animal') {
+ 
+  Category.find({"breeds.name" : {$in: match.map(e => e.data.breed)}}).then(reusltCategory => {
+    console.log('resultcategory ===> ');
+    console.log(reusltCategory);
+    console.log(match);
+    let data = (type === 'animal') ? reusltCategory.map(category => ({...category.toObject(), category: category.toObject(), items: category.toObject().breeds.map(e => ({breed: e, name: e.name})) }))
+    : reusltCategory.map(category => ({...category.toObject(), category: category.toObject(), items: category.toObject().subCategories.map(e => ({subCategory: e, name: e.name})) }))
+    const finalRes = data.reduce((type==='animal') ? categoryReducer : productReducer, []);
+    return res
+    .status(200)
+    .json({
+      status: 200,
+      message: "Result found successfully",
+      data: finalRes,
     });
+  }).catch((error) => {
+    console.log(error);
+    return res.json({ status: 400, message: "Error in finding result" });
+  });
+  // console.log(animalResult.map(e => e.categoryId));
+} else {
+  Category.find({"subCategories.name" : {$in: match.map(e => e.data.subCategory)}}).then(reusltCategory => {
+    console.log('resultcategory Product ===> ');
+    console.log(reusltCategory);
+    console.log(match);
+    let data = (type === 'animal') ? reusltCategory.map(category => ({...category.toObject(), category: category.toObject(), items: category.toObject().breeds.map(e => ({breed: e, name: e.name})) }))
+    : reusltCategory.map(category => ({...category.toObject(), category: category.toObject(), items: category.toObject().subCategories.map(e => ({subCategory: e, name: e.name})) }))
+    const finalRes = data.reduce((type==='animal') ? categoryReducer : productReducer, []);
+    return res
+    .status(200)
+    .json({
+      status: 200,
+      message: "Result found successfully",
+      data: finalRes,
+    });
+  }).catch((error) => {
+    console.log(error);
+    return res.json({ status: 400, message: "Error in finding result" });
+  });
+}
+
+
+  
 
 
 

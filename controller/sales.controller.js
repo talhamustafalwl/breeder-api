@@ -431,6 +431,36 @@ class SalesController {
     }
   }
 
+
+  async dashboardSale(req, res, next) {
+    try {
+      const {breederId} = req.params;
+      console.log(breederId);
+      console.log('in dashboard sale');
+      Sale.aggregate([
+        {$match : {breederId:  mongoose.Types.ObjectId(breederId) }},
+        {
+          $lookup:
+          {
+            from: 'installments',
+            localField: '_id',
+            foreignField: 'salesId',
+            as: 'installments'
+          }
+        }
+      ]).then(resultSales => {
+        return res.status(200).json({
+          status: 200,
+          message: "Sales fetched successfully",
+          data: resultSales,
+        });
+      });
+    } catch(error) {
+      return next(error);
+    }
+  }
+
+
   async getGraphData(req, res, next) {
     try {
       console.log(req.query.type);

@@ -14,6 +14,6 @@ router.route('/').post(auth, allowAdmin, authenticateRole, upload.single('file')
 //for see/delete/update subscription by id
 router.route('/:id').get(auth,SubscriptionController.getbyId)
   .delete(auth, allowAdmin, allowBreeder, authenticateRole,SubscriptionController.deletebyId)
-.patch(adminauth,SubscriptionController.updatebyId)
+.patch(auth, allowAdmin, authenticateRole, upload.single('file'), SubscriptionController.updatebyId)
 
 module.exports=router
