@@ -24,13 +24,13 @@ module.exports = {
   // baseDocumentURL: 'http://192.168.100.29:5000/api/uploads/documents/',
 
 
-  Server: 'http://localhost:5000/api',
-  webServer: 'http://localhost:3000',
-  baseAPIUrl: 'http://localhost:5000/api/',
-  baseImageURL: 'http://localhost:5000/api/uploads/images/',
-  serverURL: 'http://localhost:5000/api',
-  imageURL: 'http://localhost:5000/api/uploads/images/form/',
-  baseDocumentURL: 'http://localhost:5000/api/uploads/documents/',
+  // Server: 'http://localhost:5000/api',
+  // webServer: 'http://localhost:3000',
+  // baseAPIUrl: 'http://localhost:5000/api/',
+  // baseImageURL: 'http://localhost:5000/api/uploads/images/',
+  // serverURL: 'http://localhost:5000/api',
+  // imageURL: 'http://localhost:5000/api/uploads/images/form/',
+  // baseDocumentURL: 'http://localhost:5000/api/uploads/documents/',
 
   // Server: 'https://breeder-api.herokuapp.com',
   // webServer: 'https://breeder-dev.herokuapp.com',
@@ -43,13 +43,13 @@ module.exports = {
 
 
 
-  // Server: 'http://3.21.129.23/api',
-  // webServer: 'http://3.21.129.23',
-  // baseAPIUrl: 'http://3.21.129.23/api/',
-  // baseImageURL: 'http://3.21.129.23/api/uploads/images/',
-  // serverURL: 'http://3.21.129.23/api',
-  // imageURL: 'http://3.21.129.23/api/uploads/images/form/',
-  // baseDocumentURL: 'http://3.21.129.23/api/uploads/documents/',
+  Server: 'http://3.21.129.23/api',
+  webServer: 'http://3.21.129.23',
+  baseAPIUrl: 'http://3.21.129.23/api/',
+  baseImageURL: 'http://3.21.129.23/api/uploads/images/',
+  serverURL: 'http://3.21.129.23/api',
+  imageURL: 'http://3.21.129.23/api/uploads/images/form/',
+  baseDocumentURL: 'http://3.21.129.23/api/uploads/documents/',
 
 
 
