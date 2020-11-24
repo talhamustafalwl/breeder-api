@@ -108,12 +108,13 @@ class ActivityController {
   }
 
   async getActivityData(req, res, next) {
+    let breederId =req.user.role == "employee" ? req.user.breederId : req.user._id;
     try {
       // categoryController.allCategories('activity').then(categoryResult => {
 
       // });
       Category.aggregate([
-        {$match: {type: 'activity'}},
+        {$match: {type: 'activity',addedBy:breederId}},
         {
           $lookup: {
             from: "activities",
