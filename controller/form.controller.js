@@ -271,15 +271,22 @@ class FormController {
             FormValueRequest.findOne({_id:req.body._id,status:"pending"})
             .then(async result => {
                 if(result){
-                    result.status="approved"
-                    await result.save()
-                    await Form.findById(req.body.formId).then(resultForm => {
-                        var individualForm = resultForm.formStructure.id(req.body.formStructureId)
-                        individualForm.values.push({...individualForm.values, ...{name: result.value, value:result.value}})
-                        resultForm.save().then(_ => {
-                            return res.status(200).send({status: 200, user: resultForm, message: 'Field is Added Successfully'});
-                        });            
-                    })
+                    if(req.body.status && req.body.status === "approved"){
+                        result.status="approved"
+                        await result.save()
+                        await Form.findById(req.body.formId).then(resultForm => {
+                            var individualForm = resultForm.formStructure.id(req.body.formStructureId)
+                            individualForm.values.push({...individualForm.values, ...{name: result.value, value:result.value}})
+                            resultForm.save().then(_ => {
+                                return res.status(200).send({status: 200, user: resultForm, message: 'Field is Added Successfully'});
+                            });            
+                        })
+                    }
+                    else{
+                        result.status="rejected"
+                        await result.save() 
+                        return res.status(200).send({status: 200, user: [], message: 'Field is Rejected Successfully'});
+                    }
                 }
                 else{
                     return res.send({status: 200, data: [], message: 'Error in Request approval (Not Found)'});
