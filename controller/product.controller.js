@@ -42,9 +42,7 @@ class ProductController {
     req.body.image = req.file ? req.file.filename : null;
     req.body.data = JSON.parse(req.body.data);
     console.log('data is ===> ', data);
-    delete req.body.data.quantity;
-
-
+    //delete req.body.data.quantity;
     req.body.quantity = data.quantity;
     req.body.goodConditionQuantity = data.quantity;
 
@@ -234,6 +232,8 @@ class ProductController {
       req.body.image = req.file.filename;
     }
     req.body.data = JSON.parse(req.body.data);
+    req.body.quantity = req.body.data.quantity;
+    req.body.goodConditionQuantity = req.body.data.quantity;
     try {
       const products = await Product.findOneAndUpdate(
         { _id: req.params.id },
