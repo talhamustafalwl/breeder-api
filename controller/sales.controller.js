@@ -781,11 +781,29 @@ class SalesController {
       } else if (type === "invoice") {
         InvoiceController.getAllInvoiceByBreeder(breederId).then(
           (resultInvoice) => {
+            
+            let convertObj=resultInvoice.map(e => e.toObject()).map(e1 => ({
+              ...e1,
+              saleId: {
+                ...e1.saleId,
+                animals: e1.saleId.animals.map(e2 => ({
+                    ...e2,
+                    animalId: {
+                      ...e2.animalId,
+                      image: e2.animalId.image
+                        ? `${baseImageURL}${e2.animalId.image}`
+                        : null,
+                    },
+                  }))
+                
+              }
+              }))
+
             // Sale.populate(resultInvoice, {path: 'saleId.animals.animalId'}).then(finalRes => {
             return res.status(200).json({
               status: 200,
               message: "Sales Invoice Found successfully",
-              data: resultInvoice,
+              data: convertObj,
             });
             // })
           }
