@@ -244,6 +244,9 @@ class AnimalController {
       req.body.image = req.file.filename;
     }
     req.body.data = JSON.parse(req.body.data);
+    req.body.quantity = req.body.data.quantity;
+    req.body.aliveQuantity = req.body.data.quantity;
+    req.body.healthyQuantity = req.body.data.quantity;
     try {
       await Animal.updateOne({ _id: req.params.id }, req.body);
       const e = await Animal.findOne({ _id: req.params.id })
@@ -725,7 +728,7 @@ class AnimalController {
       const data = JSON.parse(req.body.data);
       req.body.image = req.file ? req.file.filename : null;
       req.body.data = JSON.parse(req.body.data);
-      delete req.body.data.quantity;
+      req.body.data.quantity;
       req.body.quantity = data.quantity;
       req.body.aliveQuantity = data.quantity;
       req.body.healthyQuantity = data.quantity;

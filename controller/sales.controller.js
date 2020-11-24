@@ -632,7 +632,7 @@ class SalesController {
         req.user.role[0] === "breeder" ? req.user._id : req.user.breederId;
       this.getBreederSalesList(breeerId).then((resultSales) => {
         User.aggregate([
-          { $match: { role: "breeder", _id: { $in: resultSales } } },
+          { $match: { role: "breeder",  $or: [ { _id: { $in: resultSales } }, { addedBy: breeerId} ] } } ,
           {
             $group: {
               _id: { $substr: ["$name", 0, 1] },
