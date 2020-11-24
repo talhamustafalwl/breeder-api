@@ -9,6 +9,8 @@ const {
 const mailer = require("../misc/mailer");
 const randomstring = require("randomstring");
 const { Animal } = require("../models/Animal/Animal");
+const { Product } = require("../models/Product");
+
 const { Form } = require("../models/Form/Form");
 const { Sale } = require("../models/Sales");
 
@@ -1470,26 +1472,55 @@ class UserController {
   async dashboardAnalysis(req, res, next) {
     try {
       const { _id } = req.user;
-      Animal.aggregate([
-        { $match: { breederId: _id } },
-        {
-          $group: {
-            _id: "$breederId",
-            animalSold: { $sum: "$soldQuantity" },
-            aliveQuantity: { $sum: "$aliveQuantity" },
-            sickQuantity: { $sum: "$sickQuantity" },
-            deadQuantity: { $sum: "$deadQuantity" },
-            pregnantQuantity: { $sum: "$pregnantQuantity" },
+      const { type } = req.query;
+      if(type === "animal") {
+        Animal.aggregate([
+          { $match: { breederId: _id } },
+          {
+            $group: {
+              _id: "$breederId",
+              animalSold: { $sum: "$soldQuantity" },
+              aliveQuantity: { $sum: "$aliveQuantity" },
+              sickQuantity: { $sum: "$sickQuantity" },
+              deadQuantity: { $sum: "$deadQuantity" },
+              pregnantQuantity: { $sum: "$pregnantQuantity" },
+            },
           },
-        },
-      ]).then((animalResult) => {
-        // Sale.find({sellerId: _id})
+        ]).then((animalResult) => {
+          // Sale.find({sellerId: _id})
+          return res.send({
+            status: 200,
+            message: "Dashboard Data found successfully",
+            data: { animal: animalResult },
+          });
+        });
+      } else if(type === "product") {
+        Product.aggregate([
+          { $match: { breederId: _id } },
+          {
+            $group: {
+              _id: "$breederId",
+              damaged: { $sum: "$damagedQuantity" },
+              expired: { $sum: "$expiredQuantity" },
+              goodCondition: { $sum: "$goodConditionQuantity" },
+              sold: { $sum: "$soldQuantity" },
+            },
+          },
+        ]).then((animalResult) => {
+          // Sale.find({sellerId: _id})
+          return res.send({
+            status: 200,
+            message: "Dashboard Data found successfully",
+            data: { animal: animalResult },
+          });
+        });
+      } else {
         return res.send({
           status: 200,
-          message: "Dashboard Data found successfully",
-          data: { animal: animalResult },
+          message: "Error Occured!",
         });
-      });
+      }
+     
     } catch (error) {
       return next(error);
     }
