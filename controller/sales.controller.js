@@ -35,6 +35,7 @@ class SalesController {
         tax,
         downpayment,
       } = req.body;
+      
       const { errors, isValid, isInstallment } = SaleValidation.validateSales(
         req.body
       );

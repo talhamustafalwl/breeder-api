@@ -4,9 +4,10 @@ const { auth, allowBreeder, allowEmployee, authenticateRole } = require("../midd
 //const { adminauth } = require("../middleware/adminauth");
 const ProductController = require('../controller/product.controller');
 const {upload} = require('../middleware/multerimage');
+const { checkSubscriptionLimit } = require('../middleware/subscriptionLimit');
 
 router.route('/')
-  .post(auth, allowBreeder, allowEmployee, authenticateRole , upload.single('file'), ProductController.create)
+  .post(auth, allowBreeder, allowEmployee, authenticateRole, (req, res, next) => { req.type='product'; return next();}, checkSubscriptionLimit , upload.single('file'), ProductController.create)
   .delete(auth,ProductController.deleteallbreeder)
   .get(auth, allowBreeder, allowEmployee, allowEmployee, authenticateRole,ProductController.getallbreeder)
 

@@ -479,6 +479,22 @@ class SubscriberController {
     }
   }
 
+  async getSubscribedPackageOfBreeder(req, res, next) {
+    try  {
+      const {id} = req.params;
+      Subscriber.findOne({userId: id}).sort({createdAt: 1}).then(resultSubscribed  => {
+        console.log(resultSubscribed);
+        return res.status(200).json({
+          status: 200,
+          message: "Subscriber found successfully",
+          data: resultSubscribed,
+        });
+      });
+    } catch(error) {
+      return next(error);
+    }
+  }
+
   async updatebyId(req, res) {
     console.log(req.body)
     try {

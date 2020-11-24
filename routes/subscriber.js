@@ -35,4 +35,11 @@ router.route('/:id').get(auth,SubscriberController.getbyId)
   .delete(adminauth,SubscriberController.deletebyId)
 .patch(adminauth,SubscriberController.updatebyId)
 
+router.get('/getSubscribedPackage/:id', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SubscriberController.getSubscribedPackageOfBreeder)
+
+router.get('/check' , (req, res) => {
+  console.log(req.url);
+  res.send('OK')
+});
+
 module.exports=router

@@ -5,6 +5,7 @@ const { auth, allowBreeder, authenticateRole,allowEmployee, allowAdmin } = requi
 const { animalsubscriber } = require("../middleware/animalsubscriber");
 const AnimalController = require('../controller/animal.controller');
 const {upload, uploadDocument} = require('../middleware/multerimage');
+const { checkSubscriptionLimit } = require('../middleware/subscriptionLimit');
 
 
 
@@ -29,7 +30,7 @@ router.route('/all').get(auth, allowAdmin, allowBreeder, authenticateRole, Anima
 //for breeder  animals crud can view/delete all (can only see his animals)
 router.route('/').get(auth, allowBreeder,allowEmployee, authenticateRole, AnimalController.getBreederAnimals)
   .delete(auth, allowBreeder, authenticateRole, AnimalController.deleteBreederAnimals)
-  .post(auth, allowBreeder, allowEmployee, authenticateRole, upload.single('file'), AnimalController.addBreederAnimals)
+  .post(auth, allowBreeder, allowEmployee, authenticateRole, (req, res, next) => { req.type='animal'; return next();}, checkSubscriptionLimit,  upload.single('file'), AnimalController.addBreederAnimals)
 
   // router.delete('/:id', auth, allowBreeder, authenticateRole, AnimalController.deleteAnimal);
 

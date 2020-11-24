@@ -124,7 +124,11 @@ router.post('/testLogin', (req, res) => {
 
 
 router.get('/testMail' , UserController.testSendMail);
-
+router.get('/testcheck', (req, res) => {
+  console.log('url');
+  console.log(typeof req.method);
+  res.send('OK')
+})
 
 router.post('/employee/login', UserController.employeeLogin);
 
