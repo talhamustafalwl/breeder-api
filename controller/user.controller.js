@@ -10,6 +10,7 @@ const mailer = require("../misc/mailer");
 const randomstring = require("randomstring");
 const { Animal } = require("../models/Animal/Animal");
 const { Product } = require("../models/Product");
+const { Category } = require("../models/Animal/Category");
 
 const { Form } = require("../models/Form/Form");
 const { Sale } = require("../models/Sales");
@@ -1054,7 +1055,7 @@ class UserController {
                     User.updateOne(
                       { _id: success.data._id },
                       { activeSubscription: resultSubscriber._id }
-                    ).then((userSuccess) => {
+                    ).then(async (userSuccess) => {
                       
                       // Send Notification to admin..
                       User.findOne({isAdmin: true}).then(reusltAdmin => {
@@ -1070,6 +1071,14 @@ class UserController {
                         }
                         notificationController.create(notifData, true);
                       })
+
+                      try{
+                      await Category.insertMany([{addedBy:success.data._id,type:"activity",name:"Milking"},
+                      {addedBy:success.data._id,type:"activity",name:"Vaccination"}])
+                      }
+                      catch{
+                        console.log("error")
+                      }
 
                       return res.status(200).send(success);
                     });
