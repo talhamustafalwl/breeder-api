@@ -1,4 +1,6 @@
 const { Installment } = require("../models/Invoice/Installment");
+const { Sale } = require("../models/Sales");
+
 const { validateInstallmentInput } = require("../validation/invoice");
 class InstallmentController {
   constructor() { }
@@ -129,12 +131,35 @@ class InstallmentController {
   async payIntallment(req, res, next) {
     try {
       const {id} = req.params;
+      const {type, saleId} = req.query;
       console.log(id);
-      Installment.updateOne({_id: id}, {$set: {isPaid: true}}).then(resultInstallment => {
-        return res.status(200).json({ status: 200, message: "Installment paid successfully", data: resultInstallment });
-      }).catch(error => {
-        return res.json({ status: 400, message: "Error in updating Installment", errors: error, data: {} });
-      });
+
+      if(type === 'installment') {
+        Installment.updateOne({_id: id}, {$set: {isPaid: true}}).then(resultInstallment => {
+          Installment.find({salesId: saleId}).then(responseInstallment => {
+            if(!responseInstallment.filter(e => !e.toObject().isPaid)[0]) {
+              Sale.updateOne({_id: saleId}, {$set: {isPaid: true}}).then(resultInstallment => {
+                return res.status(200).json({ status: 200, message: "Installment paid successfully", data: resultInstallment });
+              }).catch(error => {
+                return res.json({ status: 400, message: "Error in updating Sale", errors: error, data: {} });
+              });
+            } else {
+              return res.status(200).json({ status: 200, message: "Installment paid successfully", data: resultInstallment });
+            }            
+          })
+        }).catch(error => {
+          return res.json({ status: 400, message: "Error in updating Installment", errors: error, data: {} });
+        });
+      } else if(type === 'sale') {
+        Sale.updateOne({_id: id}, {$set: {isPaid: true}}).then(resultInstallment => {
+          return res.status(200).json({ status: 200, message: "Sale paid successfully", data: resultInstallment });
+        }).catch(error => {
+          return res.json({ status: 400, message: "Error in updating Sale", errors: error, data: {} });
+        });
+      } else {
+        return res.json({ status: 400, message: "Error in updating Installment", data: {} });
+      }
+     
     } catch(error) {
       return next(error);
     }

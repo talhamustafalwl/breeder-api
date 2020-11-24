@@ -481,6 +481,7 @@ class UserController {
           ],
         })
           .then((result) => {
+            console.log(req.user._id);
             return res.status(200).json({
               status: 200,
               message: "Breeder found successfully",
@@ -491,7 +492,7 @@ class UserController {
                     ? `${config.baseImageURL}${e.toObject().image}`
                     : null,
                 },
-              })),
+              })).filter(e => !(e._id==req.user._id.toString())),
             });
           })
           .catch((error) => {

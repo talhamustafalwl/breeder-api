@@ -808,7 +808,7 @@ class AnimalController {
           delete animalResult._id;
           delete animalResult.transferBreeder;
           if(isBuyerAvailable) {
-            Animal.findOne({ sellerAnimalId: animalId, breederId: sellerId }).then(
+            Animal.findOne({ sellerAnimalId: animalId, breederId: buyerId }).then(
               (partnerAnimal) => {
 
 

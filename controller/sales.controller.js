@@ -659,7 +659,7 @@ class SalesController {
   async getAllSaleBySellerId (req, res, next) {
     try {
       const { sellerId }  = req.params;
-      Sale.find({sellerId}).then(responseSale => {
+      Sale.find({sellerId}).populate('buyerId').then(responseSale => {
         return res.status(200).json({
           status: 200,
           message: "Sales fetched successfully",
