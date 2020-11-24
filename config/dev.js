@@ -15,13 +15,13 @@ module.exports = {
   // baseDocumentURL: 'http://192.168.137.36:5000/api/uploads/documents/',
   
 
-  // Server: 'http://192.168.88.129:5000/api',
-  // webServer: 'http://192.168.88.129:5000/api',
-  // baseAPIUrl: 'http://192.168.88.129:5000/api',
-  // baseImageURL: 'http://192.168.88.129:5000/api/uploads/images/',
-  // serverURL: 'http://192.168.88.129:5000/api',
-  // imageURL: 'http://192.168.88.129:5000/api/uploads/images/form/',
-  // baseDocumentURL: 'http://192.168.88.129:5000/api/uploads/documents/',
+  // Server: 'http://192.168.100.29:5000/api',
+  // webServer: 'http://192.168.100.29:5000/api',
+  // baseAPIUrl: 'http://192.168.100.29:5000/api',
+  // baseImageURL: 'http://192.168.100.29:5000/api/uploads/images/',
+  // serverURL: 'http://192.168.100.29:5000/api',
+  // imageURL: 'http://192.168.100.29:5000/api/uploads/images/form/',
+  // baseDocumentURL: 'http://192.168.100.29:5000/api/uploads/documents/',
 
 
   // Server: 'http://localhost:5000/api',

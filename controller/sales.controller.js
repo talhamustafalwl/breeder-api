@@ -831,8 +831,8 @@ class SalesController {
                     ...e,
                     animalId: {
                       ...e.animalId,
-                      image: e.image
-                        ? `${config.baseImageURL}${e.image}`
+                      image: e.animalId.image
+                        ? `${baseImageURL}${e.animalId.image}`
                         : null,
                     },
                   })),
