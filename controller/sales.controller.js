@@ -656,6 +656,21 @@ class SalesController {
     }
   }
 
+  async getAllSaleBySellerId (req, res, next) {
+    try {
+      const { sellerId }  = req.params;
+      Sale.find({sellerId}).then(responseSale => {
+        return res.status(200).json({
+          status: 200,
+          message: "Sales fetched successfully",
+          data: responseSale,
+        });
+      });
+    } catch(error) {
+      return next(error);
+    }
+  }
+
   async getAllBreederList(req, res, next) {
     try {
       const breeerId =
