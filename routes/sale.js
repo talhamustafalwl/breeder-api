@@ -7,7 +7,7 @@ const { auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole } = requ
 router.get('/breederListSimple', auth, allowBreeder, allowEmployee, authenticateRole, SaleControoler.getAllBreederListSimple)
 router.get('/breederSalesList/:buyerId', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SaleControoler.getAllBreederSaleList)
 router.get('/breederList', auth, allowBreeder, allowEmployee, authenticateRole, SaleControoler.getAllBreederList)
-
+// router.get('/allSale/:sellerId', auth, allowEmployee, allowAdmin, allowBreeder, authenticateRole, SaleControoler. )
 
 router.post('/saleAnimal', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SaleControoler.saleAnimal);
 router.get('/', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SaleControoler.getSales);
