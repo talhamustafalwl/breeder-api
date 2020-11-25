@@ -43,7 +43,8 @@ const upload = multer({
     if (
       file.mimetype == "image/png" ||
       file.mimetype == "image/jpg" ||
-      file.mimetype == "image/jpeg"
+      file.mimetype == "image/jpeg" ||
+      file.mimetype.split('/')[0] == "video"
     ) {
       cb(null, true);
     } else {

@@ -14,6 +14,7 @@ const passwordchangedemail = require('../emails/passwordchanged');
 const UserController = require('../controller/user.controller');
 const SubscriberController = require('../controller/subscriber.controller');
 const {upload} = require('../middleware/multerimage');
+const { checkSubscriptionLimit } = require('../middleware/subscriptionLimit');
 
 // Load input validation
 const { validateLoginInput, validateRegisterInput, validateRegisterInputEmp } = require("../validation/users");
@@ -52,7 +53,7 @@ router.post("/image/upload", auth, allowAdmin, allowBreeder, authenticateRole, u
 
 // Register Employee only .. By Breeder..
 // employeesubscriber //// Will manage subscribe later.. 
-router.post("/employee/register", auth, allowAdmin, allowBreeder, authenticateRole, upload.single('file'), UserController.registerEmployees);
+router.post("/employee/register", auth, allowAdmin, allowBreeder, authenticateRole,    (req, res, next) => { req.type='employee'; return next();},  checkSubscriptionLimit, upload.single('file'), UserController.registerEmployees);
 router.delete("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, UserController.deleteEmployee);
 
 // -------------------------------------------------------------------------------------

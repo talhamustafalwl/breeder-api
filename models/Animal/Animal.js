@@ -16,6 +16,7 @@ const healthRecordSchema  = mongoose.Schema({
 const gallerySchema = mongoose.Schema({
     filename: String,
     size: String,
+    type: String,
     addedBy: {
         type: Schema.Types.ObjectId,
         ref: 'User'
