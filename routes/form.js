@@ -22,5 +22,7 @@ router.get('/category/:categoryId', FormController.getFormByCategory)
 router.put('/modify/values', auth, allowBreeder, authenticateRole, FormController.modifyValuesRequest);
 router.get('/modify/values', auth, allowAdmin, authenticateRole, FormController.modifyValuesRequestGet);
 router.put('/addItemField/values', auth, allowAdmin, authenticateRole, FormController.modifyValuesRequestAdd);
+router.post('/addItemField/values', auth, allowAdmin, authenticateRole, FormController.modifyValuesRequestDelete);
+router.delete('/addItemFieldFormId/:id', auth, allowAdmin, authenticateRole, FormController.modifyValuesRequestDeleteFormId);
 
 module.exports = router;

@@ -299,6 +299,35 @@ class FormController {
             return res.status(400).send({status: 400, data: [], message: 'Error in Request approval'});
         }
     }
+
+
+    async modifyValuesRequestDelete(req, res, next) {
+        console.log("req.body==>>",req.body)
+        try {
+            FormValueRequest.deleteMany({formStructureId:{ $in:req.body}}).then(() => {
+                return res.status(200).json({ status: 200, message: "Removed successfully" });
+          
+        })         
+           
+        } catch(error) {
+            return res.send({status: 400, data: [], message: 'Error in deleting'});
+        }
+    }
+
+    
+    async modifyValuesRequestDeleteFormId(req, res, next) {
+        console.log("req.params.id-->",req.params.id)
+        try {
+            FormValueRequest.deleteMany({formId:req.params.id}).then(() => {
+                return res.status(200).json({ status: 200, message: "Removed successfully" });
+          
+        })         
+           
+        } catch(error) {
+            return res.send({status: 400, data: [], message: 'Error in deleting'});
+        }
+    }
+
     
 
     async getRegisteredFormsOfBreeder(req, res, next) {
