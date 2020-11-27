@@ -46,8 +46,10 @@ const upload = multer({
       file.mimetype == "image/jpeg" ||
       file.mimetype.split('/')[0] == "video"
     ) {
+      console.log('image uploading');
       cb(null, true);
     } else {
+      console.log('in else');
       cb(null, false);
       //return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
     }

@@ -65,6 +65,7 @@ module.exports = {
 
   //paypal
   paypalId:"",
+  
   paypalSecret:"",
 
 
