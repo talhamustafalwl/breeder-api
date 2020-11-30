@@ -2,6 +2,7 @@ const { Sale } = require("../models/Sales");
 const { Animal } = require("../models/Animal/Animal");
 const InvoiceController = require("./invoice.controller");
 const AnimalController = require("./animal.controller");
+const ProductController = require("./product.controller");
 const InstallmentController = require("./installment.controller");
 const SaleValidation = require("../validation/sals");
 const constant = require("../middleware/constant");
@@ -31,6 +32,7 @@ class SalesController {
         buyerId,
         animals,
         installments,
+        products,
         amount,
         tax,
         downpayment,
@@ -66,6 +68,7 @@ class SalesController {
         isPaid: false,
         saleUniqueId: getRandomId(),
         animals,
+        products,
         isInstallment,
         downpayment,
       });
@@ -83,6 +86,7 @@ class SalesController {
         isPaid: false,
         saleUniqueId: getRandomId(),
         animals,
+        products,
         isInstallment,
         downpayment,
       });
@@ -104,7 +108,15 @@ class SalesController {
             animals,
             buyerId,
             req.user._id
-          ).then((resultAnimal) => {
+          ).then(async (resultAnimal) => {
+
+            try{
+              await ProductController.updateProductAfterSale(
+                products,buyerId,req.user._id)
+            }
+            catch{
+              console.log("error")
+            }
             // Create installment if any..
             console.log("result animal and is installment available");
             console.log(isInstallment);
@@ -795,6 +807,15 @@ class SalesController {
                         ? `${baseImageURL}${e2.animalId.image}`
                         : null,
                     },
+                  })),
+                  products: e1.saleId.products.map(e3 => ({
+                    ...e3,
+                    productId: {
+                      ...e3.productId,
+                      image: e3.productId.image
+                        ? `${baseImageURL}${e3.productId.image}`
+                        : null,
+                    },
                   }))
                 
               }
@@ -836,6 +857,7 @@ class SalesController {
       Sale.findById(req.params.id)
         .populate("buyerId")
         .populate("animals.animalId")
+        .populate("products.productId")
         .exec()
         .then((resultSale) => resultSale.toObject())
         .then((resultSale) => {
@@ -852,6 +874,15 @@ class SalesController {
                       ...e.animalId,
                       image: e.animalId.image
                         ? `${baseImageURL}${e.animalId.image}`
+                        : null,
+                    },
+                  })),
+                  products: resultSale.products.map((e2) => ({
+                    ...e2,
+                    productId: {
+                      ...e2.productId,
+                      image: e2.productId.image
+                        ? `${baseImageURL}${e2.productId.image}`
                         : null,
                     },
                   })),

@@ -7,7 +7,7 @@ function validateSales(data) {
     let isInstallment = false;
     data.buyerId = data.buyerId ? data.buyerId : '';
 
-    data.animals = data.animals ? data.animals : '';
+    //data.animals = data.animals ? data.animals : '';
     data.amount = data.amount ? data.amount : '';
     data.installments = data.installments ? data.installments: '';
     // data.isPaid = !isEmpty(data.isPaid) ? data.isPaid : '';
@@ -15,9 +15,9 @@ function validateSales(data) {
     if (Validator.isEmpty(data.buyerId)) {
         errors.buyerId = 'Buyer id is required';
     }
-    if(!data.animals || !data.animals[0]) {
-        errors.animals = 'Animals array is required at least one element!';
-    }
+    // if(!data.animals || !data.animals[0]) {
+    //     errors.animals = 'Animals array is required at least one element!';
+    // }
     
     if(!(data.amount)) {
         errors.amount = 'Amount is required';

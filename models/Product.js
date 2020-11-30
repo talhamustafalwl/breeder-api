@@ -49,7 +49,10 @@ const ProductSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-
+    soldQuantityPending:  {
+      type: Number,
+      default: 0,
+  },
     // model: {type: Number,required:true},
     // price: {type: Number,required:true},
     categoryId: {

@@ -119,7 +119,8 @@ async getallbreeder(req, res) {
 
     async getAllInvoiceByBreeder(breederId) {
       return new Promise((resolve, reject) => {
-        Invoice.find({breederId: breederId}).populate('buyerId').populate('installmentId').populate({path: 'saleId', populate: {path: 'animals.animalId'}} ).exec().then(resultInvoice => {
+        Invoice.find({breederId: breederId}).populate('buyerId').populate('installmentId').populate({path: 'saleId', populate: {path: 'animals.animalId'}} )
+        .populate({path: 'saleId', populate: {path: 'products.productId'}} ).exec().then(resultInvoice => {
           resolve(resultInvoice);
         }).catch(error => {
           reject(error);

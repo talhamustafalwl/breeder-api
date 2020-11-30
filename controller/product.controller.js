@@ -264,6 +264,37 @@ class ProductController {
   }
 
 
+
+  async updateProductAfterSale(animalArr, buyer, seller) {
+    // animalId, price, quantity
+    return new Promise((resolve, reject) => {
+      
+      async
+        .eachSeries(animalArr, function updateObj(obj, done) {
+          console.log('Calling each series ... ');
+          Product.updateOne({_id: obj.productId}, {$inc: {goodConditionQuantity: -obj.quantity,  soldQuantityPending: obj.quantity}}).then(resultDone => {
+            console.log(resultDone);
+            console.log('This is done condition ... ');
+            done();
+          }).catch(error => {
+            console.log('this is error condition... ');
+            console.log(error);
+            done();
+          });
+        })
+        .then((alldone) => {
+          console.log("all done");
+          resolve(true);
+        })
+        .catch((error) => {
+          console.log("Error ");
+          console.log(error);
+          reject();
+        });
+    });
+  }
+
+
 }
 
 module.exports = new ProductController();

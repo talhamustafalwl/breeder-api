@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 var idvalidator = require('mongoose-id-validator');
 const Schema = mongoose.Schema;
 const SaleAnimalSchema = new Schema({ animalId: { type: Schema.Types.ObjectId, ref: 'Animal' , required: true}, price: {type: Number, required: true}, quantity: {type: Number, required: true} });
+const SaleProductSchema = new Schema({ productId: { type: Schema.Types.ObjectId, ref: 'Product' , required: true}, price: {type: Number, required: true}, quantity: {type: Number, required: true} });
 //for Sales create to hold info
 const SalesSchema = mongoose.Schema({
     // contactId: {
@@ -32,6 +33,7 @@ const SalesSchema = mongoose.Schema({
         required: true,
     },
     animals: [SaleAnimalSchema],
+    products: [SaleProductSchema],
     // {type: Schema.Types.ObjectId,
     //     ref: 'Animal'}, // can sell to the multiple animal...
    
