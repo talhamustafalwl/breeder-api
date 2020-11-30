@@ -850,8 +850,10 @@ class UserController {
           $push: {
             gallery: {
               $each: req.files.map((file) => ({
-                filename: file.filename,
+                filename: file.filename, 
                 size: file.size,
+                addedBy: req.user._id,
+                type: file.mimetype,
               })),
             },
           },
@@ -1379,7 +1381,7 @@ class UserController {
                 resultUser.gallery && resultUser.gallery[0]
                   ? resultUser.toObject().gallery.map((e) => ({
                       ...e,
-                      filename: `${config.baseImageURL}${e.filename}`,
+                      ...{filename: `${config.baseImageURL}${e.filename}`},
                     }))
                   : [],
             },

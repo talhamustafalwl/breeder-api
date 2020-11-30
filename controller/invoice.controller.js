@@ -1,5 +1,9 @@
 const { Invoice } = require("../models/Invoice/Invoice");
 const { validateInvoiceInput } = require("../validation/invoice");
+const config = require("../config/key");
+const invoiceReminder = require("../emails/invoiceReminder");
+const mailer = require("../misc/mailer");
+
 class InvoiceController {
     constructor() { }
 
@@ -28,6 +32,25 @@ class InvoiceController {
         Invoice.find({saleId, type: 'sale'}).then(resultInvoice => {
           return res.status(200).json({ status: 200, message: "Invoice of animal by sale found successfully", data: resultInvoice });
         });
+      } catch(error) {
+        return next(error);
+      }
+    }
+
+    
+
+    async invoiceReminderEmail(req, res, next) {
+      console.log(req.body.buyerId.email,"<==req.buyerId.email")
+      const html = invoiceReminder( config.webServer,req.body);
+          mailer.sendEmail(
+            config.mailthrough,
+            req.body.buyerId.email,
+            "Sale Invoice Reminder!",
+            html
+          );
+      try {
+          return res.status(200).json({ status: 200, message: "Invoice Reminder send successfully", data: [] });
+       
       } catch(error) {
         return next(error);
       }

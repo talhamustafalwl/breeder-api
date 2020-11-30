@@ -19,7 +19,7 @@ router.route('/:id').get(auth,InvoiceController.getbyId)
     .delete(auth,InvoiceController.deletebyId)
     .patch(auth,InvoiceController.updatebyId)
 
-
+router.route('/invoiceReminderEmail').post(auth, allowAdmin, allowBreeder, allowEmployee,InvoiceController.invoiceReminderEmail)
 
 router.get('/seller/:sellerId', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, InvoiceController.getInvoiceBySellerId);
 router.delete('/softremove/:id', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, InvoiceController.softRemoveInvoice);
