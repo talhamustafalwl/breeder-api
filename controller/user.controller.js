@@ -171,6 +171,7 @@ class UserController {
           uid:req.user.uid,
           email: req.user.email,
           name: req.user.name,
+          businessName: req.user.businessName,
           breederId: req.user.breederId,
           image: req.user.image
             ? `${config.baseImageURL}${req.user.image}`
