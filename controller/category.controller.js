@@ -191,38 +191,46 @@ class CategoryController {
 
   async deletebyId(req, res) {
     try {
-      Category.findById(req.params.id).then(async categoryResult => {
-        if(categoryResult.type === 'animal') {
-          let isAvailable = await this.isAnimalAvailableByCategory(req.params.id);
-          console.log('already available animal');
-          if(isAvailable)  return res.json({
-            status: 400,
-            message: "Can not remove! Animal is registered in this category.",
-            data: {},
-          });
-        } else if(categoryResult.type === 'product') {
-          let isAvailable = await this.isProductAvailableByCategory(req.params.id);
-          console.log('already available product');
-          if(isAvailable)  return res.json({
-            status: 400,
-            message: "Can not remove! Product is registered in this category.",
-            data: {},
-          });
-        }
-        console.log('then called delete !!!');
-        const category = await Category.deleteOne({ _id: req.params.id });
-        const form = await this.deleteFormByCategoryId(req.params.id).catch(error => {
-          console.log(error);
+      Form.findOne({categoryId: req.params.id}).then(resultForm  => {
+        if(resultForm) return res.json({
+          status: 400,
+          message: "Can not remove, Form of this category is created.",
+          data: {},
         });
-          
-        return res
-          .status(200)
-          .json({
-            status: 200,
-            message: "Category deleted successfully",
-            data: category,
+        Category.findById(req.params.id).then(async categoryResult => {
+          if(categoryResult.type === 'animal') {
+            let isAvailable = await this.isAnimalAvailableByCategory(req.params.id);
+            console.log('already available animal');
+            if(isAvailable)  return res.json({
+              status: 400,
+              message: "Can not remove! Animal is registered in this category.",
+              data: {},
+            });
+          } else if(categoryResult.type === 'product') {
+            let isAvailable = await this.isProductAvailableByCategory(req.params.id);
+            console.log('already available product');
+            if(isAvailable)  return res.json({
+              status: 400,
+              message: "Can not remove! Product is registered in this category.",
+              data: {},
+            });
+          }
+          console.log('then called delete !!!');
+          const category = await Category.deleteOne({ _id: req.params.id });
+          const form = await this.deleteFormByCategoryId(req.params.id).catch(error => {
+            console.log(error);
           });
-      });
+            
+          return res
+            .status(200)
+            .json({
+              status: 200,
+              message: "Category deleted successfully",
+              data: category,
+            });
+        });
+      })
+     
 
      
 
