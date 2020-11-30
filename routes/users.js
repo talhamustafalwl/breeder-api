@@ -13,7 +13,7 @@ const forgetpasswordemail = require('../emails/forgetpassword');
 const passwordchangedemail = require('../emails/passwordchanged');
 const UserController = require('../controller/user.controller');
 const SubscriberController = require('../controller/subscriber.controller');
-const {upload} = require('../middleware/multerimage');
+const {upload, uploadDocument} = require('../middleware/multerimage');
 const { checkSubscriptionLimit } = require('../middleware/subscriptionLimit');
 
 // Load input validation

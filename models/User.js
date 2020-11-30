@@ -4,6 +4,7 @@ const saltRounds = 10;
 const jwt = require('jsonwebtoken');
 const Schema = mongoose.Schema;
 const gallerySchema = mongoose.Schema({
+    type: String,
     filename: String,
     size: String,
     title: String,
