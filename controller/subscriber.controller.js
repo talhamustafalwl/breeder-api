@@ -499,7 +499,7 @@ class SubscriberController {
     console.log(req.body)
     try {
       req.body.fromDate=new Date()
-      req.body.toDate=new Date(new Date().setMonth(new Date().getMonth()+1))
+      req.body.toDate= req.body.toDate ? req.body.toDate : new Date(new Date().setMonth(new Date().getMonth()+1))
       req.body.type='monthly'
       const feed = await Subscriber.updateOne({ _id: req.params.id }, req.body);
       return res.status(200).json({
