@@ -114,7 +114,7 @@ class ActivityController {
 
       // });
       Category.aggregate([
-        {$match: {type: 'activity',addedBy:breederId}},
+        {$match: {type: 'activity',$or: [{isDefault: true}, {addedBy:breederId}]}},
         {
           $lookup: {
             from: "activities",
