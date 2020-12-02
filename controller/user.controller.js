@@ -215,7 +215,8 @@ class UserController {
         });
       }
       User.findOne(
-        { email: req.body.email, role: req.body.role },
+        // { email: req.body.email, role: req.body.role },
+        { email: req.body.email},
         (err, user) => {
           if (!user)
             return res.json({
@@ -229,7 +230,7 @@ class UserController {
               status:400,message:"Breeder removed your account",data:{}
             })
         
-            if(!user.canAccessMobileApp)
+            if(user.canAccessMobileApp && user.canAccessMobileApp === false)
             return res.status(202).json({
               status:400,message:"Breeder blocked your account",data:{}
             })
@@ -243,14 +244,13 @@ class UserController {
               return res.status(202).json({
                 status:400,message:"Breeder disabled your account",data:{}
               })
-
           User.findOne(
-            { _id: user.breederId, uid: req.body.uid },
+            { _id: user.breederId ? user.breederId : user._id, uid: req.body.uid },
             (err, breeder) => {
               if (!breeder)
                 return res.json({
                   status: 400,
-                  message: "Please enter your valid breeder id",
+                  message: "Please enter your valid Care Giver ID",
                   data: {},
                 });
 
