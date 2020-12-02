@@ -89,7 +89,7 @@ class CategoryController {
       const category = await Category.find({
         ...req.query.type ? { type: req.query.type } : {},
         ...(req.query.type==='animalproduct') ? {type: {$in: ['animal', 'product']}}: {},
-        ...(req.query.type==="contact" || req.query.type==="activity") ? {addedBy: breederId}: {},
+        ...(req.query.type==="contact" || req.query.type==="activity") ? { $or: [{isDefault: true}, {addedBy:breederId}]}: {},
         }
       ).sort({ createdAt: -1 })
       //removed (.populate("parentId");)
@@ -503,7 +503,7 @@ async getInventoryByBreeder(req, res, next) {
     if(type === 'animal') {
       console.log('animal inventory finding');
       match = await this.getAnimalForInventory(breederId);
-     
+      
       // console.log(animalResult.map(e => e.categoryId));
     } else {
       match = await this.getProductForInventory(breederId);
@@ -541,10 +541,10 @@ async getInventoryByBreeder(req, res, next) {
     const categoryReducer  = (acc, currValue) => {
       currValue.items = currValue.items.map(e => {
         const status = {
-          alive: match.reduce((a, cv)=> (cv.data.breed.toString()===e.breed.name.toString()) ? a+cv.aliveQuantity : a ,0),
-          sold: match.reduce((a, cv)=> (cv.data.breed.toString()===e.breed.name.toString()) ? a+cv.soldQuantity : a ,0),
-          died: match.reduce((a, cv)=> (cv.data.breed.toString()===e.breed.name.toString()) ? a+cv.deadQuantity : a ,0),
-          pregnant: match.reduce((a, cv)=> (cv.data.breed.toString()===e.breed.name.toString()) ? a+cv.pregnantQuantity : a ,0),
+          alive: match.reduce((a, cv)=> ((typeof cv.data.breed === 'string') ? (cv.data.breed.toString()===e.breed.name.toString()) : (cv.data.breed.includes(e.breed.name.toString()))) ? a+cv.aliveQuantity : a ,0),
+          sold: match.reduce((a, cv)=> ((typeof cv.data.breed === 'string') ? (cv.data.breed.toString()===e.breed.name.toString()) : (cv.data.breed.includes(e.breed.name.toString()))) ? a+cv.soldQuantity : a ,0),
+          died: match.reduce((a, cv)=> ((typeof cv.data.breed === 'string') ? (cv.data.breed.toString()===e.breed.name.toString()) : (cv.data.breed.includes(e.breed.name.toString()))) ? a+cv.deadQuantity : a ,0),
+          pregnant: match.reduce((a, cv)=> ((typeof cv.data.breed === 'string') ? (cv.data.breed.toString()===e.breed.name.toString()) : (cv.data.breed.includes(e.breed.name.toString()))) ? a+cv.pregnantQuantity : a ,0),
         }
         return {
         ...e,
@@ -626,8 +626,7 @@ async getInventoryByBreeder(req, res, next) {
     // }
 // subCategories: {$addToSet: { id: '$_id', name: '$name', type: '$type', icon: '$icon' }}
 if(type === 'animal') {
- 
-  Category.find({"breeds.name" : {$in: match.map(e => e.data.breed)}}).then(reusltCategory => {
+  Category.find({"breeds.name" : {$in: match.map(e => e.data.breed).flat()}}).then(reusltCategory => {
     console.log('resultcategory ===> ');
     console.log(reusltCategory);
     console.log(match);

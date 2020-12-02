@@ -1076,13 +1076,13 @@ class UserController {
                         notificationController.create(notifData, true);
                       })
 
-                      try{
-                      await Category.insertMany([{addedBy:success.data._id,type:"activity",name:"Milking"},
-                      {addedBy:success.data._id,type:"activity",name:"Vaccination"}])
-                      }
-                      catch{
-                        console.log("error")
-                      }
+                      // try{
+                      // await Category.insertMany([{addedBy:success.data._id,type:"activity",name:"Milking"},
+                      // {addedBy:success.data._id,type:"activity",name:"Vaccination"}])
+                      // }
+                      // catch{
+                      //   console.log("error")
+                      // }
 
                       return res.status(200).send(success);
                     });
