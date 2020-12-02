@@ -868,6 +868,7 @@ class SalesController {
               data: {
                 ...{
                   ...resultSale,
+                  buyerId: {...resultSale.buyerId, image: resultSale.buyerId.image ? `${baseImageURL}${resultSale.buyerId.image}` : null },
                   animals: resultSale.animals.map((e) => ({
                     ...e,
                     animalId: {
@@ -898,6 +899,7 @@ class SalesController {
                 data: {
                   ...{
                     ...resultSale,
+                    buyerId: {...resultSale.buyerId, image: resultSale.buyerId.image ? `${baseImageURL}${resultSale.buyerId.image}` : null },
                     animals: resultSale.animals.map((e) => ({
                       ...e,
                       animalId: {
