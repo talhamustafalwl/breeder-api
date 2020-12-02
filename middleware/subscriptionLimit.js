@@ -6,8 +6,9 @@ const { Subscriber } = require('../models/Subscription/Subscriber');
 
 let checkSubscriptionLimit = function (req, res, next) {
     console.log(req.type);
+    breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
 
-    Subscriber.findOne({userId: req.user._id}).populate('subscriptionId').then(resultSubscription => {
+    Subscriber.findOne({userId: breederId}).populate('subscriptionId').then(resultSubscription => {
         if(req.type === 'animal') {
             Animal.find({breederId: req.user._id}).then(responseAnimal => {
                 console.log(responseAnimal.length);
