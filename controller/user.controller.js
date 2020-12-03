@@ -214,76 +214,60 @@ class UserController {
           data: {},
         });
       }
-      User.findOne(
-        // { email: req.body.email, role: req.body.role },
-        { email: req.body.email},
-        (err, user) => {
-          if (!user)
-            return res.json({
-              status: 400,
-              message: "Please enter your valid email",
-              data: {},
-            });
-            console.log(user.isEmployeeActive,user.canAccessMobileApp)
-            if(!user.isEmployeeActive)
+
+      let user=await User.findOne({ email: req.body.email,uid: req.body.uid})
+      if(!user){
+        user=await User.findOne({ email: req.body.email,breederUniqueId: req.body.uid})
+        if(!user){
+          return res.json({status: 400,message: "Please enter your valid Email /Care Giver ID",data: {},});
+        }
+      }
+      if(!user.isEmployeeActive)
             return res.status(202).json({
               status:400,message:"Breeder removed your account",data:{}
-            })
+      })
         
-            if(user.canAccessMobileApp && user.canAccessMobileApp === false)
+      if(user.canAccessMobileApp && user.canAccessMobileApp === false)
             return res.status(202).json({
               status:400,message:"Breeder blocked your account",data:{}
-            })
+       })
 
-            if(user.isblocked)
+      if(user.isblocked)
             return res.status(202).json({
               status:400,message:"Admin blocked your account",data:{}
-            })
+      })
 
-            if(!user.active)
+      if(!user.active)
               return res.status(202).json({
                 status:400,message:"Breeder disabled your account",data:{}
-              })
-          User.findOne(
-            { _id: user.breederId ? user.breederId : user._id, uid: req.body.uid },
-            (err, breeder) => {
-              if (!breeder)
-                return res.json({
-                  status: 400,
-                  message: "Please enter your valid Care Giver ID",
-                  data: {},
-                });
+      })
+      user.comparePassword(req.body.password, (err, isMatch) => {
+        if (!isMatch)
+          return res.json({
+            status: 400,
+            message: "Incorrect password",
+            errors: errors,
+            data: {},
+          });
+        user.deviceToken = req.body.deviceToken;
+        user.save;
+        //console.log(user)
+        user.generateToken((err, user) => {
+          if (err) return res.send(err);
+          //io.emit("userSet", { msg: "email is registered", email: req.body.email });
 
-              user.comparePassword(req.body.password, (err, isMatch) => {
-                if (!isMatch)
-                  return res.json({
-                    status: 400,
-                    message: "Incorrect password",
-                    errors: errors,
-                    data: {},
-                  });
-                user.deviceToken = req.body.deviceToken;
-                user.save;
-                //console.log(user)
-                user.generateToken((err, user) => {
-                  if (err) return res.send(err);
-                  //io.emit("userSet", { msg: "email is registered", email: req.body.email });
+          return res.status(200).json({
+            status: 200,
+            message: "Login successfully",
+            data: {
+              userId: user._id,
+              token: user.token,
+              email: user.email,
+            },
+          });
+        });
+      });
 
-                  return res.status(200).json({
-                    status: 200,
-                    message: "Login successfully",
-                    data: {
-                      userId: user._id,
-                      token: user.token,
-                      email: user.email,
-                    },
-                  });
-                });
-              });
-            }
-          );
-        }
-      );
     } catch (err) {
       return next(err);
     }

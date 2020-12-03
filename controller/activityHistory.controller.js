@@ -111,6 +111,7 @@ class ActivityController {
 
 
         async getallByType(req, res) {
+          let breederId=req.user.role == "employee" ? req.user.breederId : req.user._id;
           console.log("req.query",req.query)
             let tableName;
             if (req.query.type === "groupId") {
@@ -121,7 +122,8 @@ class ActivityController {
             try {
               const cleaning = await ActivityHistory.aggregate([
                 {
-                  $match: { categoryId: mongoose.Types.ObjectId(req.query.categoryId) },
+                  $match: { categoryId: mongoose.Types.ObjectId(req.query.categoryId),
+                    addedBy:breederId },
                 },
         
                 {
