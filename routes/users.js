@@ -73,7 +73,7 @@ router.put('/gallery/delete', auth, allowBreeder, allowEmployee, authenticateRol
 
 router.post('/dealcategories', auth, allowAdmin, allowBreeder, authenticateRole, UserController.addDealCategories)
 router.delete('/dealcategories/:id', auth, allowAdmin, allowBreeder, authenticateRole, UserController.deleteDealCategories)
-
+router.get('/itemCount', auth, allowAdmin, allowEmployee, allowBreeder, authenticateRole, UserController.getItemsCount)
 
 router.post("/emailCheck", (req, res) => {
   console.log("emailCheck called", req.body)

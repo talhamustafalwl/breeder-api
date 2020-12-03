@@ -1539,6 +1539,32 @@ class UserController {
     }
   }
 
+  async getItemsCount(req, res, next) {
+    try {
+      const query = req.user.isAdmin ? {} : {breederId: req.user._id};
+      const getAnimalCount = Promise.resolve(Animal.find(query).count());
+      const getProductCount = Promise.resolve(Product.find(query).count());
+      const getEmployeesCount = Promise.resolve(User.find({...query, role: 'employee', isEmployeeActive: true}).count());
+      
+      Promise.all([getAnimalCount, getEmployeesCount, getProductCount]).then(([animalCount, employeeCount, productCount]) => {
+        return res.send({
+          status: 200,
+          message: "Item Count found successfully",
+          data: { animalCount, employeeCount, productCount },
+        });
+      }).catch(error => {
+        return res.json({
+          status: 400,
+          message: error.message ? error.message : "Internal Server Error",
+          data: {},
+          error,
+        });
+      })
+    } catch(error) {
+      return next(error);
+    }
+  }
+
   async setupWizard(req, res, next) {
     try {
       const {

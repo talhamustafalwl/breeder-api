@@ -1,11 +1,12 @@
 const { Subscriber } = require("../models/Subscription/Subscriber");
+const {SubscriptionHistory} = require('../models/Subscription/SubscriptionHistory');
 const { Subscription } = require("../models/Subscription/Subscription");
 const { Transaction } = require("../models/Subscription/Transaction");
 const LogicController = require("./logic.controller");
 const { validateSubscriberInput } = require("../validation/subscriber");
 const config = require("../config/key");
 const PaymentSesrvice = require('../misc/payment');
-
+const mnogoose = require('mongoose');
 
 class SubscriberController {
   constructor() {}
@@ -482,7 +483,7 @@ class SubscriberController {
   async getSubscribedPackageOfBreeder(req, res, next) {
     try  {
       const {id} = req.params;
-      Subscriber.findOne({userId: id}).sort({createdAt: 1}).then(resultSubscribed  => {
+      Subscriber.findOne({userId: id}).populate('subscriptionId').sort({createdAt: 1}).then(resultSubscribed  => {
         console.log(resultSubscribed);
         return res.status(200).json({
           status: 200,
@@ -530,22 +531,47 @@ class SubscriberController {
     }
 
     try {
+      if(!req.user.creditCard[0]) return res.json({
+        status: 400,
+        message: "No credit card added!",
+        data: {},
+      });
       const breederpresent = await Subscriber.find({ breederId: req.user._id });
       //console.log("breederpresent --->",breederpresent)
       if (!breederpresent) {
-        req.body.breederId = req.user._id;
+        req.body.userId = req.user._id;
+        req.body.fromDate = new Date();
+        // toDate: new Date(Date.now() +  * 24 * 60 * 60 * 1000),
+        req.body.toDate = (req.body.type === 'monthly') ? (new Date(new Date().setMonth(new Date().getMonth()+1))) : (new Date(new Date().setFullYear(new Date().getFullYear()+1)));
+
         const subscriberData = await Subscriber.create(req.body);
+        
         return res.status(200).json({
           status: 200,
           message: "Subscriber created successfully",
           data: subscriberData,
         });
       } else {
+        console.log(req.body);
+        console.log(req.user._id);
+        req.body.fromDate = new Date();
+        // toDate: new Date(Date.now() +  * 24 * 60 * 60 * 1000),
+        req.body.toDate = (req.body.type === 'monthly') ? (new Date(new Date().setMonth(new Date().getMonth()+1))) : (new Date(new Date().setFullYear(new Date().getFullYear()+1)));
+
         const subscriberUpdate = await Subscriber.findOneAndUpdate(
-          { breederId: req.user._id },
+          { userId: mnogoose.Types.ObjectId(req.user._id) },
           req.body,
           { new: true }
         );
+
+        SubscriptionHistory.findOneAndUpdate({userId: req.user._id, isActive: true}, {isActive: false}).then(resultSubscription => {
+          console.log(resultSubscription);
+          SubscriptionHistory({
+            ...req.body,
+            userId: req.user._id,
+          }).save();
+        });
+
         return res.status(200).json({
           status: 200,
           message: "Subscriber updated successfully",
