@@ -12,7 +12,7 @@ function validateContact(data) {
     // category: {type: String},
 
     data.name = data.name ? data.name : '';
-    data.address = data.address ? data.address : '';
+    //data.address = data.address ? data.address : '';
     data.category = data.category ? data.category : '';
 
 
@@ -20,9 +20,9 @@ console.log(data);
     if(Validator.isEmpty(data.name)) {
         errors.name = 'Name is required';
     }
-    if(Validator.isEmpty(data.address)) {
-        errors.address = 'Address is required';
-    }
+    // if(Validator.isEmpty(data.address)) {
+    //     errors.address = 'Address is required';
+    // }
     if(Validator.isEmpty(data.category)) {
         errors.category = 'Category is required';
     }
