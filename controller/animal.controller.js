@@ -528,9 +528,11 @@ class AnimalController {
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     query.breederId = { $in: breederId };
     const {activationType} = req.query
-    if(!(activationType==="Both")) {
-      console.log ('working');
-      query.isArchived = req.query.activationType==='Active' ? false : true;
+    if(activationType) {
+      if(!(activationType==="Both")) {
+        console.log ('working');
+        query.isArchived = req.query.activationType==='Active' ? false : true;
+      }
     }
 
     console.log(query)
