@@ -38,7 +38,7 @@ router.route('/').get(auth, allowBreeder,allowEmployee, authenticateRole, Animal
 router.put('/update/:id', auth, allowBreeder, allowEmployee, authenticateRole, AnimalController.updateAnimalData); 
 
 //for specific animal update/view/delete 
-router.route('/:id').get(auth, allowBreeder, allowEmployee, authenticateRole,AnimalController.getanimal)
+router.route('/:id').get(AnimalController.getanimal)
   .delete(auth, allowBreeder, allowEmployee, allowAdmin, authenticateRole,AnimalController.deleteanimal)
 .patch(auth, allowBreeder, allowEmployee, authenticateRole, upload.single('file'),AnimalController.updateanimal)
 
