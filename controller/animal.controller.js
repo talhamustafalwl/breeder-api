@@ -164,44 +164,24 @@ class AnimalController {
 
                 ...{
                   parent2: {
-                    "0": {
-                      ...e.toObject().family.parent2 ? e.toObject().family.parent2[0] : {},
-                      ...{
-                        image:
-                          e.toObject().family.parent2 &&
-                          `${config.baseImageURL}${
-                            e.toObject().family.parent2[0].image
-                          }`,
-                      },
-                    }, 
-                    
+                    ...e.toObject().family.parent2,
                     ...{
                       image:
                         e.toObject().family.parent2 &&
                         `${config.baseImageURL}${
-                          e.toObject().family.parent2[0].image
+                          e.toObject().family.parent2.image
                         }`,
                     },
                   },
                 },
                 ...{
                   parent1: {
-                    "0": {
-                      ...e.toObject().family.parent1 ? e.toObject().family.parent1[0]: {},
+                    ...e.toObject().family.parent1,
                     ...{
                       image:
                         e.toObject().family.parent1 &&
                         `${config.baseImageURL}${
-                          e.toObject().family.parent1[0].image
-                        }`,
-                    },
-                    },
-                   
-                    ...{
-                      image:
-                        e.toObject().family.parent1 &&
-                        `${config.baseImageURL}${
-                          e.toObject().family.parent1[0].image
+                          e.toObject().family.parent1.image
                         }`,
                     },
                   },
@@ -527,7 +507,7 @@ class AnimalController {
     const breederId =
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     query.breederId = { $in: breederId };
-    const {activationType} = req.query
+    const {activationType} = req.query;
     if(activationType) {
       if(!(activationType==="Both")) {
         console.log ('working');
