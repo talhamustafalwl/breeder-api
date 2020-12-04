@@ -157,6 +157,7 @@ const userSchema = mongoose.Schema({
         type: Boolean, default: false,
     },
     creditCard: [creditCardSchema],
+    stripeCustomer:  {type: Object},
     activeSubscription: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Subscriber'

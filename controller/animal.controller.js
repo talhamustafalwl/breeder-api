@@ -10,6 +10,7 @@ var async = require("async");
 const formController = require("./form.controller");
 const groupController = require("./group.controller");
 const { isForgotTokenActive } = require("./user.controller");
+const constant = require("../middleware/constant");
 
 class AnimalController {
   constructor() {}
@@ -212,19 +213,24 @@ class AnimalController {
             data: {},
           });
           const data = await Animal.findOne({ _id: req.params.id });
-            await LogicController.deleteqr(data, data, (nextRes) => {
-              console.log(nextRes);
-            });
-            // await LogicController.delete
-            const animal = await Animal.deleteOne({
-              _id: req.params.id,
-              ...req.user.role.includes('admin') ? {}: {breederId: req.user._id},
-            });
-            return res.status(200).json({
-              status: 200,
-              message: "Animal deleted successfully",
-              data: animal,
-            });
+           
+            // await LogicController.deleteqr(data, data, (nextRes) => {
+            //   console.log(nextRes);
+            // });
+            // // await LogicController.delete
+            // const animal = await Animal.deleteOne({
+            //   _id: req.params.id,
+            //   ...req.user.role.includes('admin') ? {}: {breederId: req.user._id},
+            // });
+            data.isArchived = true;
+            data.save().then(() => {
+              return res.status(200).json({
+                status: 200,
+                message: "Animal deleted successfully",
+                data: animal,
+              });
+            })
+
       });
 
       
@@ -501,7 +507,13 @@ class AnimalController {
     const breederId =
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     query.breederId = { $in: breederId };
-    //console.log(query)
+    const {activationType} = req.query
+    if(!(activationType==="Both")) {
+      console.log ('working');
+      query.isArchived = req.query.activationType==='Active' ? false : true;
+    }
+
+    console.log(query)
     try {
       //const animals = await Animal.find({ breederId });
       if (req.user.role == "employee") {

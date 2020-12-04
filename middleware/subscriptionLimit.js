@@ -28,7 +28,7 @@ let checkSubscriptionLimit = function (req, res, next) {
                 }
             });
         } else if (req.type === 'employee') {
-            User.find({role: 'employee', breederId: req.user._id}).then(responseEmployee => {
+            User.find({role: 'employee', breederId: req.user._id, isEmployeeActive: true}).then(responseEmployee => {
                 if(responseEmployee.length < resultSubscription.subscriptionId.allowedEmp) {
                     return next();
                 } else {

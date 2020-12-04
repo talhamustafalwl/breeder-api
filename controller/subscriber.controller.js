@@ -7,9 +7,13 @@ const { validateSubscriberInput } = require("../validation/subscriber");
 const config = require("../config/key");
 const PaymentSesrvice = require('../misc/payment');
 const mnogoose = require('mongoose');
+const payment = require("../misc/payment");
+const { charge } = require("../misc/payment");
 
 class SubscriberController {
-  constructor() {}
+  constructor() {
+    this.subscribeUser = this.subscribeUser.bind(this);
+  }
 
 
   async initialSubscribeBreeder (breederId) {
@@ -518,6 +522,19 @@ class SubscriberController {
     }
   }
 
+
+  async chargeForSubscription (subscriptionId, type, creditCardId, customerId) {
+    console.log('the data to be passed is ', creditCardId, '  and ',  customerId)
+    return new Promise(async (resolve, reject) => {
+      console.log(creditCardId);
+      const subscription = await Subscription.findById(subscriptionId);
+      const subscriptionAmount = type==='monthly' ? subscription.monthlyPrice : subscription.yearlyPrice; 
+      const cardToken = await payment.createCardToken(creditCardId, customerId);
+      const chargeResult = await payment.charge(subscriptionAmount, cardToken.id, 'Charge for subscription' );
+      resolve(chargeResult);
+    });
+  }
+
   async subscribeUser(req, res) {
     console.log("breeder --->", req.user._id);
     const { errors, isValid } = validateSubscriberInput(req.body);
@@ -533,11 +550,19 @@ class SubscriberController {
     try {
       if(!req.user.creditCard[0]) return res.json({
         status: 400,
-        message: "No credit card added!",
+        message: "No card added!",
         data: {},
       });
       const breederpresent = await Subscriber.find({ breederId: req.user._id });
       //console.log("breederpresent --->",breederpresent)
+
+
+      // Add Payment ..
+      // const chargeResult = await this.chargeForSubscription(req.body.subscriptionId, req.body.type, req.user.creditCard[0].id, req.user.stripeCustomer.id);
+      // console.log('Stripe charge result: ');
+      // console.log(chargeResult);
+
+
       if (!breederpresent) {
         req.body.userId = req.user._id;
         req.body.fromDate = new Date();
@@ -579,6 +604,7 @@ class SubscriberController {
         });
       }
     } catch (err) {
+      console.log(err);
       return res.json({
         status: 400,
         message: "Error in updating Subscriber",

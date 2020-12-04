@@ -75,6 +75,10 @@ router.post('/dealcategories', auth, allowAdmin, allowBreeder, authenticateRole,
 router.delete('/dealcategories/:id', auth, allowAdmin, allowBreeder, authenticateRole, UserController.deleteDealCategories)
 router.get('/itemCount', auth, allowAdmin, allowEmployee, allowBreeder, authenticateRole, UserController.getItemsCount)
 
+
+router.get('/adminDashboardStatics',  UserController.adminDashboardStatics)
+
+
 router.post("/emailCheck", (req, res) => {
   console.log("emailCheck called", req.body)
   if (!req.body.email) {

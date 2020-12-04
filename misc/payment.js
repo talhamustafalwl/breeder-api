@@ -1,3 +1,4 @@
+const { reject } = require("async");
 const config = require("../config/key");
 const stripe = require("stripe")(config.stripe_private);
 class PaymentSesrvice {
@@ -5,17 +6,17 @@ class PaymentSesrvice {
 
   async createPayment(creditCard, amount) {}
 
-  async createCardToken(number, exp_month, exp_year, cvc) {
-    const token = await stripe.tokens.create({
-      card: {
-        number,
-        exp_month,
-        exp_year,
-        cvc,
-      },
-    });
-    return token;
-  }
+  // async createCardToken(number, exp_month, exp_year, cvc) {
+  //   const token = await stripe.tokens.create({
+  //     card: {
+  //       number,
+  //       exp_month,
+  //       exp_year,
+  //       cvc,
+  //     },
+  //   });
+  //   return token;
+  // }
 
   async getCreditCard(cardToken) {
     const token = await stripe.tokens.retrieve(cardToken);
@@ -76,6 +77,31 @@ class PaymentSesrvice {
       );
     });
   }
+
+
+
+  async createCustomer(name, email,  description) {
+    return new Promise(async (resolve, reject) => {
+      const customer = await stripe.customers.create({
+        name,
+        email,
+        description,
+      });
+      resolve(customer);
+    });
+  }
+
+  async createCardToken(cardId, customerId) {
+    return new Promise(async (resolve, reject) => {
+      const token = await stripe.tokens.create({
+        card: cardId,
+        customer: customerId
+      });
+      console.log(token);
+      resolve(token);
+    })
+  }
+
 }
 
 module.exports = new PaymentSesrvice();

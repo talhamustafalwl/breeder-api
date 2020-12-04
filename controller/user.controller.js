@@ -28,6 +28,7 @@ const notificationController = require("./notification.controller");
 const salesController = require("./sales.controller");
 const { reject } = require("async");
 const subscriberController = require("./subscriber.controller");
+const payment = require("../misc/payment");
 
 class UserController {
   constructor() {
@@ -87,72 +88,70 @@ class UserController {
       //       path: "subscriptionId",
       //     },
       //   }).
-      User.aggregate(
-          [
-            { $match: { _id: Types.ObjectId(req.params.id) } 
+      User.aggregate([
+        { $match: { _id: Types.ObjectId(req.params.id) } },
+        {
+          $lookup: {
+            from: "animals",
+            localField: "_id",
+            foreignField: "breederId",
+            as: "animals",
+          },
+        },
+        {
+          $lookup: {
+            from: "products",
+            localField: "_id",
+            foreignField: "breederId",
+            as: "products",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "_id",
+            foreignField: "breederId",
+            as: "employees",
+          },
+        },
+      ]).then((result) => {
+        User.populate(
+          result,
+          {
+            path: "activeSubscription",
+            populate: {
+              path: "subscriptionId",
             },
-            {
-                $lookup: {
-                    from: 'animals',
-                    localField: '_id',
-                    foreignField: 'breederId',
-                    as: 'animals',
-                }
-            },
-            {
-                $lookup: {
-                    from: 'products',
-                    localField: '_id',
-                    foreignField: 'breederId',
-                    as: 'products',
-                }
-            },
-            {
-                $lookup: {
-                    from: 'users',
-                    localField: '_id',
-                    foreignField: 'breederId',
-                    as: 'employees',
-                }
-            },
-          ]).then(
-        (result) => {
-            User.populate(result, { 
-                        path: "activeSubscription",
-                        populate: {
-                          path: "subscriptionId",
-                        },
-                    }, (err, resultFinal) => {
-                        return res.status(200).json({
-                            status: 200,
-                            message: "Employee found successfully",
-                            // data: result,
-                            data: {
-                            ...resultFinal[0],
-                            ...{
-                                image: resultFinal[0].image
-                                ? `${config.baseImageURL}${resultFinal[0].image}`
-                                : null,
-                            },
-                            animals: resultFinal[0].animals.map(e => ({
-                                ...e, 
-                                image: e.image ? `${config.baseImageURL}${e.image}` : null,
-                            })),
-                            products: resultFinal[0].products.map(e => ({
-                                ...e, 
-                                image: e.image ? `${config.baseImageURL}${e.image}` : null,
-                            })),
-                            employees: resultFinal[0].employees.map(e => ({
-                                ...e, 
-                                image: e.image ? `${config.baseImageURL}${e.image}` : null,
-                            })),
-                            },
-                        });
-                    }
-            )
-            
-        }
-      );
+          },
+          (err, resultFinal) => {
+            return res.status(200).json({
+              status: 200,
+              message: "Employee found successfully",
+              // data: result,
+              data: {
+                ...resultFinal[0],
+                ...{
+                  image: resultFinal[0].image
+                    ? `${config.baseImageURL}${resultFinal[0].image}`
+                    : null,
+                },
+                animals: resultFinal[0].animals.map((e) => ({
+                  ...e,
+                  image: e.image ? `${config.baseImageURL}${e.image}` : null,
+                })),
+                products: resultFinal[0].products.map((e) => ({
+                  ...e,
+                  image: e.image ? `${config.baseImageURL}${e.image}` : null,
+                })),
+                employees: resultFinal[0].employees.map((e) => ({
+                  ...e,
+                  image: e.image ? `${config.baseImageURL}${e.image}` : null,
+                })),
+              },
+            });
+          }
+        );
+      });
     } catch (error) {
       return next(error);
     }
@@ -168,7 +167,7 @@ class UserController {
         isAdmin: req.user.role[0] === "admin" ? true : false,
         data: {
           _id: req.user._id,
-          uid:req.user.uid,
+          uid: req.user.uid,
           email: req.user.email,
           name: req.user.name,
           businessName: req.user.businessName,
@@ -215,32 +214,50 @@ class UserController {
         });
       }
 
-      let user=await User.findOne({ email: req.body.email,uid: req.body.uid})
-      if(!user){
-        user=await User.findOne({ email: req.body.email,breederUniqueId: req.body.uid})
-        if(!user){
-          return res.json({status: 400,message: "Please enter your valid Email /Care Giver ID",data: {},});
+      let user = await User.findOne({
+        email: req.body.email,
+        uid: req.body.uid,
+      });
+      if (!user) {
+        user = await User.findOne({
+          email: req.body.email,
+          breederUniqueId: req.body.uid,
+        });
+        if (!user) {
+          return res.json({
+            status: 400,
+            message: "Please enter your valid Email /Care Giver ID",
+            data: {},
+          });
         }
       }
-      if(!user.isEmployeeActive)
-            return res.status(202).json({
-              status:400,message:"Breeder removed your account",data:{}
-      })
-        
-      if(user.canAccessMobileApp && user.canAccessMobileApp === false)
-            return res.status(202).json({
-              status:400,message:"Breeder blocked your account",data:{}
-       })
+      if (!user.isEmployeeActive)
+        return res.status(202).json({
+          status: 400,
+          message: "Breeder removed your account",
+          data: {},
+        });
 
-      if(user.isblocked)
-            return res.status(202).json({
-              status:400,message:"Admin blocked your account",data:{}
-      })
+      if (user.canAccessMobileApp && user.canAccessMobileApp === false)
+        return res.status(202).json({
+          status: 400,
+          message: "Breeder blocked your account",
+          data: {},
+        });
 
-      if(!user.active)
-              return res.status(202).json({
-                status:400,message:"Breeder disabled your account",data:{}
-      })
+      if (user.isblocked)
+        return res.status(202).json({
+          status: 400,
+          message: "Admin blocked your account",
+          data: {},
+        });
+
+      if (!user.active)
+        return res.status(202).json({
+          status: 400,
+          message: "Breeder disabled your account",
+          data: {},
+        });
       user.comparePassword(req.body.password, (err, isMatch) => {
         if (!isMatch)
           return res.json({
@@ -267,14 +284,13 @@ class UserController {
           });
         });
       });
-
     } catch (err) {
       return next(err);
     }
   }
 
   async isblocked(req, res) {
-    console.log(req.body)
+    console.log(req.body);
     if (!req.body) {
       return res.json({
         status: 400,
@@ -290,7 +306,9 @@ class UserController {
       );
       return res.status(200).json({
         status: 200,
-        message: `Breeder and all its employees ${req.body.isblocked === false ? "Active" : "Block"} successfully`,
+        message: `Breeder and all its employees ${
+          req.body.isblocked === false ? "Active" : "Block"
+        } successfully`,
         data: user,
       });
     } catch (err) {
@@ -303,10 +321,9 @@ class UserController {
     }
   }
 
-
   async deleteBreeder(req, res) {
-    console.log(req.params.id)
-    if (!req.params.id ) {
+    console.log(req.params.id);
+    if (!req.params.id) {
       return res.json({
         status: 400,
         message: "Breeder Id  is required",
@@ -315,9 +332,9 @@ class UserController {
       });
     }
     try {
-      const user = await User.deleteMany(
-        { $or: [{ _id: req.params.id }, { breederId: req.params.id }] }
-      );
+      const user = await User.deleteMany({
+        $or: [{ _id: req.params.id }, { breederId: req.params.id }],
+      });
       return res.status(200).json({
         status: 200,
         message: `Breeder and all its employees deleted successfully`,
@@ -333,24 +350,36 @@ class UserController {
     }
   }
 
-
   async approveBreeder(req, res) {
-    console.log(req.params.id)
-    if (!req.params.id ) {
+    console.log(req.params.id);
+    if (!req.params.id) {
       return res.json({
-        status: 400,message: "Breeder Id  is required",
-        errors: { file: "Breeder Id is required" },data: {},});
+        status: 400,
+        message: "Breeder Id  is required",
+        errors: { file: "Breeder Id is required" },
+        data: {},
+      });
     }
     try {
-      const user = await User.findOne({ _id: req.params.id }, { isverified: false } )
+      const user = await User.findOne(
+        { _id: req.params.id },
+        { isverified: false }
+      );
       if (!user) {
-        return res.json({ status: 404, message: "Breeder not found / Already approved", data: {} });
+        return res.json({
+          status: 404,
+          message: "Breeder not found / Already approved",
+          data: {},
+        });
       }
       user.verified = true;
-      user.secretToken = '';
+      user.secretToken = "";
       await user.save();
-      return res.status(200).json({ status: 200, message: "Breeder verified successfully", data: {} });
-
+      return res.status(200).json({
+        status: 200,
+        message: "Breeder verified successfully",
+        data: {},
+      });
     } catch (err) {
       return res.json({
         status: 400,
@@ -360,7 +389,6 @@ class UserController {
       });
     }
   }
-
 
   async getAllEmployees(req, res) {
     try {
@@ -395,7 +423,6 @@ class UserController {
     }
   }
 
-
   // async getAllbreeders(req, res) {
   //   try {
   //     User.find({ role: "breeder"}).then(result => {
@@ -422,7 +449,6 @@ class UserController {
   //   }
   // }
 
-
   async getBreederForSales(req, res) {
     try {
       const keyword = req.query.keyword.replace(/['"]+/g, "");
@@ -430,7 +456,12 @@ class UserController {
         salesController
           .getBreederSalesList(req.user._id)
           .then((resultSales) => {
-            User.find({$or: [{ role: "breeder", _id: { $in: resultSales } }, { role: "breeder", addedBy: req.user._id }]})
+            User.find({
+              $or: [
+                { role: "breeder", _id: { $in: resultSales } },
+                { role: "breeder", addedBy: req.user._id },
+              ],
+            })
               .then((result) => {
                 return res.status(200).json({
                   status: 200,
@@ -470,14 +501,16 @@ class UserController {
             return res.status(200).json({
               status: 200,
               message: "Breeder found successfully",
-              data: result.map((e) => ({
-                ...e.toObject(),
-                ...{
-                  image: e.toObject().image
-                    ? `${config.baseImageURL}${e.toObject().image}`
-                    : null,
-                },
-              })).filter(e => !(e._id==req.user._id.toString())),
+              data: result
+                .map((e) => ({
+                  ...e.toObject(),
+                  ...{
+                    image: e.toObject().image
+                      ? `${config.baseImageURL}${e.toObject().image}`
+                      : null,
+                  },
+                }))
+                .filter((e) => !(e._id == req.user._id.toString())),
             });
           })
           .catch((error) => {
@@ -834,7 +867,7 @@ class UserController {
           $push: {
             gallery: {
               $each: req.files.map((file) => ({
-                filename: file.filename, 
+                filename: file.filename,
                 size: file.size,
                 addedBy: req.user._id,
                 type: file.mimetype,
@@ -1023,7 +1056,7 @@ class UserController {
       // user.findByEmailAndRoleNotAdmin(req.body.email, 'breeder', )
 
       User.findOne({ email: req.body.email, role: "breeder" }).then(
-        (resultUser) => {
+        async (resultUser) => {
           console.log(resultUser + " user");
           if (!resultUser) {
             // Register user...
@@ -1032,7 +1065,13 @@ class UserController {
               charset: "numeric",
             });
 
-            this.registerUserWithRole(req.body, "breeder", req.body.verified ? false: true)
+            req.body.stripeCustomer = await payment.createCustomer(req.body.name, req.body.email, 'Breeder for logly platform');
+            
+            this.registerUserWithRole(
+              req.body,
+              "breeder",
+              req.body.verified ? false : true
+            )
               .then((success) => {
                 console.log("success result ===> ");
                 console.log(success);
@@ -1044,21 +1083,20 @@ class UserController {
                       { _id: success.data._id },
                       { activeSubscription: resultSubscriber._id }
                     ).then(async (userSuccess) => {
-                      
                       // Send Notification to admin..
-                      User.findOne({isAdmin: true}).then(reusltAdmin => {
+                      User.findOne({ isAdmin: true }).then((reusltAdmin) => {
                         const notifData = {
-                          token: reusltAdmin.deviceToken, 
-                          title: 'Breeder Registered!',
-                          description: 'Breeder has beeen registered.',
+                          token: reusltAdmin.deviceToken,
+                          title: "Breeder Registered!",
+                          description: "Breeder has beeen registered.",
                           data: {},
                           userId: reusltAdmin.userId,
-                          notificationType: 'admin',
-                          type: 'adminnotification',
+                          notificationType: "admin",
+                          type: "adminnotification",
                           breederId: success.data._id,
-                        }
+                        };
                         notificationController.create(notifData, true);
-                      })
+                      });
 
                       // try{
                       // await Category.insertMany([{addedBy:success.data._id,type:"activity",name:"Milking"},
@@ -1179,16 +1217,16 @@ class UserController {
               html
             );
             console.log("sending email");
-          } else if(role==="breeder") {
-              // email for breeder when added by breeder..... 
-              console.log(body.email,body.password)
-              const html = RegisterNewBreeder(
-               body.email,body.password);
-              mailer.sendEmail(
-                config.mailthrough,body.email,"Email for logly Breeder",
-                html
-              );
-
+          } else if (role === "breeder") {
+            // email for breeder when added by breeder.....
+            console.log(body.email, body.password);
+            const html = RegisterNewBreeder(body.email, body.password);
+            mailer.sendEmail(
+              config.mailthrough,
+              body.email,
+              "Email for logly Breeder",
+              html
+            );
           }
           return resolve({
             status: 200,
@@ -1210,20 +1248,20 @@ class UserController {
     // );
     // console.log("sending email");
 
-    User.findOne({isAdmin: true}).then(reusltAdmin => {
+    User.findOne({ isAdmin: true }).then((reusltAdmin) => {
       const notifData = {
-        token: reusltAdmin.deviceToken, 
-        title: 'Breeder Registered!',
-        description: 'Breeder has beeen registered.',
+        token: reusltAdmin.deviceToken,
+        title: "Breeder Registered!",
+        description: "Breeder has beeen registered.",
         data: {},
-        userId: '12312312312312312312312312',
-        notificationType: 'admin',
-        type: 'adminnotification',
-        breederId: '12312312313',
-      }
+        userId: "12312312312312312312312312",
+        notificationType: "admin",
+        type: "adminnotification",
+        breederId: "12312312313",
+      };
       console.log(notifData);
       notificationController.create(notifData, true);
-    })
+    });
     res.status(200).json({ status: 200, message: "email is send" });
   }
 
@@ -1365,7 +1403,7 @@ class UserController {
                 resultUser.gallery && resultUser.gallery[0]
                   ? resultUser.toObject().gallery.map((e) => ({
                       ...e,
-                      ...{filename: `${config.baseImageURL}${e.filename}`},
+                      ...{ filename: `${config.baseImageURL}${e.filename}` },
                     }))
                   : [],
             },
@@ -1470,7 +1508,7 @@ class UserController {
     try {
       const { _id } = req.user;
       const { type } = req.query;
-      if(type === "animal") {
+      if (type === "animal") {
         Animal.aggregate([
           { $match: { breederId: _id } },
           {
@@ -1491,7 +1529,7 @@ class UserController {
             data: { animal: animalResult },
           });
         });
-      } else if(type === "product") {
+      } else if (type === "product") {
         Product.aggregate([
           { $match: { breederId: _id } },
           {
@@ -1517,7 +1555,6 @@ class UserController {
           message: "Error Occured!",
         });
       }
-     
     } catch (error) {
       return next(error);
     }
@@ -1525,26 +1562,145 @@ class UserController {
 
   async getItemsCount(req, res, next) {
     try {
-      const query = req.user.isAdmin ? {} : {breederId: req.user._id};
+      const query = req.user.isAdmin ? {} : { breederId: req.user._id };
       const getAnimalCount = Promise.resolve(Animal.find(query).count());
       const getProductCount = Promise.resolve(Product.find(query).count());
-      const getEmployeesCount = Promise.resolve(User.find({...query, role: 'employee', isEmployeeActive: true}).count());
-      
-      Promise.all([getAnimalCount, getEmployeesCount, getProductCount]).then(([animalCount, employeeCount, productCount]) => {
-        return res.send({
-          status: 200,
-          message: "Item Count found successfully",
-          data: { animalCount, employeeCount, productCount },
+      const getEmployeesCount = Promise.resolve(
+        User.find({
+          ...query,
+          role: "employee",
+          isEmployeeActive: true,
+        }).count()
+      );
+
+      Promise.all([getAnimalCount, getEmployeesCount, getProductCount])
+        .then(([animalCount, employeeCount, productCount]) => {
+          return res.send({
+            status: 200,
+            message: "Item Count found successfully",
+            data: { animalCount, employeeCount, productCount },
+          });
+        })
+        .catch((error) => {
+          return res.json({
+            status: 400,
+            message: error.message ? error.message : "Internal Server Error",
+            data: {},
+            error,
+          });
         });
-      }).catch(error => {
-        return res.json({
-          status: 400,
-          message: error.message ? error.message : "Internal Server Error",
-          data: {},
-          error,
-        });
-      })
-    } catch(error) {
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async adminDashboardStatics(req, res, next) {
+    const getTotalSale = () => {
+      return new Promise((resolve, reject) => {
+        Sale.aggregate([
+          { $group: { _id: null, total: { $sum: "$totalPrice" } } },
+        ])
+          .then((result) => resolve(result[0].total))
+          .catch(reject);
+      });
+    };
+
+    const getTotalAnimal = () => {
+      return new Promise((resolve, reject) => {
+        Animal.find({}).count().then(resolve).catch(reject);
+      });
+    };
+
+    const getTotalProduct = () => {
+      return new Promise((resolve, reject) => {
+        Product.find({}).count().then(resolve).catch(reject);
+      });
+    };
+
+    const totalBreeders = () => {
+      return new Promise((resolve, reject) => {
+        User.aggregate([
+          {
+            $match: {
+              role: "breeder",
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              total: { $sum: 1 },
+              active: {
+                $sum: {
+                  $cond: {
+                    if: { $eq: ["$isblocked", false] },
+                    then:  1,
+                    else: 0,
+                  },
+                },
+              },
+              block: {
+                $sum: {
+                  $cond: {
+                    if: { $eq: ["$isblocked", true] },
+                    then: 1,
+                    else: 0,
+                  },
+                },
+              },
+            },
+          },
+        ]).then((result) => resolve(result[0]));
+      });
+    };
+
+    const getAverageSale = () => {
+      return new Promise((resolve, reject) => {
+        Sale.aggregate([
+          {
+            $group: {
+              _id: { $month: "$createdAt" },
+              totalPrice: { $sum: "$totalPrice" },
+            },
+          },
+        ])
+          .then((result) => {
+            resolve(
+              result.reduce((acc, cv) => acc + cv.totalPrice, 0) / result.length
+            );
+          })
+          .catch(reject);
+      });
+    };
+
+    try {
+      Promise.all([
+        getTotalSale(),
+        getTotalAnimal(),
+        getTotalProduct(),
+        getAverageSale(),
+        totalBreeders(),
+      ]).then(
+        ([
+          TotalSale,
+          AnimalCount,
+          ProductCount,
+          AverageSale,
+          TotalBreeders,
+        ]) => {
+          return res.send({
+            status: 200,
+            message: "Admin Dashboard Statics Found Successfully",
+            data: {
+              totalSale: TotalSale,
+              animalCount: AnimalCount,
+              productCount: ProductCount,
+              averageSale: AverageSale,
+              totalBreeders: TotalBreeders,
+            },
+          });
+        }
+      );
+    } catch (error) {
       return next(error);
     }
   }
