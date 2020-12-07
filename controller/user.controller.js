@@ -1773,6 +1773,30 @@ class UserController {
       return next(error);
     }
   }
+
+
+  async addCreditCard(req, res, next) {
+    try {
+        const {name, cardNumber, expiryDate, CVC} = req.body;
+        const [expiryMonth, expiryYear] = expiryDate.split(' / ');
+        
+        const {id} = req.user.stripeCustomer;
+        payment.createSource(cardNumber, expiryMonth.trim(), expiryYear.trim(), CVC, id).then(response => {
+          console.log('response is ::');
+          console.log(response);
+          User.updateOne(
+            { _id: req.user._id },
+            { $push: { creditCard: {name: name, card: response, customer: id}} }
+          ).then(responseUser => {
+            return res.send({ status: 200, message: "Credit Card Added Successfully!", result: responseUser });
+          })
+        });
+    }  catch(error) {
+      console.log(error);
+      return next(error);
+    }
+  }
+
 }
 
 module.exports = new UserController();

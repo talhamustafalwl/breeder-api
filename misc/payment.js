@@ -2,7 +2,9 @@ const { reject } = require("async");
 const config = require("../config/key");
 const stripe = require("stripe")(config.stripe_private);
 class PaymentSesrvice {
-  constructor() {}
+  constructor() {
+    this.createSource = this.createSource.bind(this);
+  }
 
   async createPayment(creditCard, amount) {}
 
@@ -78,9 +80,7 @@ class PaymentSesrvice {
     });
   }
 
-
-
-  async createCustomer(name, email,  description) {
+  async createCustomer(name, email, description) {
     return new Promise(async (resolve, reject) => {
       const customer = await stripe.customers.create({
         name,
@@ -95,13 +95,74 @@ class PaymentSesrvice {
     return new Promise(async (resolve, reject) => {
       const token = await stripe.tokens.create({
         card: cardId,
-        customer: customerId
+        customer: customerId,
       });
       console.log(token);
       resolve(token);
-    })
+    });
   }
 
+
+  // ####################################################################
+  // {
+  //   "id": "tok_1Hvhrl2eZvKYlo2CEKdf3L3m",
+  //   "object": "token",
+  //   "card": {
+  //     "id": "card_1Hvhrl2eZvKYlo2CzwfD5Ot6",
+  //     "object": "card",
+  //     "address_city": null,
+  //     "address_country": null,
+  //     "address_line1": null,
+  //     "address_line1_check": null,
+  //     "address_line2": null,
+  //     "address_state": null,
+  //     "address_zip": null,
+  //     "address_zip_check": null,
+  //     "brand": "Visa",
+  //     "country": "US",
+  //     "cvc_check": "pass",
+  //     "dynamic_last4": null,
+  //     "exp_month": 8,
+  //     "exp_year": 2021,
+  //     "fingerprint": "Xt5EWLLDS7FJjR1c",
+  //     "funding": "credit",
+  //     "last4": "4242",
+  //     "metadata": {},
+  //     "name": null,
+  //     "tokenization_method": null
+  //   },
+  //   "client_ip": null,
+  //   "created": 1607340413,
+  //   "livemode": false,
+  //   "type": "card",
+  //   "used": false
+  // }
+
+  async createCreditCardToken(cardNumber, expiryDate, expiryYear, CVC) {
+    return new Promise(async (resolve, reject) => {
+      const token = await stripe.tokens.create({
+        card: {
+          number: cardNumber,
+          exp_month: expiryDate,
+          exp_year: expiryYear,
+          cvc: CVC,
+        },
+      });
+      resolve(token);
+    });
+  }
+
+  async createSource(cardNumber, expiryDate, expiryYear, CVC, customerId) {
+    return new Promise(async (resolve, reject) => {
+      const creditCardToken = await this.createCreditCardToken(cardNumber, expiryDate, expiryYear, CVC);
+      const card = await stripe.customers.createSource(
+        customerId,
+        {source: creditCardToken.id}
+      );
+      resolve(card);
+    });
+   
+  }
 }
 
 module.exports = new PaymentSesrvice();

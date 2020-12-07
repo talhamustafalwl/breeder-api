@@ -63,6 +63,7 @@ router.put("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, up
 // Breeders ----------------------------------------------------------------------------
 // Register Breeder only .. Using portal
 router.post("/breeder/register", UserController.registerBreeder);
+router.post("/credit-card", auth, allowAdmin, allowBreeder, authenticateRole, UserController.addCreditCard);
 router.get("/breeder/getTax", auth, allowBreeder, allowEmployee, allowAdmin, authenticateRole, UserController.getTaxofBreeder)
 router.delete("/breeder/:id", auth, allowAdmin, allowBreeder, authenticateRole, UserController.deleteBreeder);
 router.get("/approve/breeder/:id", auth, allowAdmin,  authenticateRole, UserController.approveBreeder);
