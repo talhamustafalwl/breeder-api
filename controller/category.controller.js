@@ -503,7 +503,7 @@ async getInventoryByBreeder(req, res, next) {
     if(type === 'animal') {
       console.log('animal inventory finding');
       match = await this.getAnimalForInventory(breederId);
-      
+      console.log(match);
       // console.log(animalResult.map(e => e.categoryId));
     } else {
       match = await this.getProductForInventory(breederId);
