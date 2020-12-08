@@ -509,13 +509,7 @@ async getInventoryByBreeder(req, res, next) {
       match = await this.getProductForInventory(breederId);
       console.log(match);
     }
-    Object.defineProperty(Array.prototype, 'flat', {
-      value: function(depth = 1) {
-        return this.reduce(function (flat, toFlatten) {
-          return flat.concat((Array.isArray(toFlatten) && (depth>1)) ? toFlatten.flat(depth-1) : toFlatten);
-        }, []);
-      }
-    });
+
 
     // const categoryReducer  = (acc, currValue) => {
     //   currValue.items = currValue.items.map(e => {

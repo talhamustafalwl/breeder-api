@@ -16,6 +16,15 @@ const connect = mongoose
     .catch((err) => console.log(err));
 ///
 
+
+Object.defineProperty(Array.prototype, 'flat', {
+    value: function(depth = 1) {
+      return this.reduce(function (flat, toFlatten) {
+        return flat.concat((Array.isArray(toFlatten) && (depth>1)) ? toFlatten.flat(depth-1) : toFlatten);
+      }, []);
+    }
+});
+
 //for frontend
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static('client/build'));
@@ -25,6 +34,8 @@ app.use(cors());
 app.use(cookieParser());
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+
+
 
 //for image,qrcode,videos
 app.use("/api/uploads", express.static("uploads"));
