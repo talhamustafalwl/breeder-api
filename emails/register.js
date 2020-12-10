@@ -1,4 +1,4 @@
-module.exports = (secretToken, Servername, type) => {
+module.exports = (secretToken, Servername, type,uid) => {
     const today = new Date();
 return `
     <!doctype html>
@@ -11,11 +11,14 @@ return `
        <body>
           <div class="invoice-box">
           <h3>Date: ${`${today.getDate()}. ${today.getMonth() + 1}. ${today.getFullYear()}.`}</h3>
+          <h3>Care Giver ID: ${uid}</h3>
+          <br/>
 
             Hi there,
             <br/>
             Thank you for registering!
             <br/><br/>
+
             Please verify your email:
             <br/>
             <a href="${Servername}/user/verify/${secretToken}">verify</a>

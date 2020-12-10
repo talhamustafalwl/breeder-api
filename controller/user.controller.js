@@ -201,7 +201,7 @@ class UserController {
   }
 
   async employeeLogin(req, res, next) {
-    console.log(req.body);
+    //console.log(req.body);
     try {
       const { errors, isValid } = validateLoginInput(req.body);
       //console.log(req.body);
@@ -232,6 +232,12 @@ class UserController {
           });
         }
       }
+      console.log( "Breeder==>",user.role.includes("breeder"))
+      if (!user.verified && user.role.includes("breeder"))
+      return res.json({
+        status: 400, message: "Kindly verify your email", data: {}
+      });
+
       if (!user.isEmployeeActive)
         return res.status(202).json({
           status: 400,
