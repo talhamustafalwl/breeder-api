@@ -524,14 +524,19 @@ class SubscriberController {
 
 
   async chargeForSubscription (subscriptionId, type, creditCardId, customerId) {
-    console.log('the data to be passed is ', creditCardId, '  and ',  customerId)
     return new Promise(async (resolve, reject) => {
       console.log(creditCardId);
-      const subscription = await Subscription.findById(subscriptionId);
-      const subscriptionAmount = type==='monthly' ? subscription.monthlyPrice : subscription.yearlyPrice; 
-      const cardToken = await payment.createCardToken(creditCardId, customerId);
-      const chargeResult = await payment.charge(subscriptionAmount, cardToken.id, 'Charge for subscription' );
-      resolve(chargeResult);
+      console.log('the data to be passed is ', creditCardId, '  and ',  customerId)
+      try {
+        const subscription = await Subscription.findById(subscriptionId);
+        const subscriptionAmount = type==='monthly' ? subscription.monthlyPrice : subscription.yearlyPrice; 
+        const cardToken = await payment.createCardToken(creditCardId, customerId);
+        const chargeResult = await payment.charge(subscriptionAmount, creditCardId,customerId, 'Charge for subscription' );
+        resolve(chargeResult);
+  
+      } catch(error) {
+        reject(error);
+      };
     });
   }
 
@@ -555,12 +560,14 @@ class SubscriberController {
       });
       const breederpresent = await Subscriber.find({ breederId: req.user._id });
       //console.log("breederpresent --->",breederpresent)
-
-
+      console.log('Data for payment   ======== == ');
+      console.log(req.body.subscriptionId, req.body.type, req.user.creditCard[0].card.id, req.user.stripeCustomer.id);
+      console.log(" ========================")
       // Add Payment ..
-      // const chargeResult = await this.chargeForSubscription(req.body.subscriptionId, req.body.type, req.user.creditCard[0].id, req.user.stripeCustomer.id);
-      // console.log('Stripe charge result: ');
-      // console.log(chargeResult);
+      const chargeResult = await this.chargeForSubscription(req.body.subscriptionId, req.body.type, req.user.creditCard[0].card.id, req.user.stripeCustomer.id);
+      console.log('Stripe charge result: ');
+      console.log(chargeResult);
+      
 
 
       if (!breederpresent) {
@@ -568,9 +575,12 @@ class SubscriberController {
         req.body.fromDate = new Date();
         // toDate: new Date(Date.now() +  * 24 * 60 * 60 * 1000),
         req.body.toDate = (req.body.type === 'monthly') ? (new Date(new Date().setMonth(new Date().getMonth()+1))) : (new Date(new Date().setFullYear(new Date().getFullYear()+1)));
-
         const subscriberData = await Subscriber.create(req.body);
-        
+        SubscriptionHistory({
+          ...req.body,
+          userId: req.user._id,
+          payment: chargeResult
+        }).save();
         return res.status(200).json({
           status: 200,
           message: "Subscriber created successfully",
@@ -594,6 +604,7 @@ class SubscriberController {
           SubscriptionHistory({
             ...req.body,
             userId: req.user._id,
+            payment: chargeResult
           }).save();
         });
 

@@ -22,6 +22,8 @@ const SubscriptionHistrySchema = mongoose.Schema({
     isActive: {type: Boolean, default: true},
     isExpired: {type: Boolean, default: false},
     expiredOn: {type: Date},
+    payment: {type: Object}
+
     // transactionId: {
     //     type:Schema.Types.ObjectId,
     //     ref: 'Transaction'

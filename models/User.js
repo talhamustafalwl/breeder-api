@@ -158,6 +158,20 @@ const userSchema = mongoose.Schema({
     },
     creditCard: [creditCardSchema],
     stripeCustomer:  {type: Object},
+    paymentInformation: {
+        bankAccount: {
+            bankName: String,
+            accountTitle: String, 
+            accountNumber: String,
+            routingNumber: String,
+        },
+        paypal: {
+            id: String,
+        },
+        stripe: {
+            id: String,
+        }
+    },
     activeSubscription: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Subscriber'

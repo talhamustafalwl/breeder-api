@@ -180,6 +180,7 @@ class UserController {
           creditCard: req.user.creditCard,
           businessInfoSettings: req.user.businessInfoSettings,
           socialConnects: req.user.socialConnects,
+          paymentInformation: req.user.paymentInformation,
         },
       });
     } catch (err) {

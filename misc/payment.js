@@ -62,13 +62,17 @@ class PaymentSesrvice {
   //     "used": false
   //   }
 
-  async charge(amount, source, description) {
+  async charge(amount, source, customer, description) {
+    console.log('in charge ===> ');
+    console.log(amount, source, description);
     return new Promise((resolve, reject) => {
       stripe.charges.create(
         {
-          amount: amount,
+          // Convert it to usd
+          amount: amount*100,
           currency: "usd",
           source,
+          customer, 
           description,
         },
         function (err, token) {
@@ -93,12 +97,18 @@ class PaymentSesrvice {
 
   async createCardToken(cardId, customerId) {
     return new Promise(async (resolve, reject) => {
-      const token = await stripe.tokens.create({
-        card: cardId,
-        customer: customerId,
-      });
-      console.log(token);
-      resolve(token);
+      try {
+        const token = await stripe.tokens.create({
+          card: cardId,
+          customer: customerId,
+        }, {
+          stripeAccount: 'acct_1Hwq3LPqJceDppFg',
+        });
+        console.log(token);
+        resolve(token);  
+      } catch(error) {
+        reject(error);
+      }
     });
   }
 
