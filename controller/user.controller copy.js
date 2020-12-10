@@ -412,13 +412,11 @@ class UserController {
             user.save((err, doc) => {
                 console.log(err);
                 if (err) reject({error: err, response: { status: 400, message: "Email is already registered", errors: err, data: {} }})
-
-                console.log(doc);
-
+                console.log("-->",doc,"-->")
                 // Send email to breeder..
                 // Email is pending for later use.. 
                 if(token) {
-                    const html = registeremail(doc.secretToken, config.webServer, role);
+                    const html = registeremail(doc.secretToken, config.webServer, role,doc.uid);
                     mailer.sendEmail(config.mailthrough, doc.email, 'Please verify your email!', html);
                     console.log('sending email');
                     return resolve({ status: 200, message: "Verification email is send", data: doc });
