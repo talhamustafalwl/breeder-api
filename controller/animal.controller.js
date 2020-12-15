@@ -855,7 +855,7 @@ class AnimalController {
       async
         .eachSeries(animalArr, function updateObj(obj, done) {
           console.log('Calling each series ... ');
-          Animal.updateOne({_id: obj.animalId}, {$inc: {aliveQuantity: -obj.quantity, healthyQuantity: -obj.quantity, soldQuantityPending: obj.quantity}}).then(resultDone => {
+          Animal.updateOne({_id: obj.animalId}, {$inc: {aliveQuantity: -obj.quantity, 'data.quantity': -obj.quantity, healthyQuantity: -obj.quantity, soldQuantityPending: obj.quantity}}).then(resultDone => {
             console.log(resultDone);
             console.log('This is done condition ... ');
             done();
