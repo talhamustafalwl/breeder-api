@@ -112,6 +112,7 @@ class AnimalController {
         .populate("categoryId");
 
       Animal.populate(ea, { path: "categoryId.parentId" }, (err, e) => {
+        console.log(e);
         if (e == "") {
           return res.json({
             status: 400,
@@ -162,30 +163,73 @@ class AnimalController {
                 //    ...{image:  e.toObject().family.parent2 ? `${config.baseImageURL}${e.toObject().family.parent2.image}`: null}
                 //   },
 
+                // ...{
+                //   parent2: {
+                //     ...e.toObject().family.parent2,
+                //     ...{
+                //       image:
+                //         e.toObject().family.parent2 &&
+                //         `${config.baseImageURL}${
+                //           e.toObject().family.parent2.image
+                //         }`,
+                //     },
+                //   },
+                // },
+                // ...{
+                //   parent1: {
+                //     ...e.toObject().family.parent1,
+                //     ...{
+                //       image:
+                //         e.toObject().family.parent1 &&
+                //         `${config.baseImageURL}${
+                //           e.toObject().family.parent1.image
+                //         }`,
+                //     },
+                //   },
+                // },
+                
+
+
+
                 ...{
-                  parent2: {
-                    ...e.toObject().family.parent2,
+                  parent2: (e.toObject().family.parent2 && e.toObject().family.parent2[0]) ? {
+                    0: {
+                      ...e.toObject().family.parent2[0],
+                      image:  `${config.baseImageURL}${
+                        e.toObject().family.parent2[0].image
+                      }`
+                    }, 
                     ...{
                       image:
                         e.toObject().family.parent2 &&
                         `${config.baseImageURL}${
-                          e.toObject().family.parent2.image
+                          e.toObject().family.parent2[0].image
                         }`,
                     },
-                  },
+                  } : {},
                 },
                 ...{
-                  parent1: {
-                    ...e.toObject().family.parent1,
+                  parent1:  (e.toObject().family.parent1 && e.toObject().family.parent1[0]) ? {
+                    0: {
+                      ...e.toObject().family.parent1[0],
+                      image:  `${config.baseImageURL}${
+                        e.toObject().family.parent1[0].image
+                      }`
+                    }, 
                     ...{
                       image:
                         e.toObject().family.parent1 &&
                         `${config.baseImageURL}${
-                          e.toObject().family.parent1.image
+                          e.toObject().family.parent1[0].image
                         }`,
                     },
-                  },
+                  }: {},
                 },
+         
+
+
+
+
               },
             },
           },
@@ -308,29 +352,66 @@ class AnimalController {
               //    ...{image:  e.toObject().family.parent2 ? `${config.baseImageURL}${e.toObject().family.parent2.image}`: null}
               //   },
 
+
+              // ...{
+              //   parent2: {
+              //     ...e.toObject().family.parent2,
+              //     ...{
+              //       image:
+              //         e.toObject().family.parent2 &&
+              //         `${config.baseImageURL}${
+              //           e.toObject().family.parent2.image
+              //         }`,
+              //     },
+              //   },
+              // },
+              // ...{
+              //   parent1: {
+              //     ...e.toObject().family.parent1,
+              //     ...{
+              //       image:
+              //         e.toObject().family.parent1 &&
+              //         `${config.baseImageURL}${
+              //           e.toObject().family.parent1.image
+              //         }`,
+              //     },
+              //   },
+              // },
+
+
               ...{
-                parent2: {
-                  ...e.toObject().family.parent2,
+                parent2: (e.toObject().family.parent2 && e.toObject().family.parent2[0]) ? {
+                  0: {
+                    ...e.toObject().family.parent2[0],
+                    image:  `${config.baseImageURL}${
+                      e.toObject().family.parent2[0].image
+                    }`
+                  }, 
                   ...{
                     image:
                       e.toObject().family.parent2 &&
                       `${config.baseImageURL}${
-                        e.toObject().family.parent2.image
+                        e.toObject().family.parent2[0].image
                       }`,
                   },
-                },
+                } : {},
               },
               ...{
-                parent1: {
-                  ...e.toObject().family.parent1,
+                parent1:  (e.toObject().family.parent1 && e.toObject().family.parent1[0]) ? {
+                  0: {
+                    ...e.toObject().family.parent1[0],
+                    image:  `${config.baseImageURL}${
+                      e.toObject().family.parent1[0].image
+                    }`
+                  }, 
                   ...{
                     image:
                       e.toObject().family.parent1 &&
                       `${config.baseImageURL}${
-                        e.toObject().family.parent1.image
+                        e.toObject().family.parent1[0].image
                       }`,
                   },
-                },
+                }: {},
               },
             },
           },
