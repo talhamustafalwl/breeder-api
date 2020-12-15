@@ -892,6 +892,8 @@ class AnimalController {
         animalResult.aliveQuantity = parseInt(animalResult.aliveQuantity) - parseInt(quantity);
         animalResult.healthyQuantity =
           parseInt(animalResult.healthyQuantity) - parseInt(quantity);
+        animalResult.data.quantity =
+          parseInt(animalResult.data.quantity) - parseInt(quantity);
         animalResult.transferQuantity =
           parseInt(animalResult.transferQuantity) + parseInt(quantity);
         animalResult.transferBreeder = [
@@ -915,6 +917,9 @@ class AnimalController {
                   parseInt(quantity);
                 partnerAnimal.healthyQuantity =
                   parseInt(partnerAnimal.healthyQuantity) +
+                  parseInt(quantity);
+                partnerAnimal.data.quantity =
+                  parseInt(partnerAnimal.data.quantity) +
                   parseInt(quantity);
                 partnerAnimal.transferBreederReceived = [
                   ...partnerAnimal.transferBreederReceived,
