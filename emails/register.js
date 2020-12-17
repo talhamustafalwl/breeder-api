@@ -1,4 +1,4 @@
-module.exports = (secretToken, Servername, type,uid) => {
+module.exports = (secretToken, Servername,type, uid, ) => {
     const today = new Date();
 return `
     <!doctype html>

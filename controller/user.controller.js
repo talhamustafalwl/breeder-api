@@ -1195,7 +1195,7 @@ class UserController {
         // Send email to breeder..
         // Email is pending for later use..
         if (token) {
-          const html = registeremail(doc.secretToken, config.webServer, role);
+          const html = registeremail(doc.secretToken, config.webServer, role, body.uid );
           mailer.sendEmail(
             config.mailthrough,
             doc.email,
