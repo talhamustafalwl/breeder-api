@@ -828,6 +828,7 @@ class AnimalController {
       req.body.quantity = data.quantity;
       req.body.aliveQuantity = data.quantity;
       req.body.healthyQuantity = data.quantity;
+      req.body.data.quantity = parseInt(req.body.data.quantity);
       req.body.family = JSON.parse(req.body.family);
       console.log(req.body);
       const animal = await new Animal(req.body);
@@ -883,6 +884,7 @@ class AnimalController {
     try {
       const {animalId, quantity,  buyerId, sellerId, breederId } = req.body;
       Animal.findById(animalId).then(animalResult => {
+        animalResult = animalResult.toObject();
         console.log(animalResult);
         console.log(' ==== > animal result');
         const isBuyerAvailable = animalResult.buyer
@@ -900,8 +902,10 @@ class AnimalController {
           ...animalResult.transferBreeder,
           ...[{ id: buyerId, quantity: quantity, date: new Date() }],
         ];
-        animalResult.save((_) => {
-          animalResult = animalResult.toObject();
+        console.log('After updating data animal result is :: ');
+        console.log(animalResult.data);
+        Animal.updateOne({_id: animalResult._id}, animalResult).then((_)=> { 
+          // animalResult = animalResult.toObject();
           const currentSellerAnimalId = animalResult._id;
           delete animalResult._id;
           delete animalResult.transferBreeder;
