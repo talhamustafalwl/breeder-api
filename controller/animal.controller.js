@@ -195,16 +195,16 @@ class AnimalController {
                   parent2: (e.toObject().family.parent2 && e.toObject().family.parent2[0]) ? {
                     0: {
                       ...e.toObject().family.parent2[0],
-                      image:  `${config.baseImageURL}${
+                      image: e.toObject().family.parent2[0].image ?  `${config.baseImageURL}${
                         e.toObject().family.parent2[0].image
-                      }`
+                      }` : null
                     }, 
                     ...{
-                      image:
+                      image: e.toObject().family.parent2 &&  e.toObject().family.parent2[0].image ? 
                         e.toObject().family.parent2 &&
                         `${config.baseImageURL}${
                           e.toObject().family.parent2[0].image
-                        }`,
+                        }` : null,
                     },
                   } : {},
                 },
@@ -212,16 +212,16 @@ class AnimalController {
                   parent1:  (e.toObject().family.parent1 && e.toObject().family.parent1[0]) ? {
                     0: {
                       ...e.toObject().family.parent1[0],
-                      image:  `${config.baseImageURL}${
+                      image:  e.toObject().family.parent1[0].image ?  `${config.baseImageURL}${
                         e.toObject().family.parent1[0].image
-                      }`
+                      }` : null
                     }, 
                     ...{
-                      image:
+                      image: e.toObject().family.parent2 &&  e.toObject().family.parent1[0].image ? 
                         e.toObject().family.parent1 &&
                         `${config.baseImageURL}${
                           e.toObject().family.parent1[0].image
-                        }`,
+                        }` : null,
                     },
                   }: {},
                 },
@@ -266,7 +266,7 @@ class AnimalController {
             //   _id: req.params.id,
             //   ...req.user.role.includes('admin') ? {}: {breederId: req.user._id},
             // });
-            data.isArchived = true;
+            data.isArchived = !data.isArchived;
             data.save().then(() => {
               return res.status(200).json({
                 status: 200,
