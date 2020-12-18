@@ -45,7 +45,7 @@ class UserController {
           ? { role: req.query.role }
           : {}),
         ...(req.user.isAdmin ? {} : { breederId: req.user._id }),
-      })
+      }).sort({createdAt: -1})
         .populate({
           path: "activeSubscription",
           populate: {
@@ -1243,6 +1243,44 @@ class UserController {
         }
       });
     });
+  }
+
+  async resendEmailBreeder(req, res, next) {
+    try {
+      User.findById(req.params.id).then(response  => {
+        if(!response)   return res.json({
+          status: 400,
+          message: "Email field is required",
+          data: {},
+        });
+        console.log( config.mailthrough,
+          response.email,
+          "Email for logly Breeder",);
+        const html = registeremail(response.secretToken, config.webServer, '', response.uid );
+        mailer.sendEmail(
+          config.mailthrough,
+          response.email,
+          "Email for logly Breeder",
+          html
+        ).catch(error => {
+          return res.json({
+            status: 400,
+            message: "Email field is required",
+            error
+          });
+        });
+        return res.json({
+          status: 200,
+          message: "Verification email resend successfully",
+        });
+      });
+    } catch(error) {
+      return res.json({
+        status: 400,
+        message: "Email field is required",
+        data: {},
+      });
+    }
   }
 
   async testSendMail(req, res, next) {
