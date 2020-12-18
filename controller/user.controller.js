@@ -1253,9 +1253,7 @@ class UserController {
           message: "Email field is required",
           data: {},
         });
-        console.log( config.mailthrough,
-          response.email,
-          "Email for logly Breeder",);
+      
         const html = registeremail(response.secretToken, config.webServer, '', response.uid );
         mailer.sendEmail(
           config.mailthrough,
