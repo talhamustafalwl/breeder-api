@@ -291,21 +291,21 @@ class CategoryController {
 
 
   async updatebyId(req, res) {
-    const { name, active } = req.body;
+    const { name, active,animals } = req.body;
     if (!name) {
       return res.json({ status: 400, message: "name required", data: {} });
     }
     try {
       Category.find({name, addedBy: req.user._id}).then(async (resultCategoryExist) => {
         console.log(resultCategoryExist);
-        if(resultCategoryExist[0]) return res.json({
-          status: 400,
-          message: "Category already exist!",
-          data: {},
-        });
+        // if(resultCategoryExist[0]) return res.json({
+        //   status: 400,
+        //   message: "Category already exist!",
+        //   data: {},
+        // });
         const category = await Category.updateOne(
           { _id: req.params.id },
-          { name, active }
+          { name, active,animals },
         );
   
         return res
