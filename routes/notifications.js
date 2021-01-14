@@ -7,6 +7,8 @@ const NotificationController = require('../controller/notification.controller');
 router.route('/').post(auth, allowAdmin, allowEmployee, allowBreeder, authenticateRole, NotificationController.addNotificationUpdated)
    .get(auth, allowBreeder, allowAdmin, allowEmployee, allowBreeder, authenticateRole, NotificationController.getAll);
 
+router.route('/:id').delete(auth, allowAdmin, allowEmployee, allowBreeder,authenticateRole, NotificationController.deletebyId)
+
 router.get('/pushNotif', NotificationController.createNotif);
 
 //for see/delete/update notification by id

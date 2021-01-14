@@ -30,6 +30,7 @@ const categorySchema = mongoose.Schema({
     breeds: [{name: {type: String}, value: {type: String}}],
     traits: [{name: {type: String}, value: {type: String}, breed: {type: String}}],
     subCategories: [{name: {type: String}, value: {type: String}}],
+    animals: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category'}],
 }, { timestamps: true })
 
 

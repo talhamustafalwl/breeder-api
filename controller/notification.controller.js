@@ -571,6 +571,17 @@ class NotificationController {
       }
     })();
   }
+
+
+  async deletebyId(req,res){
+    try {
+        const notification = await Notification.deleteOne({_id:req.params.id});
+        return res.status(200).json({ status: 200, message: "Notification deleted successfully", data: notification });
+    } catch (err) {
+        return res.json({ status: 400, message: "Error in deleting Notification", errors: err, data: {} });
+    }
+}
+
 }
 
 module.exports = new NotificationController();
