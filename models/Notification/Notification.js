@@ -27,8 +27,14 @@ const NotificationSchema = mongoose.Schema({
     priority:{type:String,required:true,default:"normal",
     enum: ["normal", "urgent","low"]}, 
 
-    addedBy:{type:String,required:true,default:"breeder",
-    enum: ["breeder", "admin"],},
+    addedBy:{
+        // type:String,
+        // required:true,
+        // default:"breeder",
+        // enum: ["breeder", "admin"],
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
 
     assignToType:{type:String,enum: ["Animal", "Group"],},//for activityHistory
     
