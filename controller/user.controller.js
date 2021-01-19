@@ -168,6 +168,7 @@ class UserController {
         data: {
           _id: req.user._id,
           uid: req.user.uid,
+          breederUniqueId:req.user.breederUniqueId ? req.user.breederUniqueId : null,
           email: req.user.email,
           name: req.user.name,
           businessName: req.user.businessName,
