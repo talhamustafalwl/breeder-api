@@ -43,13 +43,24 @@ module.exports = {
 
 
 
-  Server: 'http://3.21.129.23/api',
-  webServer: 'http://3.21.129.23',
-  baseAPIUrl: 'http://3.21.129.23/api/',
-  baseImageURL: 'http://3.21.129.23/api/uploads/images/',
-  serverURL: 'http://3.21.129.23/api',
-  imageURL: 'http://3.21.129.23/api/uploads/images/form/',
-  baseDocumentURL: 'http://3.21.129.23/api/uploads/documents/',
+  // Server: 'http://3.21.129.23/api',
+  // webServer: 'http://3.21.129.23',
+  // baseAPIUrl: 'http://3.21.129.23/api/',
+  // baseImageURL: 'http://3.21.129.23/api/uploads/images/',
+  // serverURL: 'http://3.21.129.23/api',
+  // imageURL: 'http://3.21.129.23/api/uploads/images/form/',
+  // baseDocumentURL: 'http://3.21.129.23/api/uploads/documents/',
+
+
+  Server: 'https://logly.us/api',
+  webServer: 'https://logly.us',
+  baseAPIUrl: 'https://logly.us/api/',
+  baseImageURL: 'https://logly.us/api/uploads/images/',
+  serverURL: 'https://logly.us/api',
+  imageURL: 'https://logly.us/api/uploads/images/form/',
+  baseDocumentURL: 'https://logly.us/api/uploads/documents/',
+
+
 
 
 

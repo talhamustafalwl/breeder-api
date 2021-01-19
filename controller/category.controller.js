@@ -9,6 +9,8 @@ const productController = require("./product.controller");
 const animalController = require("./animal.controller");
 const formController = require("./form.controller");
 const { removeQuote } = require("../middleware/constant");
+const { User } = require("../models/User");
+const notificationController = require("./notification.controller");
 class CategoryController {
   constructor() {
     this.getInventoryByBreeder = this.getInventoryByBreeder.bind(this);
@@ -23,9 +25,41 @@ class CategoryController {
 
   //only admin
   async create(req, res) {
-    const { name, active, parentId, type, icon, breeds } = req.body;
+    const { name, active, parentId, type, icon, breeds, isDefault } = req.body;
     console.log(req.body);
+
     console.log(name);
+
+    if((type === 'activity') &&  isDefault) {
+      console.log('default activity created')
+      // User.findOne({email: 'faizan@livewireapps.com'}).then(resultUser  => {
+      //   notificationController.create({
+      //     token: resultUser.deviceToken,
+      //        deviceToken: resultUser.deviceToken,
+      //         title: 'New Activity Category Added',
+      //         description : 'New Activity Category has been added! Please Check',
+      //         data: {},
+      //         userId: resultUser._id,
+      //         breederId: resultUser._id,
+      //         notificationType: 'breeder',
+      //         animalIdoremployeeId: null,
+      //   }, true).then(responseNotif => {
+      //     console.log('Notification sended');
+      //   })
+      // });
+      notificationController.sendToAllBreeders({
+        title: 'New Activity Category Added',
+        description : 'New Activity Category has been added! Please Check',
+        notificationType: 'breeder',
+        notificationSubType: 'announcement'
+      })
+   
+       // title,
+    //  description,
+    // notificationType,
+    // notificationSubType
+    } 
+
     if (!name) {
       return res.json({
         status: 400,

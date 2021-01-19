@@ -131,6 +131,7 @@ class NotificationController {
     this.create = this.create.bind(this);
     this.createMultiple = this.createMultiple.bind(this);
     this.addNotification = this.addNotification.bind(this);
+    this.sendToAllBreeders = this.sendToAllBreeders.bind(this);
     this.addNotificationUpdated = this.addNotificationUpdated.bind(this);
   }
 
@@ -175,11 +176,13 @@ class NotificationController {
   }
 
   async createMultiple(data, isPush) {
+    console.log('inside create multiple')
     return new Promise(async (resolve, reject) => {
       // console.log("Transforming data: ");
-      console.log('data is ===== > ', data);
+      // console.log('data is ===== > ', data);
       // console.log(this.transformData(data));
       if (isPush)
+        console.log('Pushing push messages');
         sendBulkMessage(
           data.map((e) => ({
             token: e.deviceToken,
@@ -196,6 +199,67 @@ class NotificationController {
           resolve(result);
       });
     });
+  }
+
+
+  async sendToAllBreeders(param) {
+    // {
+    // title,
+    //  description,
+    // notificationType,
+    // notificationSubType
+    // }
+    return new Promise((resolve,reject) => {
+      console.log('sending to all breeders');
+      User.find({  role: "breeder" })
+      .then((allBreeders) => {
+        console.log('all breeders are  ');
+        // console.log(allBreeders);
+        // console.log(allEmployees);
+
+        // const d = {
+        //   deviceToken,
+        //   title,
+        //   description,
+        //   data,
+        //   userId,
+        //   breederId,
+        //   notificationType,
+        //   animalIdoremployeeId,
+        // }
+
+        const data = allBreeders
+          .map((e) => e.toObject())
+          .map((e) => ({
+            ...e,
+            title: param.title,
+            description: param.description,
+            userId: e._id,
+            breederId: e._id,
+            notificationType: param.notificationType,
+            notificationSubType: param.notificationSubType,
+            data: {},
+            // ...(req.body.notificationType === "animal" ? {animalId: } : {}),
+            // ...(req.body.notificationType === "employee" ? employeeId : {}),
+          }));
+        //console.log(data);
+        
+        this.createMultiple(data, true)
+          .then((resultNotif) => {
+            return resolve({
+              status: 200,
+              message: "Notification created successfully",
+            });
+          })
+          .catch((error) => {
+
+            reject(error);
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    })
   }
 
   async NotifTest() {

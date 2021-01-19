@@ -118,15 +118,16 @@ class FormController {
         .sort({ createdAt: -1 })
         .populate("categoryId")
         .exec(function (error, result) {
-          console.log(result);
+          console.log('forms found successfully --- ');
+          // console.log(result);
           if (req.query.type) {
             // const finalRes = result.map(e => {return {e, ...{categoryId: {...e.categoryId, ...{icon: `${config.imageURL}${e.categoryId.icon}` }}}}});
-            console.log(req.query.type);
-            console.log(
-              result.filter(
-                (e) => e.toObject().categoryId.type === req.query.type
-              )
-            );
+            console.log('type = ', req.query.type);
+            // console.log(
+            //   result.filter(
+            //     (e) => e.toObject().categoryId.type === req.query.type
+            //   )
+            // );
             const finalRes = result
               .filter((e) => e.toObject().categoryId.type === req.query.type)
               .map((e) => ({
@@ -160,6 +161,7 @@ class FormController {
                     ),
                 },
               }));
+              console.log('Data fetched Successfully');
             return res
               .status(200)
               .json({
@@ -180,6 +182,7 @@ class FormController {
                 },
               },
             }));
+            console.log ('In else data fetched successfully')
             return res
               .status(200)
               .json({
@@ -190,6 +193,7 @@ class FormController {
           }
         });
     } catch (err) {
+      console.log(err);
       return next(err);
     }
   }
