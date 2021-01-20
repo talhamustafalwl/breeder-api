@@ -133,6 +133,7 @@ class NotificationController {
     this.addNotification = this.addNotification.bind(this);
     this.sendToAllBreeders = this.sendToAllBreeders.bind(this);
     this.addNotificationUpdated = this.addNotificationUpdated.bind(this);
+    this.sendToAdmin = this.sendToAdmin.bind(this);
   }
 
   transformData(data) {
@@ -182,27 +183,70 @@ class NotificationController {
       // console.log('data is ===== > ', data);
       // console.log(this.transformData(data));
       if (isPush)
-        console.log('Pushing push messages');
+        // console.log('Pushing push messages');
+        // console.log(data);
         sendBulkMessage(
           data.map((e) => ({
             token: e.deviceToken,
             title: e.title,
             description: e.description,
             data: e.data,
+            isPush: e.isPush,
           }))
         );
-      Notification.insertMany(data, (error, result) => {
-        if (error) {
-          console.log(error);
-          reject(error);
+      // Notification.insertMany(data, (error, result) => {
+      //   if (error) {
+      //     console.log(error);
+      //     reject(error);
+      //   }
+      //     resolve(result);
+      // });
+      try {
+        console.log(data[0]);
+        if(data[0]) {
+          delete data[0]._id;
+          const notification = await new Notification({
+            ...data[0],
+            breedersId: data.map(e => e.breederId),
+          });
+          const doc = await notification.save();  
+          resolve(doc);
+        } else {
+          resolve();
         }
-          resolve(result);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  async sendToAdmin(type, data) {
+    return new Promise(async (resolve, reject) => {
+      User.findOne({isAdmin: true}).then(async resultUser => {
+        if(resultUser) {
+          console.log('Admin is available === ');
+          console.log(resultUser.notificationSettings[type]);
+          if(resultUser.notificationSettings[type]) {
+            console.log(data);
+            sendSingleMessage({token: resultUser.deviceToken, data});
+          }
+          try {
+              const notification = await new Notification({
+               ...data,
+               userId: resultUser._id,
+              });
+              const doc = await notification.save();  
+              resolve(doc);
+          } catch (err) {
+            reject(err);
+          }
+        }
       });
     });
   }
 
 
-  async sendToAllBreeders(param) {
+  async sendToAllBreeders(param, ) {
     // {
     // title,
     //  description,
@@ -535,12 +579,12 @@ class NotificationController {
           notificationSubType: req.body.notificationSubType,
           type: req.body.type,
         };
-        let usersId = allUsers.map(e=> e.toObject()).map((e) => e._id);
+        let usersId = allUsers.map(e=> e.toObject());
         let tokens = allUsers.map(e=> e.toObject()).map((e) => e.deviceToken);
         console.log(usersId);
         if(req.user.isAdmin) {
 
-          this.createMultiple(usersId.map(e => ({...data, breederId: e._id, deviceToken: e.deviceToken, data: {} })), true).then(notificationResult => {
+          this.createMultiple(usersId.map(e => ({...data, breederId: e._id, deviceToken: e.deviceToken, data: {},  })), true).then(notificationResult => {
             return res
             .status(200)
             .json({
@@ -558,11 +602,14 @@ class NotificationController {
           })
           
         } else {
+          // push notificaiton
           await this.ExpoNotification(tokens, data);
+          // ##########################
+
           try {
             const notification = await new Notification({
               ...data,
-              ...{ employeeId: usersId },
+              ...{ employeeId: usersId.map(e => e._id) },
             });
             const doc = await notification.save();
             return res

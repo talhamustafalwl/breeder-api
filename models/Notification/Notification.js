@@ -11,6 +11,8 @@ const NotificationSchema = mongoose.Schema({
         ref: 'Animal'}],
     breederId: {type: Schema.Types.ObjectId,
         ref: 'User'},
+    breedersId: [{type: Schema.Types.ObjectId,
+        ref: 'User'}],
     employeeId: [{type: Schema.Types.ObjectId,
         ref: 'User'}],
 

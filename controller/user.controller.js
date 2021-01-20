@@ -725,6 +725,7 @@ class UserController {
             this.registerUserWithRole(req.body, "employee", false)
               .then((success) => {
                 console.log(success);
+                
                 notificationController
                   .create(
                     req.user._id,
@@ -813,6 +814,7 @@ class UserController {
   async editEmployee(req, res, next) {
     try {
       console.log("edit employee called");
+      console.log({ ...req.body, ...(req.file ? { image: req.file.filename } : {}) });
       //console.log(req.body);
       User.findByIdAndUpdate(
         req.params.id,
@@ -827,6 +829,7 @@ class UserController {
           });
         })
         .catch((error) => {
+          console.log(error);
           return res.json({
             status: 400,
             message: "Error updating employees",
@@ -835,6 +838,7 @@ class UserController {
           });
         });
     } catch (error) {
+      console.log(error)
       return next(error);
     }
   }

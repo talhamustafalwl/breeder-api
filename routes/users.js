@@ -166,6 +166,7 @@ router.post("/login", (req, res) => {
         return res.json({ status: 400, message: "Incorrect email id or password", errors: errors, data: {} });
 
       user.deviceToken = req.body.deviceToken;
+      user.mobileToken = req.body.mobileToken;
       user.generateToken((err, user) => {
         if (err) return res.send(err);
         //io.emit("userSet", { msg: "email is registered", email: req.body.email });

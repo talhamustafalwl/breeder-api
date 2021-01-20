@@ -134,7 +134,7 @@ const userSchema = mongoose.Schema({
         formPublish: {type: Boolean, default: true},  // breeder
         employeeRegister: {type: Boolean, default: true}, // admin/breeder
         breederRegister: {type: Boolean, default: true}, // admin
-        
+        changeSubscription: {type: Boolean, default: true}, // admin
     },
 
     businessInfoSettings: {
@@ -153,6 +153,7 @@ const userSchema = mongoose.Schema({
         instagram: {type: Object},
     },
     deviceToken: {type: String},
+    mobileToken: {type: String},
     setupWizardCompleted: {
         type: Boolean, default: false,
     },
@@ -205,8 +206,10 @@ userSchema.pre('save', function (next) {
 });
 
 userSchema.pre('findOneAndUpdate', function (next) {
-    if(this._update.password.length < 30){
-    this._update.password = bcrypt.hashSync(this._update.password, saltRounds)
+    if(this._update.password) {
+        if(this._update.password.length < 30){
+            this._update.password = bcrypt.hashSync(this._update.password, saltRounds)
+        }        
     }
     next();
 })

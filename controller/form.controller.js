@@ -10,6 +10,9 @@ const { Animal } = require("../models/Animal/Animal");
 const { Product } = require("../models/Product");
 const { serverURL } = require("../config/dev");
 const { FormValueRequest } = require("../models/Form/FormValueRequest");
+const notificationController = require("./notification.controller");
+const notificationMessages = require("../config/notificationMessages");
+const notificationConfig = require("../config/notificationConfig");
 
 class FormController {
   constructor() {
@@ -74,28 +77,24 @@ class FormController {
         .then((formResult) => {
           const reusltData = {
             ...formResult.toObject(),
-            formStructure: formResult
-              .toObject()
-              .formStructure.map((e) =>
-                e.name === "breed"
-                  ? { ...e, values: formResult.toObject().categoryId.breeds }
-                  : e.name === "traits"
-                  ? { ...e, values: formResult.toObject().categoryId.traits }
-                  : e.name === "subCategory"
-                  ? {
-                      ...e,
-                      values: formResult.toObject().categoryId.subCategories,
-                    }
-                  : e
-              ),
+            formStructure: formResult.toObject().formStructure.map((e) =>
+              e.name === "breed"
+                ? { ...e, values: formResult.toObject().categoryId.breeds }
+                : e.name === "traits"
+                ? { ...e, values: formResult.toObject().categoryId.traits }
+                : e.name === "subCategory"
+                ? {
+                    ...e,
+                    values: formResult.toObject().categoryId.subCategories,
+                  }
+                : e
+            ),
           };
-          return res
-            .status(200)
-            .json({
-              status: 200,
-              message: "Data Fetched Successfully",
-              data: reusltData,
-            });
+          return res.status(200).json({
+            status: 200,
+            message: "Data Fetched Successfully",
+            data: reusltData,
+          });
         })
         .catch((err) => {
           console.log(err);
@@ -118,11 +117,11 @@ class FormController {
         .sort({ createdAt: -1 })
         .populate("categoryId")
         .exec(function (error, result) {
-          console.log('forms found successfully --- ');
+          console.log("forms found successfully --- ");
           // console.log(result);
           if (req.query.type) {
             // const finalRes = result.map(e => {return {e, ...{categoryId: {...e.categoryId, ...{icon: `${config.imageURL}${e.categoryId.icon}` }}}}});
-            console.log('type = ', req.query.type);
+            console.log("type = ", req.query.type);
             // console.log(
             //   result.filter(
             //     (e) => e.toObject().categoryId.type === req.query.type
@@ -141,34 +140,30 @@ class FormController {
                   },
                 },
                 ...{
-                  formStructure: e
-                    .toObject()
-                    .formStructure.map((fst) =>
-                      req.query.type === "animal" && fst.name === "breed"
-                        ? {
-                            ...fst,
-                            ...{ values: e.toObject().categoryId.breeds },
-                          }
-                        : req.query.type === "product" &&
-                          fst.name === "subCategory"
-                        ? {
-                            ...fst,
-                            ...{
-                              values: e.toObject().categoryId.subCategories,
-                            },
-                          }
-                        : fst
-                    ),
+                  formStructure: e.toObject().formStructure.map((fst) =>
+                    req.query.type === "animal" && fst.name === "breed"
+                      ? {
+                          ...fst,
+                          ...{ values: e.toObject().categoryId.breeds },
+                        }
+                      : req.query.type === "product" &&
+                        fst.name === "subCategory"
+                      ? {
+                          ...fst,
+                          ...{
+                            values: e.toObject().categoryId.subCategories,
+                          },
+                        }
+                      : fst
+                  ),
                 },
               }));
-              console.log('Data fetched Successfully');
-            return res
-              .status(200)
-              .json({
-                status: 200,
-                message: "Data Fetched Successfully",
-                data: finalRes,
-              });
+            console.log("Data fetched Successfully");
+            return res.status(200).json({
+              status: 200,
+              message: "Data Fetched Successfully",
+              data: finalRes,
+            });
           } else {
             // const finalRes = result.map(e => {return {e, ...{categoryId: {...e.categoryId, ...{icon: `${config.imageURL}${e.categoryId.icon}` }}}}});
             const finalRes = result.map((e) => ({
@@ -182,14 +177,12 @@ class FormController {
                 },
               },
             }));
-            console.log ('In else data fetched successfully')
-            return res
-              .status(200)
-              .json({
-                status: 200,
-                message: "Data Fetched Successfully",
-                data: finalRes,
-              });
+            console.log("In else data fetched successfully");
+            return res.status(200).json({
+              status: 200,
+              message: "Data Fetched Successfully",
+              data: finalRes,
+            });
           }
         });
     } catch (err) {
@@ -220,13 +213,11 @@ class FormController {
                 },
               },
             }));
-            return res
-              .status(200)
-              .json({
-                status: 200,
-                message: "Data Fetched Successfully",
-                data: finalRes,
-              });
+            return res.status(200).json({
+              status: 200,
+              message: "Data Fetched Successfully",
+              data: finalRes,
+            });
           });
       } else {
         Form.find()
@@ -245,13 +236,11 @@ class FormController {
                 },
               },
             }));
-            return res
-              .status(200)
-              .json({
-                status: 200,
-                message: "Data Fetched Successfully",
-                data: finalRes,
-              });
+            return res.status(200).json({
+              status: 200,
+              message: "Data Fetched Successfully",
+              data: finalRes,
+            });
           });
       }
     } catch (err) {
@@ -315,13 +304,11 @@ class FormController {
               form
                 .save()
                 .then(async (result) => {
-                  return res
-                    .status(200)
-                    .json({
-                      status: 200,
-                      message: "Form Created Successfully",
-                      data: result,
-                    });
+                  return res.status(200).json({
+                    status: 200,
+                    message: "Form Created Successfully",
+                    data: result,
+                  });
                   // await this.cloneFormToBreeder(req.body).then(result => {
                   //     console.log(result);
                   // }).catch(err => {
@@ -380,6 +367,7 @@ class FormController {
   async modifyForm(req, res, next) {
     try {
       const { id } = req.params;
+    
       console.log(id);
       if (!id)
         return res.json({
@@ -388,7 +376,7 @@ class FormController {
           data: {},
         });
       console.log(req.body);
-      const form = await Form.findOneAndUpdate({ _id: id }, req.body).catch(
+      const form = await Form.findOneAndUpdate({ _id: id }, req.body, {new: true}).catch(
         (err) => {
           console.log(err);
           return res.json({
@@ -399,15 +387,43 @@ class FormController {
           });
         }
       );
-      return res
-        .status(200)
-        .json({
-          status: 200,
-          message: "Form created successfully",
-          removeMessage: "Form removed successfully",
-          editMessage: "Form updated Successfully",
-          data: form,
-        });
+      function onlyUnique(value, index, self) {
+        return self.indexOf(value) === index;
+      }
+      console.log('updated value is ');
+      console.log(form.breedersId.filter(onlyUnique));
+
+      if (req.body.published != undefined) {
+        console.log('in pubslish case');
+        const uniqueBreeders = form.breedersId.filter(onlyUnique);
+        const notifMessage = notificationMessages.formPublish(req.body.published);
+        console.log(notifMessage);
+        User.find({_id: {$in: uniqueBreeders}}).then(responseUser => {
+          const data = responseUser
+          .map((e) => e.toObject())
+          .map((e) => ({
+            ...e,
+            title: notifMessage.title,
+            description: notifMessage.description,
+            userId: e._id,
+            breederId: e._id,
+            notificationType:  notificationConfig.notificationType.breeder,
+            notificationSubType: notificationConfig.notificationSubType.announcement,
+            data: {},
+            isPush: e.notificationSettings.formPublish,
+          }));
+          notificationController.createMultiple(data, true);
+        }); 
+      }
+
+
+      return res.status(200).json({
+        status: 200,
+        message: "Form created successfully",
+        removeMessage: "Form removed successfully",
+        editMessage: "Form updated Successfully",
+        data: form,
+      });
     } catch (err) {
       return next(err);
     }
@@ -440,13 +456,11 @@ class FormController {
           },
         });
         resultForm.save().then((_) => {
-          return res
-            .status(200)
-            .send({
-              status: 200,
-              user: resultForm,
-              message: "Request has been successfully send to admin.",
-            });
+          return res.status(200).send({
+            status: 200,
+            user: resultForm,
+            message: "Request has been successfully send to admin.",
+          });
         });
       });
     } catch (error) {
@@ -469,13 +483,11 @@ class FormController {
       }).then((match) => {
         if (!match) {
           FormValueRequest.create(req.body).then((result) => {
-            return res
-              .status(200)
-              .send({
-                status: 200,
-                user: result,
-                message: "Request has been successfully send to admin",
-              });
+            return res.status(200).send({
+              status: 200,
+              user: result,
+              message: "Request has been successfully send to admin",
+            });
           });
         } else {
           return res.send({
@@ -499,23 +511,19 @@ class FormController {
         .populate("categoryId", "name")
         .sort({ createdAt: -1 })
         .then((resultForm) => {
-          return res
-            .status(200)
-            .send({
-              status: 200,
-              data: resultForm,
-              message: "Pending Requests",
-            });
+          return res.status(200).send({
+            status: 200,
+            data: resultForm,
+            message: "Pending Requests",
+          });
         });
     } catch (error) {
       console.log(error);
-      return res
-        .status(400)
-        .send({
-          status: 400,
-          data: [],
-          message: "Error in getting Pending Requests",
-        });
+      return res.status(400).send({
+        status: 400,
+        data: [],
+        message: "Error in getting Pending Requests",
+      });
     }
   }
 
@@ -536,25 +544,21 @@ class FormController {
                   ...{ name: result.value, value: result.value },
                 });
                 resultForm.save().then((_) => {
-                  return res
-                    .status(200)
-                    .send({
-                      status: 200,
-                      user: resultForm,
-                      message: "Field is Added Successfully",
-                    });
+                  return res.status(200).send({
+                    status: 200,
+                    user: resultForm,
+                    message: "Field is Added Successfully",
+                  });
                 });
               });
             } else {
               result.status = "rejected";
               await result.save();
-              return res
-                .status(200)
-                .send({
-                  status: 200,
-                  user: [],
-                  message: "Field is Rejected Successfully",
-                });
+              return res.status(200).send({
+                status: 200,
+                user: [],
+                message: "Field is Rejected Successfully",
+              });
             }
           } else {
             return res.send({
@@ -632,27 +636,23 @@ class FormController {
                   .map((e) => ({
                     ...e.toObject(),
                     ...{
-                      formStructure: e
-                        .toObject()
-                        .formStructure.map((fst) =>
-                          fst.name === "breed"
-                            ? {
-                                ...fst,
-                                ...{ values: e.toObject().categoryId.breeds },
-                              }
-                            : fst
-                        ),
+                      formStructure: e.toObject().formStructure.map((fst) =>
+                        fst.name === "breed"
+                          ? {
+                              ...fst,
+                              ...{ values: e.toObject().categoryId.breeds },
+                            }
+                          : fst
+                      ),
                     },
                   }));
                 console.log("final result is ");
                 console.log(finalRes);
-                return res
-                  .status(200)
-                  .json({
-                    status: 200,
-                    message: "Data Fetched Successfully",
-                    data: finalRes,
-                  });
+                return res.status(200).json({
+                  status: 200,
+                  message: "Data Fetched Successfully",
+                  data: finalRes,
+                });
               }
             );
           });
@@ -662,13 +662,11 @@ class FormController {
           .populate("categoryId")
           .exec()
           .then((result) => {
-            return res
-              .status(200)
-              .json({
-                status: 200,
-                message: "Data Fetched Successfully",
-                data: result,
-              });
+            return res.status(200).json({
+              status: 200,
+              message: "Data Fetched Successfully",
+              data: result,
+            });
           });
       }
     } catch (err) {
@@ -740,7 +738,10 @@ class FormController {
           });
         }
 
-        Product.find({ categoryId, ...(req.user.isAdmin ? {} : { breederId: req.user._id }), }).then((result2) => {
+        Product.find({
+          categoryId,
+          ...(req.user.isAdmin ? {} : { breederId: req.user._id }),
+        }).then((result2) => {
           if (result2 && result2.length > 0) {
             console.log("===>>>>", result2.length);
             return res.json({

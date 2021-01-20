@@ -28,7 +28,15 @@ module.exports.sendMessage = (token, title, description, data ) => {
 
 
 module.exports.sendBulkMessage = (data=[]) => {
-    data.forEach(value => this.sendMessage(value.token, value.title, value.description, value.data));
+    console.log('in send bulk messages ===> ');
+    // console.log(data);
+    data.forEach(value => {
+        console.log(value);
+        if (value.isPush) 
+        {
+            this.sendMessage(value.token, value.title, value.description, value.data)
+        }
+    });
     return;
     // this.sendMessage(token, title, description, data);
     // var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)

@@ -9,6 +9,9 @@ const PaymentSesrvice = require('../misc/payment');
 const mnogoose = require('mongoose');
 const payment = require("../misc/payment");
 const { charge } = require("../misc/payment");
+const notificationMessages = require("../config/notificationMessages");
+const notificationConfig = require("../config/notificationConfig");
+const notificationController = require("./notification.controller");
 
 class SubscriberController {
   constructor() {
@@ -581,6 +584,24 @@ class SubscriberController {
           userId: req.user._id,
           payment: chargeResult
         }).save();
+
+
+      
+          console.log('notification in subscription case');
+          const notifMessage = notificationMessages.changeSubscription();
+          const subdata = {
+            title: notifMessage.title,
+            description: notifMessage.description,
+            notificationType:  notificationConfig.notificationType.admin,
+            notificationSubType: notificationConfig.notificationSubType.announcement,
+            type: notificationConfig.type.adminnotification,
+            data: {},
+          }
+          notificationController.sendToAdmin(notifMessage.type, subdata);
+
+        
+
+
         return res.status(200).json({
           status: 200,
           message: "Subscriber created successfully",
@@ -607,6 +628,18 @@ class SubscriberController {
             payment: chargeResult
           }).save();
         });
+
+        console.log('notification in subscription case');
+        const notifMessage = notificationMessages.changeSubscription();
+        const subdata = {
+          title: notifMessage.title,
+          description: notifMessage.description,
+          notificationType:  notificationConfig.notificationType.admin,
+          notificationSubType: notificationConfig.notificationSubType.announcement,
+          type: notificationConfig.type.adminnotification,
+          data: {},
+        }
+        notificationController.sendToAdmin(notifMessage.type, subdata);
 
         return res.status(200).json({
           status: 200,
