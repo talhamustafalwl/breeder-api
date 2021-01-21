@@ -8,8 +8,8 @@ function validateSubscriptionInput(data) {
   data.description = !isEmpty(data.description) ? data.description : "";
   data.allowedAnimal = !isEmpty(data.allowedAnimal) ? data.allowedAnimal : "";
   data.allowedEmp = !isEmpty(data.allowedEmp) ? data.allowedEmp : "";
-  data.monthlyPrice = !isEmpty(data.monthlyPrice) ? data.monthlyPrice : "";
-  data.yearlyPrice = !isEmpty(data.yearlyPrice) ? data.yearlyPrice : "";
+  // data.monthlyPrice = !isEmpty(data.monthlyPrice) ? data.monthlyPrice : "";
+  // data.yearlyPrice = !isEmpty(data.yearlyPrice) ? data.yearlyPrice : "";
 
   data.allowedProduct = !isEmpty(data.allowedProduct)
     ? data.allowedProduct
@@ -51,21 +51,21 @@ function validateSubscriptionInput(data) {
 
 
   // price checks
-  if (Validator.isEmpty(data.monthlyPrice)) {
-    errors.monthlyPrice = "monthlyPrice field is required";
-  }
-  if (!Validator.isDecimal(data.monthlyPrice)) {
-    errors.monthlyPrice = "monthlyPrice can only contain Number";
-  }
+  // if (Validator.isEmpty(data.monthlyPrice)) {
+  //   errors.monthlyPrice = "monthlyPrice field is required";
+  // }
+  // if (!Validator.isDecimal(data.monthlyPrice)) {
+  //   errors.monthlyPrice = "monthlyPrice can only contain Number";
+  // }
 
 
     // price checks
-    if (Validator.isEmpty(data.yearlyPrice)) {
-      errors.yearlyPrice = "yearlyPrice field is required";
-    }
-    if (!Validator.isDecimal(data.yearlyPrice)) {
-      errors.yearlyPrice = "yearlyPrice can only contain Number";
-    }
+    // if (Validator.isEmpty(data.yearlyPrice)) {
+    //   errors.yearlyPrice = "yearlyPrice field is required";
+    // }
+    // if (!Validator.isDecimal(data.yearlyPrice)) {
+    //   errors.yearlyPrice = "yearlyPrice can only contain Number";
+    // }
 
 
   return {

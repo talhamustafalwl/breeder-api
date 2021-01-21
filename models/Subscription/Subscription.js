@@ -10,8 +10,10 @@ const SubscriptionSchema = mongoose.Schema({
     allowedProduct: {type: Number,required:true},//quantity of allowed products
     isActive: {type: Boolean,default:true},//false hide this
     currency:{type:String,required:true},
-    monthlyPrice:{type:Number,required:true},
-    yearlyPrice:{type:Number,required:true},
+    monthlyPrice:{type:Number},
+    yearlyPrice:{type:Number},
+    lifetimePrice:{type:Number},
+    onlyLifetime:{type:Boolean},
     icon: {type: String},
     defaultPackage:{type:Boolean,default:false},
 }, { timestamps: true })
