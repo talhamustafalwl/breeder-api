@@ -32,6 +32,7 @@ const formStructureSchema = mongoose.Schema({
   type: { type: String },
   prefix: {type: String},
   mandatory: { type: Boolean },
+  onlyBusiness: { type: Boolean },
   validation: {
     minLength: { type: Number },
     maxLength: { type: Number },
@@ -46,6 +47,7 @@ const formStructureSchema = mongoose.Schema({
     shouldAtLeastOneLowerCase: { type: Boolean },
     shouldAtLeastOneNumber: { type: Boolean },
     required: { type: Boolean },
+    // onlyBusiness: { type: Boolean },
   },
   breedersId: [{_id: Object, index: Number}],
   values: [mongoose.Schema({ name: String, value: String })],

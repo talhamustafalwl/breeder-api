@@ -3,14 +3,15 @@ const router = express.Router();
 const { User } = require("../models/User");
 const { auth, allowAdmin, allowBreeder, authenticateRole, allowEmployee } = require("../middleware/auth");
 const { adminauth } = require("../middleware/adminauth");
-const { employeesubscriber } = require("../middleware/empsubscriber");
-const mailer = require('../misc/mailer');
 const bcrypt = require('bcrypt');
-const randomstring = require('randomstring');
-const config = require("../config/key");
-const registeremail = require('../emails/register');
-const forgetpasswordemail = require('../emails/forgetpassword');
-const passwordchangedemail = require('../emails/passwordchanged');
+// const mailer = require('../misc/mailer');
+// const randomstring = require('randomstring');
+// const config = require("../config/key");
+// const registeremail = require('../emails/register');
+// const forgetpasswordemail = require('../emails/forgetpassword');
+// const passwordchangedemail = require('../emails/passwordchanged');
+// const { employeesubscriber } = require("../middleware/empsubscriber");
+// const { registerUserWithRole } = require('../controller/user.controller');
 const UserController = require('../controller/user.controller');
 const SubscriberController = require('../controller/subscriber.controller');
 const {upload, uploadDocument} = require('../middleware/multerimage');
@@ -18,7 +19,7 @@ const { checkSubscriptionLimit } = require('../middleware/subscriptionLimit');
 
 // Load input validation
 const { validateLoginInput, validateRegisterInput, validateRegisterInputEmp } = require("../validation/users");
-const { registerUserWithRole } = require('../controller/user.controller');
+const { Subscriber } = require("../models/Subscription/Subscriber");
 
 
 
@@ -143,7 +144,7 @@ router.post('/employee/login', UserController.employeeLogin);
 
 
 router.post("/login", (req, res) => {
-  console.log('calling login',req.body);
+  console.log('calling login',req.body);let countallowed= {}
   const { errors, isValid } = validateLoginInput(req.body);
 
   // Check validation
@@ -167,14 +168,17 @@ router.post("/login", (req, res) => {
 
       user.deviceToken = req.body.deviceToken;
       user.mobileToken = req.body.mobileToken;
-      user.generateToken((err, user) => {
+      user.generateToken(async (err, user) => {
         if (err) return res.send(err);
         //io.emit("userSet", { msg: "email is registered", email: req.body.email });
-
-       
+        try{
+        countallowed= await Subscriber.findOne({breederId:user.breederId}).populate('subscriptionId')
+        // console.log("countallowed",countallowed)
+      }
+        catch(err){console.log(err)}
         return res.status(200)
           .json({
-            status: 200, message: "Login successfully", data: { userId: user._id, token: user.token, email: user.email, user }
+            status: 200, message: "Login successfully", data: { userId: user._id, token: user.token, email: user.email, user, subscriber:countallowed }
           });
       });
     });

@@ -103,10 +103,10 @@ async function ReminderNotificationCheck(data) {
   }
 }
 
-cron.schedule("*/10 * * * *", async () => {
+cron.schedule("*/15 * * * *", async () => {
   let create;
   let obj = new NotificationController();
-  console.log("running a task every 10 min", new Date());
+  console.log("running a task every 15 min", new Date());
   try {
     let data = await Activity.find({})
       .populate("employeeId", "deviceToken")

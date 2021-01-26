@@ -13,9 +13,12 @@ const SubscriptionSchema = mongoose.Schema({
     monthlyPrice:{type:Number},
     yearlyPrice:{type:Number},
     lifetimePrice:{type:Number},
-    onlyLifetime:{type:Boolean},
+    // onlyLifetime:{type:Boolean},
     icon: {type: String},
     defaultPackage:{type:Boolean,default:false},
+
+    priceMethod:  {type: String,  enum: ["Both", "Lifetime", "Monthly & Yearly"] },
+    packageType: {type: String,  enum: ["Individual", "Business","Charity Organization"] },
 }, { timestamps: true })
 
 

@@ -508,7 +508,7 @@ class SubscriberController {
     try {
       req.body.fromDate=new Date()
       req.body.toDate= req.body.toDate ? req.body.toDate : new Date(new Date().setMonth(new Date().getMonth()+1))
-      req.body.type='monthly'
+      req.body.type=req.body.type ? req.body.type : 'monthly'
       const feed = await Subscriber.updateOne({ _id: req.params.id }, req.body);
       return res.status(200).json({
         status: 200,
@@ -532,7 +532,7 @@ class SubscriberController {
       console.log('the data to be passed is ', creditCardId, '  and ',  customerId)
       try {
         const subscription = await Subscription.findById(subscriptionId);
-        const subscriptionAmount = type==='monthly' ? subscription.monthlyPrice : subscription.yearlyPrice; 
+        const subscriptionAmount = type==='monthly' ? subscription.monthlyPrice ? 'yearly' : subscription.yearlyPrice : subscription.lifetimePrice; 
         const cardToken = await payment.createCardToken(creditCardId, customerId);
         const chargeResult = await payment.charge(subscriptionAmount, creditCardId,customerId, 'Charge for subscription' );
         resolve(chargeResult);
@@ -577,7 +577,9 @@ class SubscriberController {
         req.body.userId = req.user._id;
         req.body.fromDate = new Date();
         // toDate: new Date(Date.now() +  * 24 * 60 * 60 * 1000),
-        req.body.toDate = (req.body.type === 'monthly') ? (new Date(new Date().setMonth(new Date().getMonth()+1))) : (new Date(new Date().setFullYear(new Date().getFullYear()+1)));
+        req.body.toDate = (req.body.type === 'monthly') ? (new Date(new Date().setMonth(new Date().getMonth()+1))) : 
+        (req.body.type === 'yearly') ? (new Date(new Date().setFullYear(new Date().getFullYear()+1)))
+        : (new Date(new Date().setFullYear(new Date().getFullYear()+20)))
         const subscriberData = await Subscriber.create(req.body);
         SubscriptionHistory({
           ...req.body,
@@ -612,7 +614,9 @@ class SubscriberController {
         console.log(req.user._id);
         req.body.fromDate = new Date();
         // toDate: new Date(Date.now() +  * 24 * 60 * 60 * 1000),
-        req.body.toDate = (req.body.type === 'monthly') ? (new Date(new Date().setMonth(new Date().getMonth()+1))) : (new Date(new Date().setFullYear(new Date().getFullYear()+1)));
+        req.body.toDate = (req.body.type === 'monthly') ? (new Date(new Date().setMonth(new Date().getMonth()+1))) : 
+        (req.body.type === 'yearly') ? (new Date(new Date().setFullYear(new Date().getFullYear()+1))) :
+        (new Date(new Date().setFullYear(new Date().getFullYear()+20)));
 
         const subscriberUpdate = await Subscriber.findOneAndUpdate(
           { userId: mnogoose.Types.ObjectId(req.user._id) },

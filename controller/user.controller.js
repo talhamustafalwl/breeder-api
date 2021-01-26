@@ -10,7 +10,7 @@ const mailer = require("../misc/mailer");
 const randomstring = require("randomstring");
 const { Animal } = require("../models/Animal/Animal");
 const { Product } = require("../models/Product");
-const { Category } = require("../models/Animal/Category");
+const { Subscriber } = require("../models/Subscription/Subscriber");
 
 const { Form } = require("../models/Form/Form");
 const { Sale } = require("../models/Sales");
@@ -29,6 +29,7 @@ const salesController = require("./sales.controller");
 const { reject } = require("async");
 const subscriberController = require("./subscriber.controller");
 const payment = require("../misc/payment");
+
 
 class UserController {
   constructor() {
@@ -157,8 +158,10 @@ class UserController {
     }
   }
 
-  authentication(req, res, next) {
-    console.log(req.user);
+  async authentication(req, res, next) {
+    let countallowed;
+     countallowed= await Subscriber.findOne({userId:req.user.breederId ? req.user.breederId : req.user._id}).populate('subscriptionId')
+
     try {
       return res.status(200).json({
         status: 200,
@@ -182,6 +185,7 @@ class UserController {
           businessInfoSettings: req.user.businessInfoSettings,
           socialConnects: req.user.socialConnects,
           paymentInformation: req.user.paymentInformation,
+          subscriber:countallowed ? countallowed : {}
         },
       });
     } catch (err) {
@@ -233,7 +237,7 @@ class UserController {
           });
         }
       }
-      console.log( "Breeder==>",user.role.includes("breeder"))
+      // console.log( "Breeder==>",user.role.includes("breeder"))
       if (!user.verified && user.role.includes("breeder"))
       return res.json({
         status: 400, message: "Kindly verify your email", data: {}
@@ -277,10 +281,13 @@ class UserController {
         user.deviceToken = req.body.deviceToken;
         user.save;
         //console.log(user)
-        user.generateToken((err, user) => {
+        user.generateToken(async (err, user) => {
           if (err) return res.send(err);
           //io.emit("userSet", { msg: "email is registered", email: req.body.email });
 
+          //Subscriber package
+          const countallowed= await Subscriber.findOne({userId:user.breederId ? user.breederId : user._id}).populate('subscriptionId')
+          // console.log(user.breederId,"countallowed==>>",countallowed)
           return res.status(200).json({
             status: 200,
             message: "Login successfully",
@@ -288,6 +295,7 @@ class UserController {
               userId: user._id,
               token: user.token,
               email: user.email,
+              subscriber:countallowed ? countallowed : {}
             },
           });
         });

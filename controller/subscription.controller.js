@@ -92,6 +92,12 @@ class SubscriptionController {
     }
 
     async updatebyId(req,res){
+      if(req.body.priceMethod && req.body.priceMethod === "Lifetime"){
+        req.body.monthlyPrice=null; req.body.yearlyPrice=null
+      }
+      if(req.body.priceMethod && req.body.priceMethod === "Monthly & Yearly"){
+        req.body.lifetimePrice=null;
+      }
         try {
 
             const feed = await Subscription.updateOne({_id:req.params.id}, {...req.body,   icon: req.file ? req.file.filename: req.body.icon, } );
