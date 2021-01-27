@@ -42,6 +42,7 @@ const locationRoute = require('./locations');
 const notificationRoute = require('./notifications');
 const activityRoute = require('./activity');
 const activityHistoryRoute = require('./activityHistory');
+const feedbackRoute = require('./feedback');
 
 app.use('/user', userRoute);
 app.use('/animal', animalRoute);
@@ -88,4 +89,5 @@ app.use('/notification', notificationRoute);
 
 app.use('/activity', activityRoute);
 app.use('/activityHistory', activityHistoryRoute);
+app.use('/feedback', feedbackRoute);
 module.exports = app;
