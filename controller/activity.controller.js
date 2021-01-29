@@ -125,7 +125,7 @@ class ActivityController {
         },
       ])
         .then((result) => {
-          console.log(result);
+          // console.log(result);
           return res
             .status(200)
             .json({ status: 200, message: "All Activities", data: result });

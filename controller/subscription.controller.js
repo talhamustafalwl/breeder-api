@@ -99,7 +99,6 @@ class SubscriptionController {
         req.body.lifetimePrice=null;
       }
         try {
-
             const feed = await Subscription.updateOne({_id:req.params.id}, {...req.body,   icon: req.file ? req.file.filename: req.body.icon, } );
     
             return res.status(200).json({ status: 200, message: "Subscription updated successfully", data: feed });

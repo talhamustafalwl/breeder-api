@@ -645,6 +645,13 @@ class UserController {
                   data: {},
                 });
               } else {
+                if(req.body.changePassword === req.body.password){
+                  return res.json({
+                    status: 400,
+                    message: "New password and Current Password must be different",
+                    data: {},
+                  });
+                }
                 result.password = req.body.changePassword;
                 result.save().then((resultSaved) => {
                   res.status(200).json({
@@ -1619,7 +1626,7 @@ class UserController {
   async getItemsCount(req, res, next) {
     try {
       const query = req.user.isAdmin ? {} : { breederId: req.user._id };
-      const getAnimalCount = Promise.resolve(Animal.find(query).count());
+      const getAnimalCount = Promise.resolve(Animal.find({...query, isArchived: false}).count());
       const getProductCount = Promise.resolve(Product.find(query).count());
       const getEmployeesCount = Promise.resolve(
         User.find({

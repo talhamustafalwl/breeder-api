@@ -122,10 +122,10 @@ class ContactController {
             console.log('soft remove called');
             console.log(req.params.id);
             Contact.updateOne({_id:req.params.id}, {$set: {isRemoved: true }}, { new: true }).then(result => {
-                return res.status(200).json({ status: 200, message: "contacts updated successfully", data: result });
+                return res.status(200).json({ status: 200, message: "contacts removed successfully", data: result });
             }).catch(error => {
                 console.log(error);
-                return res.json({ status: 400, message: "Error in updateding contacts ", errors: error, data: {} });
+                return res.json({ status: 400, message: "Error in removeing contacts ", errors: error, data: {} });
             })
         } catch(error) {
             return next(error);
@@ -137,10 +137,10 @@ class ContactController {
             console.log('soft remove called');
             console.log(req.params.id);
             Contact.updateMany({category:req.params.category}, {$set: {isRemoved: true }}, { new: true }).then(result => {
-                return res.status(200).json({ status: 200, message: "contacts updated successfully", data: result });
+                return res.status(200).json({ status: 200, message: "contacts removed successfully", data: result });
             }).catch(error => {
                 console.log(error);
-                return res.json({ status: 400, message: "Error in updateding contacts ", errors: error, data: {} });
+                return res.json({ status: 400, message: "Error in removed contacts ", errors: error, data: {} });
             })
         } catch(error) {
             return next(error);

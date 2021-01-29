@@ -64,6 +64,9 @@ class PaymentSesrvice {
 
   async charge(amount, source, customer, description) {
     console.log('in charge ===> ');
+    if(amount === 0){
+      return
+    }
     console.log(amount, source, description);
     return new Promise((resolve, reject) => {
       stripe.charges.create(

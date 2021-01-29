@@ -740,19 +740,29 @@ if(type === 'animal') {
 
   // Activity section...
   async addType(req, res, next) {
+    req.body.type= req.body.type ? req.body.type.toLowerCase() : ''
     try {
-      Category.update({_id: req.params.id}, {$push: {subType: req.body.type}}).then(categoryResult => {
-        return res
-              .status(200)
-              .json({
-                status: 200,
-                message: "Category updated successfully",
-                data: categoryResult,
-              });
-      }).catch((error) => {
-        console.log(error);
-        return res.json({ status: 400, message: "Error in updating result" });
-      });
+      await Category.find({_id: req.params.id,subType: req.body.type}).then(rs=> {
+        if(rs.length ===0){
+          Category.update({_id: req.params.id}, {$push: {subType: req.body.type}}).then(categoryResult => {
+            return res
+                  .status(200)
+                  .json({
+                    status: 200,
+                    message: "Type added successfully",
+                    data: categoryResult,
+                  });
+          }).catch((error) => {
+            console.log(error);
+            return res.json({ status: 400, message: "Error in updating type" });
+          });
+        }
+        else{
+          return res.json({ status: 400, message: "Same type name is already present" });
+        }
+      }
+      );
+     
     }catch(error) {
       console.log(error);
       return next(error);

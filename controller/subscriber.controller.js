@@ -528,12 +528,12 @@ class SubscriberController {
 
   async chargeForSubscription (subscriptionId, type, creditCardId, customerId) {
     return new Promise(async (resolve, reject) => {
-      console.log(creditCardId);
-      console.log('the data to be passed is ', creditCardId, '  and ',  customerId)
+      // console.log(creditCardId,type);
+      // console.log('the data to be passed is ', creditCardId, '  and ',  customerId)
       try {
         const subscription = await Subscription.findById(subscriptionId);
-        const subscriptionAmount = type==='monthly' ? subscription.monthlyPrice ? 'yearly' : subscription.yearlyPrice : subscription.lifetimePrice; 
-        const cardToken = await payment.createCardToken(creditCardId, customerId);
+        const subscriptionAmount = (type==='monthly') ? subscription.monthlyPrice : (type ==='yearly') ? subscription.yearlyPrice : subscription.lifetimePrice; 
+        // const cardToken = await payment.createCardToken(creditCardId, customerId);
         const chargeResult = await payment.charge(subscriptionAmount, creditCardId,customerId, 'Charge for subscription' );
         resolve(chargeResult);
   
@@ -563,9 +563,9 @@ class SubscriberController {
       });
       const breederpresent = await Subscriber.find({ breederId: req.user._id });
       //console.log("breederpresent --->",breederpresent)
-      console.log('Data for payment   ======== == ');
-      console.log(req.body.subscriptionId, req.body.type, req.user.creditCard[0].card.id, req.user.stripeCustomer.id);
-      console.log(" ========================")
+      // console.log('Data for payment   ======== == ');
+      // console.log(req.body.subscriptionId, req.body.type, req.user.creditCard[0].card.id, req.user.stripeCustomer.id);
+      // console.log(" ========================")
       // Add Payment ..
       const chargeResult = await this.chargeForSubscription(req.body.subscriptionId, req.body.type, req.user.creditCard[0].card.id, req.user.stripeCustomer.id);
       console.log('Stripe charge result: ');

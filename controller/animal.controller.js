@@ -270,7 +270,7 @@ class AnimalController {
             data.save().then(() => {
               return res.status(200).json({
                 status: 200,
-                message: "Animal deleted successfully",
+                message: "Animal updated successfully",
                 data: animal,
               });
             })
