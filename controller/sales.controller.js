@@ -730,7 +730,7 @@ class SalesController {
       const breeerId =
         req.user.role[0] === "breeder" ? req.user._id : req.user.breederId;
       this.getBreederSalesList(breeerId).then((resultSales) => {
-        User.find({ role: "breeder", _id: { $in: resultSales } })
+        User.find({ role: "breeder",  $or: [ { _id: { $in: resultSales } }, { addedBy: breeerId}] })
           .then((result) => {
             return res.status(200).json({
               status: 200,

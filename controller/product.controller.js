@@ -46,8 +46,7 @@ class ProductController {
     req.body.quantity = data.quantity;
     req.body.goodConditionQuantity = data.quantity;
 
-    req.body.status = "InStock";
-    console.log(req.body);
+    req.body.status = req.body.quantity > 0 ? "InStock" : "Out of Stock";
     try {
       const products = await new Product(req.body);
       const doc = await products.save();

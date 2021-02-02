@@ -1171,7 +1171,7 @@ class AnimalController {
             childResult.save();
             return res.status(200).json({
               status: 200,
-              message: "Parent Deleted successfully",
+              message: "Child Deleted successfully",
             });
           });
         });

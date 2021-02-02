@@ -358,11 +358,13 @@ class NotificationController {
         return res
           .status(200)
           .json({ status: 200, message: "Notification", data: notifications });
-      } else {
+      }
+      else {
         const notifications = await Notification.find({
           breederId: breederId,
           type:
-            req.query && req.query.type ? req.query.type : "staffnotification",
+            req.query && req.query.type === "breeder"  ? 
+            ["adminstaffnotification","staffnotification"] : req.query.type ? req.query.type : "staffnotification",
           ...queryCreate,
         }).sort({ createdAt: -1 });
         // if(notifications== '') {
@@ -683,6 +685,15 @@ class NotificationController {
     })();
   }
 
+  async updateReadbyId(req,res){
+    console.log(req.params.id,"updateReadbyId")
+    try {
+        const notification = await Notification.updateOne({_id:req.params.id}, {$set: {status: "read" }}, { new: true });
+        return res.status(200).json({ status: 200, message: "Notification read successfully", data: notification });
+    } catch (err) {
+        return res.json({ status: 400, message: "Error in read Notification", errors: err, data: {} });
+    }
+  }
 
   async deletebyId(req,res){
     try {

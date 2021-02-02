@@ -9,6 +9,8 @@ router.route('/').post(auth, allowAdmin, allowEmployee, allowBreeder, authentica
 
 router.route('/:id').delete(auth, allowAdmin, allowEmployee, allowBreeder,authenticateRole, NotificationController.deletebyId)
 
+router.route('/read/:id').patch(NotificationController.updateReadbyId)
+
 router.get('/pushNotif', NotificationController.createNotif);
 
 //for see/delete/update notification by id

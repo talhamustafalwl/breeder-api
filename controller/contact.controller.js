@@ -64,7 +64,7 @@ class ContactController {
         //console.log(req.query.category ? "d" : "n")
         try {
             if(req.query.category){
-                Contact.aggregate( [{$match: {category: Types.ObjectId(req.query.category),breederId}},
+                Contact.aggregate( [{$match: {category: Types.ObjectId(req.query.category),breederId,isRemoved:false}},
                     {$group:{_id:{$substr: ['$name', 0, 1]}, detail:{$push:"$$ROOT"}}},
                     { $sort: { _id : 1 } }
                 ])
