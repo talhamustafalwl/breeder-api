@@ -350,9 +350,14 @@ class SalesController {
       get mytotalSalePercentage() {
         // if(!this.totalSale) return 0;
         // return Math.round((parseInt(this.mytotalSale*100))/parseInt(this.totalSale));
-        return 5;
+        return 0;
       },
       totalAnimals: data.map((e) => e.animals).flat(1),
+      totalProducts: data.map((e) => e.products).flat(1),
+      totalProductsSold: data
+        .map((e) => e.products)
+        .flat(1)
+        .reduce((acc, cv) => parseInt(cv.quantity) + acc, 0),
       totalAnimalsSold: data
         .map((e) => e.animals)
         .flat(1)
@@ -360,7 +365,7 @@ class SalesController {
       get myAnimalSoldPercentage() {
         // if(!this.totalAnimals) return 0;
         // return Math.round((parseInt(this.totalAnimalsSold*100))/parseInt(this.totalAnimals));
-        return 5;
+        return 0;
       },
       totalSaleAmount: data.reduce(
         (acc, cv) =>
