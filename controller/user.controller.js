@@ -316,6 +316,9 @@ class UserController {
       });
     }
     try {
+      if(req.body.isblocked){
+        req.body.token=""
+      }
       const user = await User.updateMany(
         { $or: [{ _id: req.params.id }, { breederId: req.params.id }] },
         req.body
@@ -323,7 +326,7 @@ class UserController {
       return res.status(200).json({
         status: 200,
         message: `Breeder and all its employees ${
-          req.body.isblocked === false ? "Active" : "Block"
+          req.body.isblocked === false ? "Active" : "Blocked"
         } successfully`,
         data: user,
       });
