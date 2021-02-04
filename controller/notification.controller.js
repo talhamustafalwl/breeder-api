@@ -12,6 +12,7 @@ const userController = require("./user.controller");
 const moment = require("moment");
 const cron = require("node-cron");
 const { Activity } = require("../models/Activity/Activity");
+const { ActivityHistory } = require("../models/Activity/ActivityHistory");
 const { query } = require("express");
 
 async function getDayFunc() {
@@ -497,7 +498,7 @@ class NotificationController {
 
   //breeder reminders
   async reminderNotificationUpdated(req, res) {
-    //console.log(req)
+    console.log(req,"req reminderNotificationUpdated")
     try {
       let allEmployees, tokens;
       if (req.assignToType === "Group") {
@@ -525,7 +526,19 @@ class NotificationController {
         animalId: req.animalId,
         employeeId: allEmployees,
         groupId: req.groupId.map((e) => e._id),
+        categoryName: req.categoryName,
+        pending:true,
+        categoryId:req.categoryId,
+        addedBy:req.breederId,
       };
+
+
+      try {
+        const activity = await new ActivityHistory(data);
+        await activity.save();
+      } catch (err) {
+        console.log(err,"<--error Activity created")
+      }
 
       await this.ExpoNotification(tokens, data);
       try {

@@ -8,7 +8,7 @@ router.post('/', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole
 // .get('/getActivityData', auth, allowAdmin, allowBreeder, authenticateRole, contactController.getActivityData)
 .get('/group', auth, contactController.getallByType)
 // .get('/:id', auth, contactController.getbyId)
-// .put('/:id', auth, contactController.updatebyId)
+.put('/:id', auth, contactController.updatebyId)
 // .delete('/:id', auth, contactController.deletebyId)
 
 module.exports = router;

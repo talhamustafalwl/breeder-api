@@ -49,6 +49,7 @@ const ActivityHistorySchema = mongoose.Schema(
       require: true,
     },
     date: { type: Date },
+    pending:{type:Boolean,default:false},
   },
   { timestamps: true }
 );

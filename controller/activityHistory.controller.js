@@ -44,6 +44,18 @@ class ActivityController {
     }
 
 
+    async updatebyId(req,res){
+    console.log(req.params.id,"<params---",req.body)
+      try {
+          const city = await ActivityHistory.updateOne({_id:req.params.id},req.body);
+          return res.status(200).json({ status: 200, message: "Activity done successfully", data: city });
+      } catch (err) {
+          return res.json({ status: 400, message: "Error in updating Activity", errors: err, data: {} });
+      }
+  }
+
+
+
         async getall(req, res) {
             console.log("req.query",req.query)
             var conditions = Object.keys(req.query).map(function (key) {
@@ -111,6 +123,7 @@ class ActivityController {
 
 
         async getallByType(req, res) {
+          console.log("<<---")
           let breederId=req.user.role == "employee" ? req.user.breederId : req.user._id;
           console.log("req.query",req.query)
             let tableName;
