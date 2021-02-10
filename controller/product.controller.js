@@ -294,6 +294,37 @@ class ProductController {
   }
 
 
+
+  async getbyIdShare(req, res) {
+    try {
+      console.log('get product by id');
+      const products = await Product.findById(req.params.id);
+      if (products == "") {
+        return res.json({ status: 400, message: "Invalid Id", data: {} });
+      }
+      return res
+        .status(200)
+        .json({ status: 200, message: "Product", data: {
+          ...products.toObject(),
+          image:  products.toObject().image ? `${configKey.baseImageURL}${products.toObject().image}` : null,
+          
+          gallery: products.toObject().gallery ? products.toObject()
+            .gallery.map((eimg) => ({...eimg, filename: `${configKey.baseImageURL}${eimg.filename}`})) : [],
+          
+        } });
+    } catch (err) {
+      console.log(err );
+      return res.json({
+        status: 400,
+        message: "Error in get Product",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
+
+
 }
 
 module.exports = new ProductController();

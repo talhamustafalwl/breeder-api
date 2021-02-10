@@ -15,6 +15,7 @@ router.route('/')
 
 //for see/delete/update product by id
 router.route('/:id').get(auth, allowBreeder, allowEmployee, authenticateRole, ProductController.getbyId)
+router.route('/share/:id').get( ProductController.getbyIdShare)
   .delete(auth, allowBreeder, allowEmployee, authenticateRole,ProductController.deletebyId)
 .put(auth, allowBreeder, allowEmployee, authenticateRole, upload.single('file'),ProductController.updatebyId)
 router.post('/gallery/upload', auth, allowBreeder, allowEmployee, authenticateRole, upload.array('file', 10),  ProductController.uploadGalleryImage )

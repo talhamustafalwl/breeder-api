@@ -66,7 +66,8 @@ async function calDateDiff(time, timePeriod) {
     //console.log(hours + ' hour and '+ minutes+' minutes.')
     if (hours === 0 && minutes >= 0 && minutes < 11) {
       console.log("create==>", hours + " hour and " + minutes + " minutes.");
-      create = true;
+      // create = true;
+      create = minutes;
     }
   });
   return create;
@@ -117,6 +118,7 @@ cron.schedule("*/15 * * * *", async () => {
         create = await ReminderNotificationCheck(e);
         //console.log(create)
         if (create) {
+          e.remainingTime=create
           obj.reminderNotificationUpdated(e);
         }
       });
@@ -516,6 +518,7 @@ class NotificationController {
       }
       const data = {
         title: req.categoryName,
+        message: `${req.categoryName} activity needs to be done (scheduled after ${req.remainingTime ? req.remainingTime : 10} min)`,
         description: req.description,
         userId: req.breederId,
         breederId: req.breederId,
@@ -679,7 +682,7 @@ class NotificationController {
         to: pushToken,
         sound: "default",
         title: data.title,
-        body: data.description,
+        body: data.message ? data.message : data.description,
         data: data,
       });
     }
