@@ -55,7 +55,7 @@ app.use('/api', routes);
 
 app.use((error, req, res, next) => {
     console.log('Error is  ======== ', error);
-    res.status(400).json({ status: 400, message: 'Internal Server Error' });
+    res.json({ status: 400, message: error.message ? error.message : 'Internal Server Error' });
 });
 
 app.use((req, res, next) => {

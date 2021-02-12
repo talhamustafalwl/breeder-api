@@ -8,6 +8,31 @@ const {upload, uploadDocument} = require('../middleware/multerimage');
 const { checkSubscriptionLimit } = require('../middleware/subscriptionLimit');
 
 
+// const cloudinary = require('cloudinary').v2;
+// const multer = require("multer");
+// const { CloudinaryStorage } = require("multer-storage-cloudinary");
+// cloudinary.config({
+//   cloud_name: "talhalwl",
+//   api_key: "788391857541918",
+//   api_secret: "KL2Nt7eOLGlEkaZl3NU08z1LeAk"
+// });
+// const storage = new CloudinaryStorage({
+//   cloudinary: cloudinary,
+//   params: {
+//     folder: 'logly',
+//     resource_type: 'video',
+//     format: async (req, file) => {
+//       console.log(file,"<--file");
+//     },
+//     transformation:{width:0.3},
+//   },
+  
+//   filename: (req, file, callback) => {
+//     const name = file.originalname.split(' ').join('_');
+//     callback(undefined, name);
+//   }
+// });
+
 
 router.post('/test', (req, res) => {
   console.log('test route',req.body)

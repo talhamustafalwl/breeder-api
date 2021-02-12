@@ -9,8 +9,7 @@ const animal = require("../validation/animal");
 var async = require("async");
 const formController = require("./form.controller");
 const groupController = require("./group.controller");
-const { isForgotTokenActive } = require("./user.controller");
-const constant = require("../middleware/constant");
+// var ffmpeg = require('ffmpeg');
 
 class AnimalController {
   constructor() {}
@@ -513,6 +512,19 @@ class AnimalController {
     try {
       console.log("uploadGalleryImage", req.files);
       console.log(req.body.id);
+      // try {
+      //   new ffmpeg(req.files[0].path, function (err, video) {
+      //     if (!err) {
+      //       console.log('The video is ready to be processed');
+      //       video.setVideoSize('640x480', true, false)
+      //     } else {
+      //       console.log('Error: ' + err);
+      //     }
+      //   });
+      // } catch (e) {
+      //   console.log(e.code,"<----");
+      //   console.log(e.msg,"<----msg");
+      // }
 
       Animal.updateOne(
         { _id: req.body.id },
