@@ -36,6 +36,7 @@
     "qrcode": "^1.4.4",
     "randomstring": "^1.1.5",
     "stripe": "^8.49.0",
+    "superagent": "^6.1.0",
     "validator": "^13.0.0"
   }
 }

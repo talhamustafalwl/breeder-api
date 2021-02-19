@@ -30,6 +30,11 @@ const { reject } = require("async");
 const subscriberController = require("./subscriber.controller");
 const payment = require("../misc/payment");
 
+// var superagent = require('superagent');
+// var mailchimpInstance   = 'us1',
+//     listUniqueId        = '7e53e2afa6',
+//     mailchimpApiKey     = '99525a128cda82bb5d6e1037a8f98fca-us1';
+
 
 class UserController {
   constructor() {
@@ -1057,7 +1062,32 @@ class UserController {
     });
   }
 
+
+
+
   async registerBreeder(req, res, next) {
+    // superagent
+    // .post('https://' + mailchimpInstance + '.api.mailchimp.com/3.0/lists/' + listUniqueId + '/members/')
+    // // .post('https://' + mailchimpInstance + '.api.mailchimp.com/3.0/automations/emails/' + listUniqueId + '/queue')
+    // .set('Content-Type', 'application/json;charset=utf-8')
+    // .set('Authorization', 'Basic ' + new Buffer('any:' + mailchimpApiKey ).toString('base64'))
+    // .send({
+    //   'email_address': 'talha@livewirelabs.co',
+    //   'status': 'subscribed',
+    //   'merge_fields': {
+    //     'FNAME': "talha",'LNAME': "livewirelabs",'ARCHIVE': 'namdedTest',
+    //   }
+    // })
+    //     .end(function(err, response) {
+    //       console.log( response.body)
+    //       if (response.status < 300 || (response.status === 400 && response.body.title === "Member Exists")) {
+    //         res.send({message:'Signed Up!'});
+    //       } else {
+    //         res.send({message:'Sign Up Failed :('});
+    //       }
+    //   });
+    //   return
+
     try {
       console.log("register called");
       const { errors, isValid } = validateRegisterInputBreeder(req.body);
@@ -1127,15 +1157,6 @@ class UserController {
                         };
                         notificationController.create(notifData, true);
                       });
-
-                      // try{
-                      // await Category.insertMany([{addedBy:success.data._id,type:"activity",name:"Milking"},
-                      // {addedBy:success.data._id,type:"activity",name:"Vaccination"}])
-                      // }
-                      // catch{
-                      //   console.log("error")
-                      // }
-
                       return res.status(200).send(success);
                     });
                   });
@@ -1160,15 +1181,6 @@ class UserController {
               message: "Email is already registered as breeder",
             });
           }
-          // else {
-          //     // Modify user to register breeder..
-          //     this.modifyUserWithRole(req.body.email, req.body, 'breeder').then(resultUser => {
-          //         return res.status(200).send(resultUser);
-          //     }).catch(error => {
-          //         console.log(error);
-          //         return res.status(400).json({ status: 400, message: "Internal Server Error" });
-          //     });
-          // }
         }
       );
 

@@ -818,7 +818,6 @@ class AnimalController {
 
   async addBreederAnimals(req, res) {
     console.log("add breeder animal works");
-    console.log(req.body);
     const { errors, isValid } = validateAnimalInput(req.body);
     if (!isValid) {
       return res.json({
@@ -834,8 +833,17 @@ class AnimalController {
         req.user.role == "employee" ? req.user.breederId : req.user._id;
       req.body.addedBy = req.user._id;
       const data = JSON.parse(req.body.data);
+      // if(!data.quantity){
+      //   data.quantity=1
+      // }
+      // if(!data.price){
+      //   data.price=0
+      // }
       req.body.image = req.file ? req.file.filename : null;
       req.body.data = JSON.parse(req.body.data);
+      // if(!req.body.data.quantity){
+      //   req.body.data.quantity=1
+      // }
       req.body.data.quantity;
       req.body.quantity = data.quantity;
       req.body.aliveQuantity = data.quantity;
