@@ -10,6 +10,12 @@ const gallerySchema = mongoose.Schema({
     title: String,
 },  {timestamps: true})
 
+const documentsSchema = mongoose.Schema({
+    type: String,
+    filename: String,
+    size: String,
+},  {timestamps: true})
+
 const creditCardSchema = mongoose.Schema({
     name: String,
     billing_details: Object,
@@ -180,7 +186,8 @@ const userSchema = mongoose.Schema({
     addedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    }
+    },
+    documents:[documentsSchema]
 
 }, {
     timestamps: true

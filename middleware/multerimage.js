@@ -90,4 +90,26 @@ const uploadDocument = multer({
   },
 });
 
-module.exports = { upload, uploadDocument, uploadCategory };
+
+
+const documentStorageDoc = multer.diskStorage({
+  destination: (req, file, cb) => {
+    console.log("on multer destination");
+    cb(null, __dirname + "/../uploads/charityDoc");
+  },
+  filename: (req, file, cb) => {
+    console.log("on multer filename");
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const uploadDoc = multer({
+  storage: documentStorageDoc,
+  fileFilter: (req, file, cb) => {
+    console.log("calling file");
+    console.log(file);
+    cb(null, true);
+  },
+});
+
+module.exports = { upload, uploadDocument, uploadCategory,uploadDoc };

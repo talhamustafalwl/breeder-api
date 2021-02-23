@@ -25,7 +25,7 @@ return `
             <b>Sale Id: ${`${invoice.saleId.saleUniqueId}`}</b> , 
             <b>Total Price of Sale: $ ${`${invoice.saleId.totalPrice}`}</b>
             <br/>
-            <a href="${Servername}/sales">See detail ...</a>
+            <a href=${Servername}/sales>See detail ...</a>
             <br/><br/>
             Have a pleasant day.
 

@@ -16,7 +16,7 @@ module.exports = (email, Servername, token) => {
           <br/>
           <div>
           <h3>Dear ${email},</h3>
-          <p>You requested for a password reset, kindly use this <a href="${Servername}/changepassword/${token}">link</a> to reset your password</p>
+          <p>You requested for a password reset, kindly use this <a href=${Servername}/changepassword/${token}>link</a> to reset your password</p>
           <br>
           <p>Cheers!</p>
           

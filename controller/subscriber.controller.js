@@ -19,28 +19,78 @@ class SubscriberController {
   }
 
 
-  async initialSubscribeBreeder (breederId) {
+  async initialSubscribeBreeder (breederId,body={}) {
+    console.log(breederId)
       return new Promise((resolve, reject) => {
-        Subscription.findOne({defaultPackage: true}).then((result) => {
-          console.log(result);
-          // subscribe package monthly..
-          const subscriber = new Subscriber({
-            userType: "breeder",
-            userId: breederId,
-            fromDate: new Date(),
-            // toDate: new Date(Date.now() +  * 24 * 60 * 60 * 1000),
-            toDate: new Date(new Date().setMonth(new Date().getMonth()+1)),
-            subscriptionId: result._id,
-            type: 'monthly'
+        if(body.packageId){
+          Subscription.findOne({_id:body.packageId}).then((result) => {
+            console.log(result,"<<--initialSubscribeBreeder Business",body.packageId);
+            // subscribe package monthly..
+            const subscriber = new Subscriber({
+              userType: "breeder",
+              userId: breederId,
+              fromDate: new Date(),
+              // expire after 15 days
+              toDate: new Date(new Date().setDate( new Date().getDate() + 15)),
+              subscriptionId: result._id,
+              type: result.priceMethod !== 'Lifetime' ? 'monthly' : 'lifetime' 
+            });
+    
+    
+            subscriber.save().then(subscriberResult => {
+              resolve(subscriberResult);
+            }).catch(error => {
+              reject(error);
+            });
           });
-  
-  
-          subscriber.save().then(subscriberResult => {
-            resolve(subscriberResult);
-          }).catch(error => {
-            reject(error);
+        }
+        else if(body.packageType === "Charity Organization"){
+          console.log(body,"<<--initialSubscribeBreeder Charity Organization");
+          Subscription.findOne({defaultPackage: true,packageType:body.packageType}).then((result) => {
+            console.log(result,"<<--result Charity Organization");
+            // subscribe package monthly..
+            const subscriber = new Subscriber({
+              userType: "breeder",
+              userId: breederId,
+              fromDate: new Date(),
+              toDate: result.priceMethod === 'Lifetime' ? (new Date(new Date().setFullYear(new Date().getFullYear()+100))) :
+                      (new Date(new Date().setMonth(new Date().getMonth()+1))),
+              subscriptionId: result._id,
+              type: result.priceMethod === 'Lifetime' ? 'lifetime' : 'monthly'
+            });
+    
+    
+            subscriber.save().then(subscriberResult => {
+              resolve(subscriberResult);
+            }).catch(error => {
+              reject(error);
+            });
           });
-        });
+        }
+        else{
+          console.log("<<--initialSubscribeBreeder Default");
+          Subscription.findOne({defaultPackage: true}).then((result) => {
+            console.log(result);
+            // subscribe package monthly..
+            const subscriber = new Subscriber({
+              userType: "breeder",
+              userId: breederId,
+              fromDate: new Date(),
+              // toDate: new Date(Date.now() +  * 24 * 60 * 60 * 1000),
+              toDate: new Date(new Date().setMonth(new Date().getMonth()+1)),
+              subscriptionId: result._id,
+              type: result.priceMethod !== 'Lifetime' ? 'monthly' : 'lifetime' 
+            });
+    
+    
+            subscriber.save().then(subscriberResult => {
+              resolve(subscriberResult);
+            }).catch(error => {
+              reject(error);
+            });
+          });
+        }
+        
       });    
   }
 
@@ -574,6 +624,7 @@ class SubscriberController {
 
 
       if (!breederpresent) {
+        console.log(req.body,"<---")
         req.body.userId = req.user._id;
         req.body.fromDate = new Date();
         // toDate: new Date(Date.now() +  * 24 * 60 * 60 * 1000),
@@ -616,7 +667,7 @@ class SubscriberController {
         // toDate: new Date(Date.now() +  * 24 * 60 * 60 * 1000),
         req.body.toDate = (req.body.type === 'monthly') ? (new Date(new Date().setMonth(new Date().getMonth()+1))) : 
         (req.body.type === 'yearly') ? (new Date(new Date().setFullYear(new Date().getFullYear()+1))) :
-        (new Date(new Date().setFullYear(new Date().getFullYear()+20)));
+        (new Date(new Date().setFullYear(new Date().getFullYear()+100)));
 
         const subscriberUpdate = await Subscriber.findOneAndUpdate(
           { userId: mnogoose.Types.ObjectId(req.user._id) },

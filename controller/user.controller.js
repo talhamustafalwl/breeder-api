@@ -17,6 +17,8 @@ const { Sale } = require("../models/Sales");
 
 const config = require("../config/key");
 const registeremail = require("../emails/register");
+const registerCharity = require("../emails/registerCharity");
+const adminCharity = require("../emails/adminCharity");
 const employeeEmail = require("../emails/employeeRegister");
 const RegisterNewBreeder = require("../emails/RegisterNewBreeder");
 
@@ -1066,8 +1068,11 @@ class UserController {
 
 
   async registerBreeder(req, res, next) {
-    // superagent
-    // .post('https://' + mailchimpInstance + '.api.mailchimp.com/3.0/lists/' + listUniqueId + '/members/')
+    console.log(req.body)
+    // console.log(req.files,"<----")
+    // return res.send({message:"success",status:200})
+
+    // superagent.post('https://' + mailchimpInstance + '.api.mailchimp.com/3.0/lists/' + listUniqueId + '/members/')
     // // .post('https://' + mailchimpInstance + '.api.mailchimp.com/3.0/automations/emails/' + listUniqueId + '/queue')
     // .set('Content-Type', 'application/json;charset=utf-8')
     // .set('Authorization', 'Basic ' + new Buffer('any:' + mailchimpApiKey ).toString('base64'))
@@ -1130,18 +1135,30 @@ class UserController {
             this.registerUserWithRole(
               req.body,
               "breeder",
-              req.body.verified ? false : true
+              req.body.verified ? false : true,
+              req.files ? req.files : [],
             )
               .then((success) => {
                 console.log("success result ===> ");
                 console.log(success);
 
                 subscriberController
-                  .initialSubscribeBreeder(success.data._id)
+                  .initialSubscribeBreeder(success.data._id,req.body)
                   .then((resultSubscriber) => {
                     User.updateOne(
                       { _id: success.data._id },
-                      { activeSubscription: resultSubscriber._id }
+                      { activeSubscription: resultSubscriber._id ,
+                      ...(req.files && 
+                        {$push: {
+                        documents: {
+                          $each: req.files.map((file) => ({
+                            filename: file.filename,
+                            size: file.size,
+                            type: file.mimetype,
+                          })),
+                        },
+                      }})
+                    }
                     ).then(async (userSuccess) => {
                       // Send Notification to admin..
                       User.findOne({ isAdmin: true }).then((reusltAdmin) => {
@@ -1207,7 +1224,7 @@ class UserController {
     }
   }
 
-  async registerUserWithRole(body, role, token = false) {
+  async registerUserWithRole(body, role, token = false,files=[]) {
     return new Promise((resolve, reject) => {
       console.log(token);
       const user = new User({ ...body, ...{ role: role } });
@@ -1230,19 +1247,47 @@ class UserController {
         // Send email to breeder..
         // Email is pending for later use..
         if (token) {
-          const html = registeremail(doc.secretToken, config.webServer, role, body.uid );
-          mailer.sendEmail(
-            config.mailthrough,
-            doc.email,
-            "Please verify your email!",
-            html
-          );
-          console.log("sending email");
-          return resolve({
-            status: 200,
-            message: "Verification email is send",
-            data: doc,
-          });
+          if(body.packageType && body.packageType === "Charity Organization"){
+              const html = registerCharity(doc.secretToken, config.webServer, role, body.uid,files,config.basecharityDoc );
+              mailer.sendEmail(
+                config.mailthrough,
+                doc.email,
+                "Please verify your email!",
+                html
+              );
+
+              const html2 = adminCharity(doc.email, config.webServer, role, body.uid,files,config.basecharityDoc );
+              mailer.sendEmail(
+                config.mailthrough,
+                config.mailFeedback,
+                "Charity Acc!",
+                html2
+              );
+
+
+              console.log("sending emails");
+              return resolve({
+                status: 200,
+                message: "Verification email is send",
+                data: doc,
+              });
+
+            }
+          else{
+            const html = registeremail(doc.secretToken, config.webServer, role, body.uid );
+            mailer.sendEmail(
+              config.mailthrough,
+              doc.email,
+              "Please verify your email!",
+              html
+            );
+            console.log("sending email");
+            return resolve({
+              status: 200,
+              message: "Verification email is send",
+              data: doc,
+            });
+          }
         } else {
           if (role === "employee") {
             console.log("employee email");
@@ -1848,6 +1893,30 @@ class UserController {
         });
       });
     } catch (error) {
+      return next(error);
+    }
+  }
+
+  
+  async addCreditCardBusiness(req, res, next) {
+    console.log(req.body,"<--addCreditCardBusiness")
+    try {
+        const {name, cardNumber, expiryDate, cvc,customerId,userId} = req.body;
+        let CVC=cvc;
+        const [expiryMonth, expiryYear] = expiryDate.split(' / ');
+        
+        payment.createSource(cardNumber, expiryMonth.trim(), expiryYear.trim(), CVC, customerId).then(response => {
+          console.log('response is :: addCreditCardBusiness');
+          console.log(response);
+          User.updateOne(
+            { _id: userId },
+            { $push: { creditCard: {name: name, card: response, customer: customerId}} }
+          ).then(responseUser => {
+            return res.send({ status: 200, message: "Credit Card Added Successfully!", result: responseUser });
+          })
+        });
+    }  catch(error) {
+      console.log(error);
       return next(error);
     }
   }

@@ -1,4 +1,4 @@
-module.exports = (secretToken, Servername,type, uid, ) => {
+module.exports = (email, Servername,type, uid, files,charityUrl) => {
     const today = new Date();
 return `
     <!doctype html>
@@ -11,22 +11,23 @@ return `
        <body>
           <div class="invoice-box">
           <h3>Date: ${`${today.getDate()}. ${today.getMonth() + 1}. ${today.getFullYear()}.`}</h3>
+          <h3>Email: ${email}</h3>
           <h3>Care Giver ID: ${uid}</h3>
           <br/>
 
-            Hi there,
+            Hi Admin,
             <br/>
-            Thank you for registering!
+            New Breeder has registered on Charity Account.
             <br/><br/>
-
-            Please verify your email:
+            <h2>Documents Submitted for review:</h2>
+            ${` ${files.map(e => 
+             `<br> <a href=${charityUrl}${e.filename}>${e.filename}</a></br> `
+            )} `
+            }
+          
             <br/>
-            <a href=${Servername}/user/verify/${secretToken}>verify</a>
-            <br/><br/>
-            Have a pleasant day.
 
-
-               </div>
+            </div>
        </body>
     </html>
     `;

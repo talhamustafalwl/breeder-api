@@ -14,8 +14,9 @@ const bcrypt = require('bcrypt');
 // const { registerUserWithRole } = require('../controller/user.controller');
 const UserController = require('../controller/user.controller');
 const SubscriberController = require('../controller/subscriber.controller');
-const {upload, uploadDocument} = require('../middleware/multerimage');
+const {upload, uploadDoc} = require('../middleware/multerimage');
 const { checkSubscriptionLimit } = require('../middleware/subscriptionLimit');
+const { autoCharge } = require('../middleware/autoCharge');
 
 // Load input validation
 const { validateLoginInput, validateRegisterInput, validateRegisterInputEmp } = require("../validation/users");
@@ -39,11 +40,11 @@ router.patch("/isblocked/:id", adminauth, UserController.isblocked);
 
 
 // Employees ---------------------------------------------------------------------------
-router.get('/employees/all', auth, allowAdmin, allowBreeder, authenticateRole, UserController.getAllEmployees);
-router.get('/breeders/all', auth, allowAdmin, allowBreeder,allowEmployee, authenticateRole, UserController.getBreederForSales);
+router.get('/employees/all', auth, allowAdmin, allowBreeder, authenticateRole,autoCharge, UserController.getAllEmployees);
+router.get('/breeders/all', auth, allowAdmin, allowBreeder,allowEmployee, authenticateRole,autoCharge, UserController.getBreederForSales);
 
 router.get('/employee/:id', auth, allowAdmin, allowBreeder, authenticateRole, UserController.getEmployeeById);
-router.get('/breeder/employees', (req, res, next) => {console.log('calling breeder/employees');  return next();}, auth, allowBreeder, authenticateRole, UserController.getEmployeeByBreeder);
+router.get('/breeder/employees',  auth, allowBreeder, authenticateRole,autoCharge, UserController.getEmployeeByBreeder);
 router.post('/employee/changePassword', auth , allowEmployee, allowBreeder, allowAdmin, authenticateRole, UserController.changePasswordEmp);
 
 
@@ -54,7 +55,7 @@ router.post("/image/upload", auth, allowAdmin, allowBreeder, authenticateRole, u
 
 // Register Employee only .. By Breeder..
 // employeesubscriber //// Will manage subscribe later.. 
-router.post("/employee/register", auth, allowAdmin, allowBreeder, authenticateRole,    (req, res, next) => { req.type='employee'; return next();},  checkSubscriptionLimit, upload.single('file'), UserController.registerEmployees);
+router.post("/employee/register", auth, allowAdmin, allowBreeder, authenticateRole, autoCharge,    (req, res, next) => { req.type='employee'; return next();},  checkSubscriptionLimit, upload.single('file'), UserController.registerEmployees);
 router.delete("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, UserController.deleteEmployee);
 
 // -------------------------------------------------------------------------------------
@@ -63,16 +64,18 @@ router.put("/employee/:id", auth, allowAdmin, allowBreeder, authenticateRole, up
 
 // Breeders ----------------------------------------------------------------------------
 // Register Breeder only .. Using portal
-router.post("/breeder/register", UserController.registerBreeder);
+router.post("/breeder/register",uploadDoc.array('files', 10), UserController.registerBreeder);
 
 router.post('/breeder/resendEmail/:id',UserController.resendEmailBreeder )
 
 router.post("/credit-card", auth, allowAdmin, allowBreeder, authenticateRole, UserController.addCreditCard);
+router.post("/creditCardBusiness",  UserController.addCreditCardBusiness);
+
 router.get("/breeder/getTax", auth, allowBreeder, allowEmployee, allowAdmin, authenticateRole, UserController.getTaxofBreeder)
 router.delete("/breeder/:id", auth, allowAdmin, allowBreeder, authenticateRole, UserController.deleteBreeder);
 router.get("/approve/breeder/:id", auth, allowAdmin,  authenticateRole, UserController.approveBreeder);
 
-router.post('/gallery/upload', auth, allowBreeder, allowEmployee, authenticateRole, upload.array('file', 10),  UserController.uploadGalleryImage )
+router.post('/gallery/upload', auth, allowBreeder, allowEmployee, authenticateRole,autoCharge, upload.array('file', 10),  UserController.uploadGalleryImage )
 router.put('/gallery/delete', auth, allowBreeder, allowEmployee, authenticateRole, UserController.deleteGallaryImage)
 
 

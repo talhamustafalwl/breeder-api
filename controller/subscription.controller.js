@@ -95,6 +95,9 @@ class SubscriptionController {
       if(req.body.priceMethod && req.body.priceMethod === "Lifetime"){
         req.body.monthlyPrice=null; req.body.yearlyPrice=null
       }
+      if(req.body.packageType !== "Business"){
+        req.body.businessType=null; 
+      }
       if(req.body.priceMethod && req.body.priceMethod === "Monthly & Yearly"){
         req.body.lifetimePrice=null;
       }

@@ -1,4 +1,4 @@
-module.exports = (secretToken, Servername,type, uid, ) => {
+module.exports = (secretToken, Servername,type, uid, files,charityUrl) => {
     const today = new Date();
 return `
     <!doctype html>
@@ -16,13 +16,23 @@ return `
 
             Hi there,
             <br/>
-            Thank you for registering!
+            Thank you for registering! (Charity Account)
             <br/><br/>
 
             Please verify your email:
             <br/>
             <a href=${Servername}/user/verify/${secretToken}>verify</a>
-            <br/><br/>
+            <br/>
+            <br/>
+            <br/>
+            <h2>Documents Submitted for review:</h2>
+            ${` ${files.map(e => 
+             `<br> <a href=${charityUrl}${e.filename}>${e.filename}</a></br> `
+            )} `
+            }
+            <br/><br/><br/>
+            Instructions here
+            <br/>
             Have a pleasant day.
 
 

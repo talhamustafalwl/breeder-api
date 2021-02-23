@@ -19,6 +19,7 @@ const SubscriptionSchema = mongoose.Schema({
 
     priceMethod:  {type: String,  enum: ["Both", "Lifetime", "Monthly & Yearly"] },
     packageType: {type: String,  enum: ["Individual", "Business","Charity Organization"] },
+    businessType: {type: String,  enum: ["Animals & Products", "Business Services"] },
 }, { timestamps: true })
 
 

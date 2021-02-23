@@ -59,6 +59,7 @@ module.exports = {
   serverURL: 'https://logly.us/api',
   imageURL: 'https://logly.us/api/uploads/images/form/',
   baseDocumentURL: 'https://logly.us/api/uploads/documents/',
+  basecharityDoc: 'https://logly.us/api/uploads/charityDoc/',
 
 
 
@@ -69,10 +70,12 @@ module.exports = {
   sendgridAPIKey: "", //talha@livewirelabs.co
 
   //stripe
-  // stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",
-  // stripe_private:"sk_test_Cozb0IU8FFmiHpepGUVqQCUM00gNg0NJRk",
-  stripe_publishable:"pk_test_vOI473IHWLLEl6IQ73qKWBz300ozyFfbRC",
-  stripe_private:"sk_test_aE7yn2txmt6mpnDuYA25u7HV00ip4LqW7g",
+  stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",
+  stripe_private:"sk_test_Cozb0IU8FFmiHpepGUVqQCUM00gNg0NJRk",
+
+   //bilala stripe
+  // stripe_publishable:"pk_test_vOI473IHWLLEl6IQ73qKWBz300ozyFfbRC",
+  // stripe_private:"sk_test_aE7yn2txmt6mpnDuYA25u7HV00ip4LqW7g",
 
 
   //paypal

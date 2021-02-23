@@ -18,7 +18,7 @@ const SubscriberSchema = mongoose.Schema({
     },
     fromDate:{type:Date},
     toDate:{type:Date},
-    type: {type: String, enum: ['monthly', 'yearly']},
+    type: {type: String, enum: ['monthly', 'yearly','lifetime']},
     payment: {type: Object}
     // payment_gateway:{type:String},
     // email:String,
