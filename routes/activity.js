@@ -2,8 +2,9 @@ const express  = require('express');
 const contactController  = require('../controller/activity.controller');
 const router = express.Router();
 const { auth, allowAdmin, allowBreeder, authenticateRole, allowEmployee } = require("../middleware/auth");
+const { autoCharge } = require('../middleware/autoCharge');
 
-router.post('/', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, contactController.create)
+router.post('/', auth, allowAdmin, allowBreeder, allowEmployee,autoCharge, authenticateRole, contactController.create)
 .get('/', auth, contactController.getall)
 .get('/getActivityData', auth, allowAdmin, allowBreeder, authenticateRole, contactController.getActivityData)
 .get('/group', auth, contactController.getallByType)

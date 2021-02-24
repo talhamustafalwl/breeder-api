@@ -6,7 +6,7 @@ const { animalsubscriber } = require("../middleware/animalsubscriber");
 const AnimalController = require('../controller/animal.controller');
 const {upload, uploadDocument} = require('../middleware/multerimage');
 const { checkSubscriptionLimit } = require('../middleware/subscriptionLimit');
-
+const { autoCharge } = require('../middleware/autoCharge');
 
 // const cloudinary = require('cloudinary').v2;
 // const multer = require("multer");
@@ -68,7 +68,7 @@ router.route('/:id').get(AnimalController.getanimal)
 .patch(auth, allowBreeder, allowEmployee, authenticateRole, upload.single('file'),AnimalController.updateanimal)
 
 
-router.post('/healthrecord/upload',auth, allowBreeder, allowEmployee, authenticateRole, uploadDocument.single('file'), AnimalController.uploadHealthRecord)
+router.post('/healthrecord/upload',auth, allowBreeder, allowEmployee, authenticateRole,autoCharge, uploadDocument.single('file'), AnimalController.uploadHealthRecord)
 
 router.get('/healthrecord/:id', AnimalController.getHealthRecord);
 router.delete('/:animalId/healthrecord/:id', AnimalController.deleteAnimalHealthRecord);

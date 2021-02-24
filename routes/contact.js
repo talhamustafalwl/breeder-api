@@ -2,8 +2,9 @@ const express  = require('express');
 const contactController  = require('../controller/contact.controller');
 const router = express.Router();
 const { auth, allowBreeder, authenticateRole, allowEmployee } = require("../middleware/auth");
+const { autoCharge } = require('../middleware/autoCharge');
 
-router.post('/', auth, allowBreeder, allowEmployee, authenticateRole, contactController.addContact)
+router.post('/', auth, allowBreeder, allowEmployee, authenticateRole,autoCharge, contactController.addContact)
 .get('/', auth, contactController.getContacts)
 .get('/breeders', auth, contactController.getContactsBreeder)
 .get('/categories/all',auth, allowBreeder, authenticateRole, contactController.getContactWithCategories)
