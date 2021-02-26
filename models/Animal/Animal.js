@@ -11,6 +11,8 @@ const healthRecordSchema  = mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
+    fileNamed: String, 
+    note: String, 
 }, {timestamps: true});
 
 const gallerySchema = mongoose.Schema({

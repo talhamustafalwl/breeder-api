@@ -463,6 +463,9 @@ class AnimalController {
               size: req.file.size,
               type: req.file.mimetype,
               addedBy: req.user._id,
+
+              fileNamed: req.body.fileNamed,
+              note: req.body.note,
             },
           },
         }
