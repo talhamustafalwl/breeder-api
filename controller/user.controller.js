@@ -1256,7 +1256,7 @@ class UserController {
                 html
               );
 
-              const html2 = adminCharity(doc.email, config.webServer, role, body.uid,files,config.basecharityDoc );
+              const html2 = adminCharity(doc.email, config.webServer, role, body,files,config.basecharityDoc );
               mailer.sendEmail(
                 config.mailthrough,
                 config.mailFeedback,

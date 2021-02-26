@@ -66,7 +66,7 @@ module.exports = {
 
 
   mailthrough: 'admin@logly.com',
-  mailFeedback: 'talha@livewirelabs.co',
+  mailFeedback: 'hello@logly.us',
   sendgridAPIKey: "", //talha@livewirelabs.co
 
   //stripe
