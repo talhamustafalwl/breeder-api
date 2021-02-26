@@ -53,10 +53,12 @@ class SubscriberController {
               userType: "breeder",
               userId: breederId,
               fromDate: new Date(),
-              toDate: result.priceMethod === 'Lifetime' ? (new Date(new Date().setFullYear(new Date().getFullYear()+100))) :
-                      (new Date(new Date().setMonth(new Date().getMonth()+1))),
+              toDate: (new Date(new Date().setFullYear(new Date().getFullYear()+100))),
+                    // result.priceMethod === 'Lifetime' ? (new Date(new Date().setFullYear(new Date().getFullYear()+100))) :
+                    //   (new Date(new Date().setMonth(new Date().getMonth()+1))),
               subscriptionId: result._id,
-              type: result.priceMethod === 'Lifetime' ? 'lifetime' : 'monthly'
+              type: "lifetime"
+              // result.priceMethod === 'Lifetime' ? 'lifetime' : 'monthly'
             });
     
     

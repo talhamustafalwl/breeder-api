@@ -1,4 +1,4 @@
-module.exports = (email, Servername,type, uid, files,charityUrl) => {
+module.exports = (email, Servername,type, body, files,charityUrl) => {
     const today = new Date();
 return `
     <!doctype html>
@@ -11,8 +11,12 @@ return `
        <body>
           <div class="invoice-box">
           <h3>Date: ${`${today.getDate()}. ${today.getMonth() + 1}. ${today.getFullYear()}.`}</h3>
+          <h3>Name: ${body.name}</h3>
+          <h3>Care Giver ID: ${body.uid}</h3>
           <h3>Email: ${email}</h3>
-          <h3>Care Giver ID: ${uid}</h3>
+          <h3>Business Name: ${body.business}</h3>
+          <h3>Phone: ${body.phone}</h3>
+          
           <br/>
 
             Hi Admin,
