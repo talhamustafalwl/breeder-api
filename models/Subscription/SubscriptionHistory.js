@@ -18,7 +18,7 @@ const SubscriptionHistrySchema = mongoose.Schema({
     },
     fromDate:{type:Date},
     toDate:{type:Date},
-    type: {type: String, enum: ['monthly', 'yearly']},
+    type: {type: String, enum: ['monthly', 'yearly','lifetime']},
     isActive: {type: Boolean, default: true},
     isExpired: {type: Boolean, default: false},
     expiredOn: {type: Date},

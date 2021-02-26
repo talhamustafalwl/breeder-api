@@ -33,7 +33,7 @@ class SubscriberController {
               // expire after 15 days
               toDate: new Date(new Date().setDate( new Date().getDate() + 15)),
               subscriptionId: result._id,
-              type: result.priceMethod !== 'Lifetime' ? 'monthly' : 'lifetime' 
+              type: body.type//result.priceMethod !== 'Lifetime' ? 'monthly' : 'lifetime' 
             });
     
     
@@ -630,7 +630,7 @@ class SubscriberController {
         // toDate: new Date(Date.now() +  * 24 * 60 * 60 * 1000),
         req.body.toDate = (req.body.type === 'monthly') ? (new Date(new Date().setMonth(new Date().getMonth()+1))) : 
         (req.body.type === 'yearly') ? (new Date(new Date().setFullYear(new Date().getFullYear()+1)))
-        : (new Date(new Date().setFullYear(new Date().getFullYear()+20)))
+        : (new Date(new Date().setFullYear(new Date().getFullYear()+100)))
         const subscriberData = await Subscriber.create(req.body);
         SubscriptionHistory({
           ...req.body,
