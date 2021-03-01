@@ -14,7 +14,7 @@ return `
           <h3>Name: ${body.name}</h3>
           <h3>Care Giver ID: ${body.uid}</h3>
           <h3>Email: ${email}</h3>
-          <h3>Business Name: ${body.business}</h3>
+          <h3>Business Name: ${body.businessName}</h3>
           <h3>Phone: ${body.phone}</h3>
           
           <br/>
