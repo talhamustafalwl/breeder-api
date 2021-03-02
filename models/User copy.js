@@ -102,8 +102,8 @@ const userSchema = mongoose.Schema(
     address: String,
 
     // For employees need to give access rights..
-    canAccessMobileApp: Boolean,
-    canAccessInventoryManagement: Boolean,
+    canAccessMobileApp: { type: Boolean, default: true },
+    canAccessInventoryManagement: { type: Boolean, default: true },
 
     // For employees need to enter business name..
     businessName: String,

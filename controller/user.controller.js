@@ -1923,11 +1923,12 @@ class UserController {
 
 
   async addCreditCard(req, res, next) {
+    console.log(req.body,"<---req.body")
     try {
-        const {name, cardNumber, expiryDate, CVC} = req.body;
+        const {name, cardNumber, expiryDate} = req.body;
         const [expiryMonth, expiryYear] = expiryDate.split(' / ');
-        
         const {id} = req.user.stripeCustomer;
+        let CVC=req.body.CVC ? req.body.CVC : req.body.cvc
         payment.createSource(cardNumber, expiryMonth.trim(), expiryYear.trim(), CVC, id).then(response => {
           console.log('response is ::');
           console.log(response);
@@ -1937,9 +1938,13 @@ class UserController {
           ).then(responseUser => {
             return res.send({ status: 200, message: "Credit Card Added Successfully!", result: responseUser });
           })
+          .catch(err =>{
+            return res.send({ status: 400, message: "Error adding/updating card info ", result: [],error: err});
+          })
+           
         });
     }  catch(error) {
-      console.log(error);
+      console.log(error,"<--error addCreditCard ");
       return next(error);
     }
   }

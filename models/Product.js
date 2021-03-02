@@ -85,7 +85,9 @@ const ProductSchema = mongoose.Schema(
 
     qrcodepath: { type: String },
     status: { type: String },
+    isArchived: {type: Boolean,default: false, },
   },
+  
   { timestamps: true }
 );
 

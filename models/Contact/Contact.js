@@ -46,6 +46,8 @@ ContactSchema.pre('findOneAndUpdate', function(next) {
     next()
 });
 
+
+ContactSchema.index({ "category": 1, "email": 1,"isRemoved":1}, { "unique": true });
 const Contact = mongoose.model('Contact', ContactSchema);
 
 module.exports = { Contact }

@@ -27,6 +27,10 @@ class ContactController {
                 return res.status(200).json({ status: 200, message: "Contact created successfully", data: result });
 
             }).catch(err => {
+                console.log(err,"<---err")
+                if(err.code && err.code == 11000){
+                    return res.json({ status: 400, message: "Email is already available ", errors: err, data: {} }); 
+                }
                 return res.json({ status: 400, message: "Error in creating Contact ", errors: err, data: {} });
             });
         } catch(error) {

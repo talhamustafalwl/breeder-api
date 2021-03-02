@@ -71,7 +71,7 @@ class ProductController {
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     // const breederId="5f3ba1f7a989412710841d5a"
     try {
-      Product.find({ breederId }).sort({ createdAt: -1 })
+      Product.find({ breederId,isArchived:false }).sort({ createdAt: -1 })
         .populate("addedBy", "name")
         .then((result) => {
           console.log(result);
@@ -177,6 +177,32 @@ class ProductController {
       });
     }
   }
+
+
+  async deleteproduct(req, res) {
+    try {
+      console.log('delete product');
+      
+      const data = await Product.findOne({ _id: req.params.id });
+        data.isArchived = !data.isArchived;
+        data.save().then((result) => {
+          return res.status(200).json({
+            status: 200,
+            message: "Product updated successfully",
+            data: result,
+          });
+        })
+    } catch (err) {
+      console.log(err);
+      return res.json({
+        status: 400,
+        message: "Error in delete Product",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
 
   async uploadGalleryImage(req, res, next) {
     try {
