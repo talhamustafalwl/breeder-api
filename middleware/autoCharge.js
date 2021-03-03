@@ -4,7 +4,7 @@ const moment=require('moment')
 const payment = require("../misc/payment");
 
 let autoCharge =function (req, res, next) {
-    if(!req.user){
+    if(!req.user || req.user.role == "employee" ){
       return next()
     }
     let breederId=req.user.role == "employee" ? req.user.breederId : req.user._id
