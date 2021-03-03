@@ -136,7 +136,9 @@ class ActivityController {
               const cleaning = await ActivityHistory.aggregate([
                 {
                   $match: { categoryId: mongoose.Types.ObjectId(req.query.categoryId),
-                    addedBy:breederId },
+                    //addedBy:breederId 
+                    breederId:breederId 
+                  },
                 },
         
                 {
