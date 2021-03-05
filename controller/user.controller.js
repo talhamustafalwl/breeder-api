@@ -1932,15 +1932,31 @@ class UserController {
         payment.createSource(cardNumber, expiryMonth.trim(), expiryYear.trim(), CVC, id).then(response => {
           console.log('response is ::');
           console.log(response);
-          User.updateOne(
-            { _id: req.user._id },
-            { $push: { creditCard: {name: name, card: response, customer: id}} }
-          ).then(responseUser => {
-            return res.send({ status: 200, message: "Credit Card Added Successfully!", result: responseUser });
-          })
-          .catch(err =>{
-            return res.send({ status: 400, message: "Error adding/updating card info ", result: [],error: err});
-          })
+          if(req.body.businessName && req.body.individualChange){
+            User.updateOne(
+              { _id: req.user._id },
+              { $push: { creditCard: {name: name, card: response, customer: id}},
+              businessName:req.body.businessName , noOfEmployees:req.body.noOfEmployees,website:req.body.website ? req.body.website : "",
+            }
+            ).then(responseUser => {
+              return res.send({ status: 200, message: "Business Info Added Successfully!", result: responseUser });
+            })
+            .catch(err =>{
+              return res.send({ status: 400, message: "Error updating Business info ", result: [],error: err});
+            })
+          }
+          else{
+            User.updateOne(
+              { _id: req.user._id },
+              { $push: { creditCard: {name: name, card: response, customer: id}} }
+            ).then(responseUser => {
+              return res.send({ status: 200, message: "Credit Card Added Successfully!", result: responseUser });
+            })
+            .catch(err =>{
+              return res.send({ status: 400, message: "Error adding/updating card info ", result: [],error: err});
+            })
+          }
+          
            
         });
     }  catch(error) {
@@ -1950,5 +1966,6 @@ class UserController {
   }
 
 }
+
 
 module.exports = new UserController();

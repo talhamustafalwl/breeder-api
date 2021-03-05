@@ -921,6 +921,7 @@ class AnimalController {
           parseInt(animalResult.data.quantity) - parseInt(quantity);
         animalResult.transferQuantity =
           parseInt(animalResult.transferQuantity) + parseInt(quantity);
+          animalResult.soldQuantity =parseInt(animalResult.soldQuantity) + parseInt(quantity);
         animalResult.transferBreeder = [
           ...animalResult.transferBreeder,
           ...[{ id: buyerId, quantity: quantity, date: new Date() }],
