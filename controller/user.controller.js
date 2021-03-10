@@ -1687,7 +1687,7 @@ class UserController {
     try {
       const query = req.user.isAdmin ? {} : { breederId: req.user._id };
       const getAnimalCount = Promise.resolve(Animal.find({...query, isArchived: false}).count());
-      const getProductCount = Promise.resolve(Product.find(query).count());
+      const getProductCount = Promise.resolve(Product.find({...query, isArchived: false}).count());
       const getEmployeesCount = Promise.resolve(
         User.find({
           ...query,
