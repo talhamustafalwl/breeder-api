@@ -427,6 +427,10 @@ class AnimalController {
   }
 
   async updateAnimalData(req, res, next) {
+    // console.log(req.body,"<--req.body")
+    if(req.body.aliveQuantity && req.body.aliveQuantity > 0){
+      req.body.status="Alive"
+    }
     try {
       Animal.findByIdAndUpdate(req.params.id, req.body)
         .then((responseAnimal) => {
@@ -908,12 +912,12 @@ class AnimalController {
       const {animalId, quantity,  buyerId, sellerId, breederId } = req.body;
       Animal.findById(animalId).then(animalResult => {
         animalResult = animalResult.toObject();
-        console.log(animalResult);
+        // console.log(animalResult);
         console.log(' ==== > animal result');
         const isBuyerAvailable = animalResult.buyer
-          .map((e) => e.id)
-          .includes(buyerId) || animalResult.transferBreeder.map((e) => e.id).includes(buyerId);
-        console.log('This is is buyer available : ', isBuyerAvailable);
+          .map((e) => ""+e.id)
+          .includes(""+buyerId) || animalResult.transferBreeder.map((e) => ""+e.id).includes(""+buyerId);
+        //console.log(buyerId,'This is is buyer available : ', isBuyerAvailable);
         animalResult.aliveQuantity = parseInt(animalResult.aliveQuantity) - parseInt(quantity);
         animalResult.healthyQuantity =
           parseInt(animalResult.healthyQuantity) - parseInt(quantity);
@@ -922,6 +926,11 @@ class AnimalController {
         animalResult.transferQuantity =
           parseInt(animalResult.transferQuantity) + parseInt(quantity);
           animalResult.soldQuantity =parseInt(animalResult.soldQuantity) + parseInt(quantity);
+        
+        if(animalResult.aliveQuantity === 0){
+          animalResult.status="Sold"
+        }
+
         animalResult.transferBreeder = [
           ...animalResult.transferBreeder,
           ...[{ id: buyerId, quantity: quantity, date: new Date() }],
@@ -936,10 +945,9 @@ class AnimalController {
           if(isBuyerAvailable) {
             Animal.findOne({ sellerAnimalId: animalId, breederId: buyerId }).then(
               (partnerAnimal) => {
-
-
-                console.log('partner animal===> ');
-                console.log(partnerAnimal);
+                console.log('partner animal===> ',partnerAnimal);
+                // console.log(partnerAnimal);
+                partnerAnimal.status="Alive"
                 partnerAnimal.aliveQuantity =
                   parseInt(partnerAnimal.aliveQuantity) +
                   parseInt(quantity);
@@ -989,6 +997,7 @@ class AnimalController {
               pregnantQuantity: 0,
               sellerAnimalId: currentSellerAnimalId,
               seller: [],
+              status:"Alive",
               transferBreederReceived: [
                 { id: sellerId, quantity: quantity, date: new Date() },
               ]
@@ -1022,17 +1031,17 @@ class AnimalController {
   async updateAnimalAfterPaid(animalArr, buyer, seller) {
     // animalId, price, quantity
     return new Promise((resolve, reject) => {
-      console.log(
-        "Updating animal ",
-        animalArr.map((e) => e.animalId)
-      );
+      // console.log(
+      //   "Updating animal ",
+      //   animalArr.map((e) => e.animalId)
+      // );
 
       async
         .eachSeries(animalArr, function updateObj(obj, done) {
           Animal.findById(obj.animalId).then((animalResult) => {
-            console.log(animalResult);
-            console.log(' ==== > animal result');
-            console.log(obj)
+            // console.log(animalResult);
+            // console.log(' ==== > animal result');
+            // console.log(obj)
             const isBuyerAvailable = animalResult.buyer
               .map((e) => e.id)
               .includes(buyer);
@@ -1053,8 +1062,8 @@ class AnimalController {
               if (isBuyerAvailable) {
                 Animal.findOne({ sellerAnimalId: obj.animalId, breederId: seller }).then(
                   (partnerAnimal) => {
-                    console.log('partner animal===> ');
-                    console.log(partnerAnimal);
+                    // console.log('partner animal===> ');
+                    // console.log(partnerAnimal);
                     partnerAnimal.aliveQuantity =
                       parseInt(partnerAnimal.aliveQuantity) +
                       parseInt(obj.quantity);
@@ -1083,7 +1092,7 @@ class AnimalController {
                   }
                 );
               } else {
-                console.log(animalResult);
+                // console.log(animalResult);
                 const newAnimal = new Animal({
                   ...animalResult,
                   buyer: [],
@@ -1146,8 +1155,8 @@ class AnimalController {
   async removeAnimalParent(req, res) {
     try {
       let parent = "";
-      console.log(req.params.id);
-      console.log(req.params.parentName);
+      // console.log(req.params.id);
+      // console.log(req.params.parentName);
       Animal.findById(req.params.id).then((animalResult) => {
         parent = animalResult.family[req.params.parentName].id;
         animalResult.family[req.params.parentName] = {};
@@ -1177,8 +1186,8 @@ class AnimalController {
   async removeAnimalChild(req, res) {
     try {
       let child = "";
-      console.log(req.params.id);
-      console.log(req.params.childId);
+      // console.log(req.params.id);
+      // console.log(req.params.childId);
       Animal.findById(req.params.id).then((animalResult) => {
         // child = animalResult.family['children'].filter(e => e==req.params.childId);
         animalResult.family["children"] = animalResult.family[
@@ -1191,7 +1200,7 @@ class AnimalController {
             } else if (childResult.family["parent2"].id == req.params.id) {
               childResult.family["parent2"] = {};
             }
-            console.log(childResult.family);
+            // console.log(childResult.family);
             childResult.save();
             return res.status(200).json({
               status: 200,
@@ -1213,9 +1222,9 @@ class AnimalController {
   async addAnimalAsParentChild(req, res) {
     try {
       const { type } = req.body;
-      console.log(req.body.type);
-      console.log(req.body.id);
-      console.log(req.body.animalId);
+      // console.log(req.body.type);
+      // console.log(req.body.id);
+      // console.log(req.body.animalId);
       Animal.findById(req.body.id).then((animalResult) => {
         if (type === "parent1") {
           animalResult.family["parent1"] = { id: req.body.animalId };
@@ -1233,7 +1242,7 @@ class AnimalController {
               ...parentChildAnimal.family["children"],
               ...[req.body.id],
             ];
-            console.log(parentChildAnimal.family["children"]);
+            // console.log(parentChildAnimal.family["children"]);
             animalResult.save().then((_) => {
               parentChildAnimal.save().then((_) => {
                 return res.status(200).json({
@@ -1247,8 +1256,8 @@ class AnimalController {
               parentChildAnimal.family["parent1"].id &&
               parentChildAnimal.family["parent2"].id
             ) {
-              console.log("in if condition");
-              console.log(parentChildAnimal.family["parent1"]);
+              // console.log("in if condition");
+              // console.log(parentChildAnimal.family["parent1"]);
               return res.json({
                 status: 400,
                 message: "You can not be the parent of this animal.",
