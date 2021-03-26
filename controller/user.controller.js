@@ -476,6 +476,7 @@ class UserController {
   // }
 
   async getBreederForSales(req, res) {
+    console.log(req.query,"<--req.query")
     try {
       const keyword = req.query.keyword.replace(/['"]+/g, "");
       if (!keyword) {
@@ -511,7 +512,39 @@ class UserController {
                 });
               });
           });
-      } else {
+      }
+      else if(req.query.uid && req.query.uid === "uid"){
+        User.find({
+          role: "breeder",uid:keyword
+        })
+          .then((result) => {
+            console.log(result.length);
+            return res.status(200).json({
+              status: 200,
+              message: "Breeder found successfully",
+              data: result
+                .map((e) => ({
+                  ...e.toObject(),
+                  ...{
+                    image: e.toObject().image
+                      ? `${config.baseImageURL}${e.toObject().image}`
+                      : null,
+                  },
+                }))
+                .filter((e) => !(e._id == req.user._id.toString())),
+            });
+          })
+          .catch((error) => {
+            return res.json({
+              status: 400,
+              message: "Error fetching breeder",
+              errors: error,
+              data: {},
+            });
+          });
+      }
+      
+      else {
         User.find({
           role: "breeder",
           $or: [
