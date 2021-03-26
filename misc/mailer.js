@@ -32,8 +32,7 @@ module.exports = {
 
       const msg = {
         to,
-        from: 'faizan@livewireapps.com',
-        // from: 'hello@logly.us',
+        from: 'hello@logly.us',
         subject,
         // text: 'and easy to do anywhere, even with Node.js',
         html,

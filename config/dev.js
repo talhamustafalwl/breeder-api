@@ -65,13 +65,18 @@ module.exports = {
 
 
 
-  mailthrough: 'admin@logly.com',
+  mailthrough: 'hello@logly.us',
   mailFeedback: 'hello@logly.us',
-  sendgridAPIKey: "", //talha@livewirelabs.co
+  sendgridAPIKey: "", 
+
+
+  //stripe client
+  stripe_publishable:"pk_test_51HTqUUDSV0RVB4KthKfXU6b74hn0xro39yxQbGoMu1w08xKm8E49OP34UetgyPPLAfa8BHoe7d918DZhj817Fc5100A95mfU1a",
+  stripe_private:"sk_test_51HTqUUDSV0RVB4Ktx1KskzuEF3RVBgpJJKr3ibua0x5MleB6XvZBltXEkfI3ZCZl4GksfPJdHkIHOrsUYkeahpzD00GBr50ZBw",
 
   //stripe
-  stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",
-  stripe_private:"sk_test_Cozb0IU8FFmiHpepGUVqQCUM00gNg0NJRk",
+  // stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",
+  // stripe_private:"sk_test_Cozb0IU8FFmiHpepGUVqQCUM00gNg0NJRk",
 
    //bilala stripe
   // stripe_publishable:"pk_test_vOI473IHWLLEl6IQ73qKWBz300ozyFfbRC",
@@ -85,19 +90,11 @@ module.exports = {
 
 
 
-  
-  // imageURL: 'http://192.168.137.11:5000/uploads/images/form/',
-  // mailthrough: 'admin@breeder.com',
-  // baseDocumentURL: 'http://192.168.137.11:5000/uploads/documents/',
-  // sendgridAPIKey: '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',
-
-
   //Server: 'https://breeder-api.herokuapp.com',
   // Server: 'http://localhost:3000',
   // Server: 'https://breeder-dev.herokuapp.com',
   // baseAPIUrl: 'http://localhost:3000/',
 
-  // sendgridAPIKey: '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',
   sendgridAPIKey: process.env.SENDGRID_API_KEY,
 
 

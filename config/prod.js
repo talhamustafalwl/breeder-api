@@ -56,16 +56,23 @@ module.exports = {
     baseDocumentURL: 'https://logly.us/api/uploads/documents/',
     basecharityDoc: 'https://logly.us/api/uploads/charityDoc/',
 
-    mailthrough: 'admin@logly.com',
-    mailFeedback: 'talha@livewirelabs.co',
+    mailthrough: 'hello@logly.us',
+    mailFeedback: 'hello@logly.us',
     sendgridAPIKey: "", //talha@livewirelabs.co
-    //stripe
-    // stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",
-    // stripe_private:"sk_test_Cozb0IU8FFmiHpepGUVqQCUM00gNg0NJRk",
 
-     //bilala stripe
-    stripe_publishable:"pk_test_vOI473IHWLLEl6IQ73qKWBz300ozyFfbRC",
-    stripe_private:"sk_test_aE7yn2txmt6mpnDuYA25u7HV00ip4LqW7g",
+    
+   //stripe client
+  stripe_publishable:"pk_test_51HTqUUDSV0RVB4KthKfXU6b74hn0xro39yxQbGoMu1w08xKm8E49OP34UetgyPPLAfa8BHoe7d918DZhj817Fc5100A95mfU1a",
+  stripe_private:"sk_test_51HTqUUDSV0RVB4Ktx1KskzuEF3RVBgpJJKr3ibua0x5MleB6XvZBltXEkfI3ZCZl4GksfPJdHkIHOrsUYkeahpzD00GBr50ZBw",
+
+  //stripe
+  // stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",
+  // stripe_private:"sk_test_Cozb0IU8FFmiHpepGUVqQCUM00gNg0NJRk",
+
+   //bilala stripe
+  // stripe_publishable:"pk_test_vOI473IHWLLEl6IQ73qKWBz300ozyFfbRC",
+  // stripe_private:"sk_test_aE7yn2txmt6mpnDuYA25u7HV00ip4LqW7g",
+
 
 
 
