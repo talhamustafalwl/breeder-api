@@ -2,6 +2,7 @@ const {
   sendMessage,
   sendBulkMessage,
   sendSingleMessage,
+  sendSingleMessage2
 } = require("../misc/fcm");
 const { Notification } = require("../models/Notification/Notification");
 const { User } = require("../models/User");
@@ -182,28 +183,16 @@ class NotificationController {
   async createMultiple(data, isPush) {
     console.log('inside create multiple')
     return new Promise(async (resolve, reject) => {
-      // console.log("Transforming data: ");
-      // console.log('data is ===== > ', data);
-      // console.log(this.transformData(data));
       if (isPush)
-        // console.log('Pushing push messages');
-        // console.log(data);
         sendBulkMessage(
           data.map((e) => ({
             token: e.deviceToken,
             title: e.title,
             description: e.description,
-            data: e.data,
-            isPush: e.isPush,
+            data: e.data && Object.keys(e => e.length > 0) ? e.data : e,
+            isPush: true,
           }))
         );
-      // Notification.insertMany(data, (error, result) => {
-      //   if (error) {
-      //     console.log(error);
-      //     reject(error);
-      //   }
-      //     resolve(result);
-      // });
       try {
         console.log(data[0]);
         if(data[0]) {
@@ -250,30 +239,11 @@ class NotificationController {
 
 
   async sendToAllBreeders(param, ) {
-    // {
-    // title,
-    //  description,
-    // notificationType,
-    // notificationSubType
-    // }
     return new Promise((resolve,reject) => {
       console.log('sending to all breeders');
       User.find({  role: "breeder" })
       .then((allBreeders) => {
         console.log('all breeders are  ');
-        // console.log(allBreeders);
-        // console.log(allEmployees);
-
-        // const d = {
-        //   deviceToken,
-        //   title,
-        //   description,
-        //   data,
-        //   userId,
-        //   breederId,
-        //   notificationType,
-        //   animalIdoremployeeId,
-        // }
 
         const data = allBreeders
           .map((e) => e.toObject())
@@ -286,10 +256,7 @@ class NotificationController {
             notificationType: param.notificationType,
             notificationSubType: param.notificationSubType,
             data: {},
-            // ...(req.body.notificationType === "animal" ? {animalId: } : {}),
-            // ...(req.body.notificationType === "employee" ? employeeId : {}),
           }));
-        //console.log(data);
         
         this.createMultiple(data, true)
           .then((resultNotif) => {
@@ -312,19 +279,20 @@ class NotificationController {
   async NotifTest() {
     return new Promise(async (resolve, reject) => {
       sendBulkMessage([
-        {
-          token: "ExponentPushToken[mn1etSOV8gRoj0sNXQ4_0o]",
-          title: "Test notification from server",
-          description: "This is test notification from the server",
-          data: {},
-        },
         // {
-        //   token:
-        //     "fNrQ4OAkiXQQ16yftO2Nun:APA91bHt_qs8M8-L8r6icE1lDJgxNr3lACP93EoUQPr125JPULT0E3K2d0E8R7_ugf8yPYK-v1zTvzR8RTAfw2IfzJGGrUmLDrtJN5ljA8I00dpAjIUg1B4ryYQOmkmYBx-vbd4o-u8m",
+        //   token: "ExponentPushToken[mn1etSOV8gRoj0sNXQ4_0o]",
         //   title: "Test notification from server",
         //   description: "This is test notification from the server",
         //   data: {},
         // },
+        {
+          token:
+            "eLIXSX4Uatv-1QLpe6XrQ_:APA91bFHpg-NYd0kuWoDKE14GEjm7PH6DInZDkHsM5E-N4Srh6bf9542dkIneuy-MuKXdhEq2Rmz8_Cb_fOAiK9UrEx_Tk76AqJ9rYuPg7mEgComi5Jm8SwcBQzcOxbUZPLFrljbsPDU",
+          title: "Test notification from server",
+          description: "This is test notification from the server",
+          data: {},
+          isPush:true
+        },
       ]);
       resolve(true);
     });
@@ -332,7 +300,7 @@ class NotificationController {
 
   async createNotif(req, res) {
     console.log("in create notif");
-    this.testExpoNotification();
+    //this.testExpoNotification();
     this.NotifTest().then((result) => {
       return res
         .status(200)
@@ -543,7 +511,18 @@ class NotificationController {
         console.log(err,"<--error Activity created")
       }
 
-      await this.ExpoNotification(tokens, data);
+      // sendBulkMessage(
+        tokens.map((e) => (
+          sendSingleMessage2({
+          token: e,
+          title: data.title,
+          description: data.message ? data.message : data.description,
+          data: data,
+          isPush: true,
+        }))
+      );
+
+      // await this.ExpoNotification(tokens, data);
       try {
         //console.log("data==>>",data,data.notificationSubType)
         const notification = await new Notification(data);
@@ -602,7 +581,7 @@ class NotificationController {
         console.log(usersId);
         if(req.user.isAdmin) {
 
-          this.createMultiple(usersId.map(e => ({...data, breederId: e._id, deviceToken: e.deviceToken, data: {},  })), true).then(notificationResult => {
+          this.createMultiple(usersId.map(e => ({...data, breederId: e._id, deviceToken: e.deviceToken, data: data})), true).then(notificationResult => {
             return res
             .status(200)
             .json({
@@ -620,8 +599,18 @@ class NotificationController {
           })
           
         } else {
+          // sendBulkMessage(
+            tokens.map((e) => (
+              sendSingleMessage2({
+              token: e,
+              title: data.title,
+              description: data.message ? data.message : data.description,
+              data: data,
+              isPush: true,
+            }))
+          );
           // push notificaiton
-          await this.ExpoNotification(tokens, data);
+          //await this.ExpoNotification(tokens, data);
           // ##########################
 
           try {

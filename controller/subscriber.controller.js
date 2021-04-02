@@ -22,7 +22,7 @@ class SubscriberController {
   async initialSubscribeBreeder (breederId,body={}) {
     console.log(breederId)
       return new Promise((resolve, reject) => {
-        if(body.packageId){
+        if(body.packageType  && body.packageType== "Business"){
           Subscription.findOne({_id:body.packageId}).then((result) => {
             console.log(result,"<<--initialSubscribeBreeder Business",body.packageId);
             // subscribe package monthly..
@@ -33,7 +33,10 @@ class SubscriberController {
               // expire after 15 days
               toDate: new Date(new Date().setDate( new Date().getDate() + 15)),
               subscriptionId: result._id,
-              type: body.type//result.priceMethod !== 'Lifetime' ? 'monthly' : 'lifetime' 
+              type: body.type, //result.priceMethod !== 'Lifetime' ? 'monthly' : 'lifetime'
+              productId: body.productId ? body.productId : "",
+              transactionId: body.transactionId ? body.transactionId : "",
+              transactionDate:body.transactionDate ? body.transactionDate : "",
             });
     
     
@@ -44,7 +47,7 @@ class SubscriberController {
             });
           });
         }
-        else if(body.packageType === "Charity Organization"){
+        else if(body.packageType && body.packageType === "Charity Organization"){
           console.log(body,"<<--initialSubscribeBreeder Charity Organization");
           Subscription.findOne({defaultPackage: true,packageType:body.packageType}).then((result) => {
             console.log(result,"<<--result Charity Organization");
