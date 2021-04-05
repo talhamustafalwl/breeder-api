@@ -13,7 +13,7 @@ module.exports = {
   // serverURL: 'http://192.168.137.36:5000/api',
   // imageURL: 'http://192.168.137.36:5000/api/uploads/images/form/',
   // baseDocumentURL: 'http://192.168.137.36:5000/api/uploads/documents/',
-  
+
 
   // Server: 'http://192.168.100.29:5000/api',
   // webServer: 'http://192.168.100.29:5000/api',
@@ -67,26 +67,25 @@ module.exports = {
 
   mailthrough: 'hello@logly.us',
   mailFeedback: 'hello@logly.us',
-  sendgridAPIKey: "", 
+  sendgridAPIKey: "",
 
 
   //stripe client
-  stripe_publishable:"pk_test_51HTqUUDSV0RVB4KthKfXU6b74hn0xro39yxQbGoMu1w08xKm8E49OP34UetgyPPLAfa8BHoe7d918DZhj817Fc5100A95mfU1a",
-  stripe_private:"sk_test_51HTqUUDSV0RVB4Ktx1KskzuEF3RVBgpJJKr3ibua0x5MleB6XvZBltXEkfI3ZCZl4GksfPJdHkIHOrsUYkeahpzD00GBr50ZBw",
+  //(testing)
+  // stripe_publishable: "pk_test_51HTqUUDSV0RVB4KthKfXU6b74hn0xro39yxQbGoMu1w08xKm8E49OP34UetgyPPLAfa8BHoe7d918DZhj817Fc5100A95mfU1a",
+  // stripe_private: "sk_test_51HTqUUDSV0RVB4Ktx1KskzuEF3RVBgpJJKr3ibua0x5MleB6XvZBltXEkfI3ZCZl4GksfPJdHkIHOrsUYkeahpzD00GBr50ZBw",
+  //live
+  stripe_publishable: "pk_live_51HTqUUDSV0RVB4KtJRy64XA3EDrUurCR4OWYjkiREDpWty4Rjoe0GLJWnS3gxgS4gcoeAy5HtWJEJ4AJkzYD4zAn00PmHGzRIx",
+  stripe_private: "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",
 
   //stripe
   // stripe_publishable:"pk_test_4UM0NJail2U84LTdxbWH90GH00BcqCrNYn",
   // stripe_private:"sk_test_Cozb0IU8FFmiHpepGUVqQCUM00gNg0NJRk",
 
-   //bilala stripe
-  // stripe_publishable:"pk_test_vOI473IHWLLEl6IQ73qKWBz300ozyFfbRC",
-  // stripe_private:"sk_test_aE7yn2txmt6mpnDuYA25u7HV00ip4LqW7g",
-
-
   //paypal
-  paypalId:"",
-  
-  paypalSecret:"",
+  paypalId: "",
+
+  paypalSecret: "",
 
 
 
