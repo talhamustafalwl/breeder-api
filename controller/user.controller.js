@@ -53,7 +53,7 @@ class UserController {
           ? { role: req.query.role }
           : {}),
         ...(req.user.isAdmin ? {} : { breederId: req.user._id }),
-      }).sort({createdAt: -1})
+      }).sort({ createdAt: -1 })
         .populate({
           path: "activeSubscription",
           populate: {
@@ -167,7 +167,7 @@ class UserController {
 
   async authentication(req, res, next) {
     let countallowed;
-     countallowed= await Subscriber.findOne({userId:req.user.breederId ? req.user.breederId : req.user._id}).populate('subscriptionId')
+    countallowed = await Subscriber.findOne({ userId: req.user.breederId ? req.user.breederId : req.user._id }).populate('subscriptionId')
 
     try {
       return res.status(200).json({
@@ -178,7 +178,7 @@ class UserController {
         data: {
           _id: req.user._id,
           uid: req.user.uid,
-          breederUniqueId:req.user.breederUniqueId ? req.user.breederUniqueId : null,
+          breederUniqueId: req.user.breederUniqueId ? req.user.breederUniqueId : null,
           email: req.user.email,
           name: req.user.name,
           businessName: req.user.businessName,
@@ -192,7 +192,7 @@ class UserController {
           businessInfoSettings: req.user.businessInfoSettings,
           socialConnects: req.user.socialConnects,
           paymentInformation: req.user.paymentInformation,
-          subscriber:countallowed ? countallowed : {}
+          subscriber: countallowed ? countallowed : {}
         },
       });
     } catch (err) {
@@ -246,9 +246,9 @@ class UserController {
       }
       // console.log( "Breeder==>",user.role.includes("breeder"))
       if (!user.verified && user.role.includes("breeder"))
-      return res.json({
-        status: 400, message: "Kindly verify your email", data: {}
-      });
+        return res.json({
+          status: 400, message: "Kindly verify your email", data: {}
+        });
 
       if (!user.isEmployeeActive)
         return res.status(202).json({
@@ -293,7 +293,7 @@ class UserController {
           //io.emit("userSet", { msg: "email is registered", email: req.body.email });
 
           //Subscriber package
-          const countallowed= await Subscriber.findOne({userId:user.breederId ? user.breederId : user._id}).populate('subscriptionId')
+          const countallowed = await Subscriber.findOne({ userId: user.breederId ? user.breederId : user._id }).populate('subscriptionId')
           // console.log(user.breederId,"countallowed==>>",countallowed)
           return res.status(200).json({
             status: 200,
@@ -302,7 +302,7 @@ class UserController {
               userId: user._id,
               token: user.token,
               email: user.email,
-              subscriber:countallowed ? countallowed : {}
+              subscriber: countallowed ? countallowed : {}
             },
           });
         });
@@ -323,8 +323,8 @@ class UserController {
       });
     }
     try {
-      if(req.body.isblocked){
-        req.body.token=""
+      if (req.body.isblocked) {
+        req.body.token = ""
       }
       const user = await User.updateMany(
         { $or: [{ _id: req.params.id }, { breederId: req.params.id }] },
@@ -334,7 +334,7 @@ class UserController {
         status: 200,
         message: `Breeder and all its employees ${
           req.body.isblocked === false ? "Active" : "Blocked"
-        } successfully`,
+          } successfully`,
         data: user,
       });
     } catch (err) {
@@ -476,7 +476,7 @@ class UserController {
   // }
 
   async getBreederForSales(req, res) {
-    console.log(req.query,"<--req.query")
+    console.log(req.query, "<--req.query")
     try {
       const keyword = req.query.keyword.replace(/['"]+/g, "");
       if (!keyword) {
@@ -513,9 +513,10 @@ class UserController {
               });
           });
       }
-      else if(req.query.uid && req.query.uid === "uid"){
+      else if ((req.query.uid && req.query.uid === "uid") || (!isNaN(keyword) && (keyword.length === 7 || keyword.length === 8))) {
+        console.log("<--here1")
         User.find({
-          role: "breeder",uid:keyword
+          role: "breeder", uid: keyword
         })
           .then((result) => {
             console.log(result.length);
@@ -543,8 +544,9 @@ class UserController {
             });
           });
       }
-      
+
       else {
+        console.log("<--here2")
         User.find({
           role: "breeder",
           $or: [
@@ -582,7 +584,14 @@ class UserController {
           });
       }
     } catch (err) {
-      return next(err);
+      console.log(err)
+      return res.json({
+        status: 400,
+        message: "Error fetching breeder",
+        errors: error,
+        data: {},
+      });
+      // return next(err);
     }
   }
 
@@ -688,7 +697,7 @@ class UserController {
                   data: {},
                 });
               } else {
-                if(req.body.changePassword === req.body.password){
+                if (req.body.changePassword === req.body.password) {
                   return res.json({
                     status: 400,
                     message: "New password and Current Password must be different",
@@ -784,7 +793,7 @@ class UserController {
             this.registerUserWithRole(req.body, "employee", false)
               .then((success) => {
                 console.log(success);
-                
+
                 notificationController
                   .create(
                     req.user._id,
@@ -1164,7 +1173,7 @@ class UserController {
             });
 
             req.body.stripeCustomer = await payment.createCustomer(req.body.name, req.body.email, 'Breeder for logly platform');
-            
+
             this.registerUserWithRole(
               req.body,
               "breeder",
@@ -1176,22 +1185,25 @@ class UserController {
                 console.log(success);
 
                 subscriberController
-                  .initialSubscribeBreeder(success.data._id,req.body)
+                  .initialSubscribeBreeder(success.data._id, req.body)
                   .then((resultSubscriber) => {
                     User.updateOne(
                       { _id: success.data._id },
-                      { activeSubscription: resultSubscriber._id ,
-                      ...(req.files && 
-                        {$push: {
-                        documents: {
-                          $each: req.files.map((file) => ({
-                            filename: file.filename,
-                            size: file.size,
-                            type: file.mimetype,
-                          })),
-                        },
-                      }})
-                    }
+                      {
+                        activeSubscription: resultSubscriber._id,
+                        ...(req.files &&
+                        {
+                          $push: {
+                            documents: {
+                              $each: req.files.map((file) => ({
+                                filename: file.filename,
+                                size: file.size,
+                                type: file.mimetype,
+                              })),
+                            },
+                          }
+                        })
+                      }
                     ).then(async (userSuccess) => {
                       // Send Notification to admin..
                       User.findOne({ isAdmin: true }).then((reusltAdmin) => {
@@ -1257,7 +1269,7 @@ class UserController {
     }
   }
 
-  async registerUserWithRole(body, role, token = false,files=[]) {
+  async registerUserWithRole(body, role, token = false, files = []) {
     return new Promise((resolve, reject) => {
       console.log(token);
       const user = new User({ ...body, ...{ role: role } });
@@ -1280,34 +1292,34 @@ class UserController {
         // Send email to breeder..
         // Email is pending for later use..
         if (token) {
-          if(body.packageType && body.packageType === "Charity Organization"){
-              const html = registerCharity(doc.secretToken, config.webServer, role, body.uid,files,config.basecharityDoc );
-              mailer.sendEmail(
-                config.mailthrough,
-                doc.email,
-                "Please verify your email!",
-                html
-              );
+          if (body.packageType && body.packageType === "Charity Organization") {
+            const html = registerCharity(doc.secretToken, config.webServer, role, body.uid, files, config.basecharityDoc);
+            mailer.sendEmail(
+              config.mailthrough,
+              doc.email,
+              "Please verify your email!",
+              html
+            );
 
-              const html2 = adminCharity(doc.email, config.webServer, role, body,files,config.basecharityDoc );
-              mailer.sendEmail(
-                config.mailthrough,
-                config.mailFeedback,
-                "Charity Acc!",
-                html2
-              );
+            const html2 = adminCharity(doc.email, config.webServer, role, body, files, config.basecharityDoc);
+            mailer.sendEmail(
+              config.mailthrough,
+              config.mailFeedback,
+              "Charity Acc!",
+              html2
+            );
 
 
-              console.log("sending emails");
-              return resolve({
-                status: 200,
-                message: "Verification email is send",
-                data: doc,
-              });
+            console.log("sending emails");
+            return resolve({
+              status: 200,
+              message: "Verification email is send",
+              data: doc,
+            });
 
-            }
-          else{
-            const html = registeremail(doc.secretToken, config.webServer, role, body.uid );
+          }
+          else {
+            const html = registeremail(doc.secretToken, config.webServer, role, body.uid);
             mailer.sendEmail(
               config.mailthrough,
               doc.email,
@@ -1360,14 +1372,14 @@ class UserController {
 
   async resendEmailBreeder(req, res, next) {
     try {
-      User.findById(req.params.id).then(response  => {
-        if(!response)   return res.json({
+      User.findById(req.params.id).then(response => {
+        if (!response) return res.json({
           status: 400,
           message: "Email field is required",
           data: {},
         });
-      
-        const html = registeremail(response.secretToken, config.webServer, '', response.uid );
+
+        const html = registeremail(response.secretToken, config.webServer, '', response.uid);
         mailer.sendEmail(
           config.mailthrough,
           response.email,
@@ -1385,7 +1397,7 @@ class UserController {
           message: "Verification email resend successfully",
         });
       });
-    } catch(error) {
+    } catch (error) {
       return res.json({
         status: 400,
         message: "Email field is required",
@@ -1558,9 +1570,9 @@ class UserController {
               gallery:
                 resultUser.gallery && resultUser.gallery[0]
                   ? resultUser.toObject().gallery.map((e) => ({
-                      ...e,
-                      ...{ filename: `${config.baseImageURL}${e.filename}` },
-                    }))
+                    ...e,
+                    ...{ filename: `${config.baseImageURL}${e.filename}` },
+                  }))
                   : [],
             },
           });
@@ -1652,7 +1664,7 @@ class UserController {
     }
   }
 
-  async resetPassword() {}
+  async resetPassword() { }
 
   async getAllBreedersId() {
     return User.find({ role: "breeder" }).then((breederResult) =>
@@ -1719,8 +1731,8 @@ class UserController {
   async getItemsCount(req, res, next) {
     try {
       const query = req.user.isAdmin ? {} : { breederId: req.user._id };
-      const getAnimalCount = Promise.resolve(Animal.find({...query, isArchived: false}).count());
-      const getProductCount = Promise.resolve(Product.find({...query, isArchived: false}).count());
+      const getAnimalCount = Promise.resolve(Animal.find({ ...query, isArchived: false }).count());
+      const getProductCount = Promise.resolve(Product.find({ ...query, isArchived: false }).count());
       const getEmployeesCount = Promise.resolve(
         User.find({
           ...query,
@@ -1789,7 +1801,7 @@ class UserController {
                 $sum: {
                   $cond: {
                     if: { $eq: ["$isblocked", false] },
-                    then:  1,
+                    then: 1,
                     else: 0,
                   },
                 },
@@ -1930,25 +1942,25 @@ class UserController {
     }
   }
 
-  
+
   async addCreditCardBusiness(req, res, next) {
-    console.log(req.body,"<--addCreditCardBusiness")
+    console.log(req.body, "<--addCreditCardBusiness")
     try {
-        const {name, cardNumber, expiryDate, cvc,customerId,userId} = req.body;
-        let CVC=cvc;
-        const [expiryMonth, expiryYear] = expiryDate.split(' / ');
-        
-        payment.createSource(cardNumber, expiryMonth.trim(), expiryYear.trim(), CVC, customerId).then(response => {
-          console.log('response is :: addCreditCardBusiness');
-          console.log(response);
-          User.updateOne(
-            { _id: userId },
-            { $push: { creditCard: {name: name, card: response, customer: customerId}} }
-          ).then(responseUser => {
-            return res.send({ status: 200, message: "Credit Card Added Successfully!", result: responseUser });
-          })
-        });
-    }  catch(error) {
+      const { name, cardNumber, expiryDate, cvc, customerId, userId } = req.body;
+      let CVC = cvc;
+      const [expiryMonth, expiryYear] = expiryDate.split(' / ');
+
+      payment.createSource(cardNumber, expiryMonth.trim(), expiryYear.trim(), CVC, customerId).then(response => {
+        console.log('response is :: addCreditCardBusiness');
+        console.log(response);
+        User.updateOne(
+          { _id: userId },
+          { $push: { creditCard: { name: name, card: response, customer: customerId } } }
+        ).then(responseUser => {
+          return res.send({ status: 200, message: "Credit Card Added Successfully!", result: responseUser });
+        })
+      });
+    } catch (error) {
       console.log(error);
       return next(error);
     }
@@ -1956,44 +1968,45 @@ class UserController {
 
 
   async addCreditCard(req, res, next) {
-    console.log(req.body,"<---req.body")
+    console.log(req.body, "<---req.body")
     try {
-        const {name, cardNumber, expiryDate} = req.body;
-        const [expiryMonth, expiryYear] = expiryDate.split(' / ');
-        const {id} = req.user.stripeCustomer;
-        let CVC=req.body.CVC ? req.body.CVC : req.body.cvc
-        payment.createSource(cardNumber, expiryMonth.trim(), expiryYear.trim(), CVC, id).then(response => {
-          console.log('response is ::');
-          console.log(response);
-          if(req.body.businessName && req.body.individualChange){
-            User.updateOne(
-              { _id: req.user._id },
-              { $push: { creditCard: {name: name, card: response, customer: id}},
-              businessName:req.body.businessName , noOfEmployees:req.body.noOfEmployees,website:req.body.website ? req.body.website : "",
+      const { name, cardNumber, expiryDate } = req.body;
+      const [expiryMonth, expiryYear] = expiryDate.split(' / ');
+      const { id } = req.user.stripeCustomer;
+      let CVC = req.body.CVC ? req.body.CVC : req.body.cvc
+      payment.createSource(cardNumber, expiryMonth.trim(), expiryYear.trim(), CVC, id).then(response => {
+        console.log('response is ::');
+        console.log(response);
+        if (req.body.businessName && req.body.individualChange) {
+          User.updateOne(
+            { _id: req.user._id },
+            {
+              $push: { creditCard: { name: name, card: response, customer: id } },
+              businessName: req.body.businessName, noOfEmployees: req.body.noOfEmployees, website: req.body.website ? req.body.website : "",
             }
-            ).then(responseUser => {
-              return res.send({ status: 200, message: "Business Info Added Successfully!", result: responseUser });
+          ).then(responseUser => {
+            return res.send({ status: 200, message: "Business Info Added Successfully!", result: responseUser });
+          })
+            .catch(err => {
+              return res.send({ status: 400, message: "Error updating Business info ", result: [], error: err });
             })
-            .catch(err =>{
-              return res.send({ status: 400, message: "Error updating Business info ", result: [],error: err});
+        }
+        else {
+          User.updateOne(
+            { _id: req.user._id },
+            { $push: { creditCard: { name: name, card: response, customer: id } } }
+          ).then(responseUser => {
+            return res.send({ status: 200, message: "Credit Card Added Successfully!", result: responseUser });
+          })
+            .catch(err => {
+              return res.send({ status: 400, message: "Error adding/updating card info ", result: [], error: err });
             })
-          }
-          else{
-            User.updateOne(
-              { _id: req.user._id },
-              { $push: { creditCard: {name: name, card: response, customer: id}} }
-            ).then(responseUser => {
-              return res.send({ status: 200, message: "Credit Card Added Successfully!", result: responseUser });
-            })
-            .catch(err =>{
-              return res.send({ status: 400, message: "Error adding/updating card info ", result: [],error: err});
-            })
-          }
-          
-           
-        });
-    }  catch(error) {
-      console.log(error,"<--error addCreditCard ");
+        }
+
+
+      });
+    } catch (error) {
+      console.log(error, "<--error addCreditCard ");
       return next(error);
     }
   }
