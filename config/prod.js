@@ -66,8 +66,8 @@ module.exports = {
   // stripe_publishable: "",
   // stripe_private: "",
   //live
-  stripe_publishable: "",
-  stripe_private: "",
+  stripe_publishable: process.env.STRIPE_PUBLISHABLE,
+  stripe_private: process.env.STRIPE_PRIVATE,
 
   //stripe
   // stripe_publishable:"",
