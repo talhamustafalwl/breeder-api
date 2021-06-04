@@ -1171,9 +1171,12 @@ class UserController {
               length: 8,
               charset: "numeric",
             });
-
-            req.body.stripeCustomer = await payment.createCustomer(req.body.name, req.body.email, 'Breeder for logly platform');
-
+            try {
+              req.body.stripeCustomer = await payment.createCustomer(req.body.name, req.body.email, 'Breeder for logly platform');
+            }
+            catch (err) {
+              console.log(err)
+            }
             this.registerUserWithRole(
               req.body,
               "breeder",

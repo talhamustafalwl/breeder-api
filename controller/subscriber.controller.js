@@ -1,5 +1,5 @@
 const { Subscriber } = require("../models/Subscription/Subscriber");
-const {SubscriptionHistory} = require('../models/Subscription/SubscriptionHistory');
+const { SubscriptionHistory } = require('../models/Subscription/SubscriptionHistory');
 const { Subscription } = require("../models/Subscription/Subscription");
 const { Transaction } = require("../models/Subscription/Transaction");
 const LogicController = require("./logic.controller");
@@ -19,84 +19,85 @@ class SubscriberController {
   }
 
 
-  async initialSubscribeBreeder (breederId,body={}) {
+  async initialSubscribeBreeder(breederId, body = {}) {
     console.log(breederId)
-      return new Promise((resolve, reject) => {
-        if(body.packageType  && body.packageType== "Business"){
-          Subscription.findOne({_id:body.packageId}).then((result) => {
-            console.log(result,"<<--initialSubscribeBreeder Business",body.packageId);
-            // subscribe package monthly..
-            const subscriber = new Subscriber({
-              userType: "breeder",
-              userId: breederId,
-              fromDate: new Date(),
-              // expire after 15 days
-              toDate: new Date(new Date().setDate( new Date().getDate() + 15)),
-              subscriptionId: result._id,
-              type: body.type, //result.priceMethod !== 'Lifetime' ? 'monthly' : 'lifetime'
-              productId: body.productId ? body.productId : "",
-              transactionId: body.transactionId ? body.transactionId : "",
-              transactionDate:body.transactionDate ? body.transactionDate : "",
-            });
-    
-    
-            subscriber.save().then(subscriberResult => {
-              resolve(subscriberResult);
-            }).catch(error => {
-              reject(error);
-            });
+    return new Promise((resolve, reject) => {
+      if (body.packageType && body.packageType == "Business") {
+        Subscription.findOne({ _id: body.packageId }).then((result) => {
+          console.log(result, "<<--initialSubscribeBreeder Business", body.packageId);
+          // subscribe package monthly..
+          const subscriber = new Subscriber({
+            userType: "breeder",
+            userId: breederId,
+            fromDate: new Date(),
+            // expire after 15 days
+            toDate: new Date(new Date().setDate(new Date().getDate() + 15)),
+            subscriptionId: result._id,
+            type: body.type, //result.priceMethod !== 'Lifetime' ? 'monthly' : 'lifetime'
+            productId: body.productId ? body.productId : "",
+            transactionId: body.transactionId ? body.transactionId : "",
+            transactionDate: body.transactionDate ? body.transactionDate : "",
+            transactionReceipt: body.transactionReceipt ? body.transactionReceipt : "",
           });
-        }
-        else if(body.packageType && body.packageType === "Charity Organization"){
-          console.log(body,"<<--initialSubscribeBreeder Charity Organization");
-          Subscription.findOne({defaultPackage: true,packageType:body.packageType}).then((result) => {
-            console.log(result,"<<--result Charity Organization");
-            // subscribe package monthly..
-            const subscriber = new Subscriber({
-              userType: "breeder",
-              userId: breederId,
-              fromDate: new Date(),
-              toDate: (new Date(new Date().setFullYear(new Date().getFullYear()+100))),
-                    // result.priceMethod === 'Lifetime' ? (new Date(new Date().setFullYear(new Date().getFullYear()+100))) :
-                    //   (new Date(new Date().setMonth(new Date().getMonth()+1))),
-              subscriptionId: result._id,
-              type: "lifetime"
-              // result.priceMethod === 'Lifetime' ? 'lifetime' : 'monthly'
-            });
-    
-    
-            subscriber.save().then(subscriberResult => {
-              resolve(subscriberResult);
-            }).catch(error => {
-              reject(error);
-            });
+
+
+          subscriber.save().then(subscriberResult => {
+            resolve(subscriberResult);
+          }).catch(error => {
+            reject(error);
           });
-        }
-        else{
-          console.log("<<--initialSubscribeBreeder Default");
-          Subscription.findOne({defaultPackage: true}).then((result) => {
-            console.log(result);
-            // subscribe package monthly..
-            const subscriber = new Subscriber({
-              userType: "breeder",
-              userId: breederId,
-              fromDate: new Date(),
-              // toDate: new Date(Date.now() +  * 24 * 60 * 60 * 1000),
-              toDate: new Date(new Date().setMonth(new Date().getMonth()+1)),
-              subscriptionId: result._id,
-              type: result.priceMethod !== 'Lifetime' ? 'monthly' : 'lifetime' 
-            });
-    
-    
-            subscriber.save().then(subscriberResult => {
-              resolve(subscriberResult);
-            }).catch(error => {
-              reject(error);
-            });
+        });
+      }
+      else if (body.packageType && body.packageType === "Charity Organization") {
+        console.log(body, "<<--initialSubscribeBreeder Charity Organization");
+        Subscription.findOne({ defaultPackage: true, packageType: body.packageType }).then((result) => {
+          console.log(result, "<<--result Charity Organization");
+          // subscribe package monthly..
+          const subscriber = new Subscriber({
+            userType: "breeder",
+            userId: breederId,
+            fromDate: new Date(),
+            toDate: (new Date(new Date().setFullYear(new Date().getFullYear() + 100))),
+            // result.priceMethod === 'Lifetime' ? (new Date(new Date().setFullYear(new Date().getFullYear()+100))) :
+            //   (new Date(new Date().setMonth(new Date().getMonth()+1))),
+            subscriptionId: result._id,
+            type: "lifetime"
+            // result.priceMethod === 'Lifetime' ? 'lifetime' : 'monthly'
           });
-        }
-        
-      });    
+
+
+          subscriber.save().then(subscriberResult => {
+            resolve(subscriberResult);
+          }).catch(error => {
+            reject(error);
+          });
+        });
+      }
+      else {
+        console.log("<<--initialSubscribeBreeder Default");
+        Subscription.findOne({ defaultPackage: true }).then((result) => {
+          console.log(result);
+          // subscribe package monthly..
+          const subscriber = new Subscriber({
+            userType: "breeder",
+            userId: breederId,
+            fromDate: new Date(),
+            // toDate: new Date(Date.now() +  * 24 * 60 * 60 * 1000),
+            toDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+            subscriptionId: result._id,
+            type: result.priceMethod !== 'Lifetime' ? 'monthly' : 'lifetime'
+          });
+
+
+          subscriber.save().then(subscriberResult => {
+            resolve(subscriberResult);
+          }).catch(error => {
+            reject(error);
+          });
+        });
+      }
+
+    });
   }
 
 
@@ -203,73 +204,73 @@ class SubscriberController {
 
     Subscription.findById(subscriptionId)
       .then((result) =>
-        //stripe
-        //await stripe.customers.create({source}})
-        //.then(customer => stripe.charges.create({
-        //    amount:result.price,
-        //    currency:result.currency,
-        //    customer: customer.id
-        //  }))
+      //stripe
+      //await stripe.customers.create({source}})
+      //.then(customer => stripe.charges.create({
+      //    amount:result.price,
+      //    currency:result.currency,
+      //    customer: customer.id
+      //  }))
 
-        //.then(charge =>
-        {
-          const subscriber = new Subscriber({
-            breederId: req.user._id,
-            description,
-            fromDate: Date.now(),
-            toDate: Date.now() + result.period * 24 * 60 * 60 * 1000,
-            subscriptionId: result.subscriptionId,
-            allowedEmp: result.allowedEmp,
-            allowedAnimal: result.allowedAnimal,
-            name: result.name,
-            price: result.price,
-            currency: result.currency,
-            payment_gateway: "stripe",
-            //   price:charge.amount,   email:charge.billing_details.name
-            // ,created:charge.created,    currency:charge.currency, customer:charge.customer,
-            // brand:charge.payment_method_details.card.brand,  country:charge.payment_method_details.card.country,
-          });
+      //.then(charge =>
+      {
+        const subscriber = new Subscriber({
+          breederId: req.user._id,
+          description,
+          fromDate: Date.now(),
+          toDate: Date.now() + result.period * 24 * 60 * 60 * 1000,
+          subscriptionId: result.subscriptionId,
+          allowedEmp: result.allowedEmp,
+          allowedAnimal: result.allowedAnimal,
+          name: result.name,
+          price: result.price,
+          currency: result.currency,
+          payment_gateway: "stripe",
+          //   price:charge.amount,   email:charge.billing_details.name
+          // ,created:charge.created,    currency:charge.currency, customer:charge.customer,
+          // brand:charge.payment_method_details.card.brand,  country:charge.payment_method_details.card.country,
+        });
 
-          /////transaction not delete it is for lof purpose
-          const transaction = new Transaction({
-            breederId: req.user._id,
-            description,
-            fromDate: Date.now(),
-            toDate: Date.now() + result.period * 24 * 60 * 60 * 1000,
-            subscriptionId: result.subscriptionId,
-            allowedEmp: result.allowedEmp,
-            allowedAnimal: result.allowedAnimal,
-          });
-          transaction.save((err, doc) => {
-            if (err)
-              return res.json({
-                status: 400,
-                message: "Subscriber Payment error in transaction",
-                errors: err,
-                data: {},
-              });
-          });
-          ///////////////
-
-          subscriber.save(async (err, doc) => {
-            if (err)
-              return res.json({
-                status: 400,
-                message: "Subscriber Payment error",
-                errors: err,
-                data: {},
-              });
-
-            ///delete older
-            await LogicController.SubscriberdeleteFirst(req.user._id);
-            ///
-            return res.status(200).json({
-              status: 200,
-              message: "Subscriber Payment made successfully",
-              data: doc,
+        /////transaction not delete it is for lof purpose
+        const transaction = new Transaction({
+          breederId: req.user._id,
+          description,
+          fromDate: Date.now(),
+          toDate: Date.now() + result.period * 24 * 60 * 60 * 1000,
+          subscriptionId: result.subscriptionId,
+          allowedEmp: result.allowedEmp,
+          allowedAnimal: result.allowedAnimal,
+        });
+        transaction.save((err, doc) => {
+          if (err)
+            return res.json({
+              status: 400,
+              message: "Subscriber Payment error in transaction",
+              errors: err,
+              data: {},
             });
+        });
+        ///////////////
+
+        subscriber.save(async (err, doc) => {
+          if (err)
+            return res.json({
+              status: 400,
+              message: "Subscriber Payment error",
+              errors: err,
+              data: {},
+            });
+
+          ///delete older
+          await LogicController.SubscriberdeleteFirst(req.user._id);
+          ///
+          return res.status(200).json({
+            status: 200,
+            message: "Subscriber Payment made successfully",
+            data: doc,
           });
-        }
+        });
+      }
       )
       .catch((err) => {
         return res.json({
@@ -291,7 +292,7 @@ class SubscriberController {
           userId: req.user._id,
           fromDate: new Date(),
           // toDate: new Date(Date.now() +  * 24 * 60 * 60 * 1000),
-          toDate: new Date(new Date().setMonth(new Date().getMonth()+1)),
+          toDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
           subscriptionId: subscriptionId,
           payment_gateway: "stripe",
           //   price:charge.amount,   email:charge.billing_details.name
@@ -338,73 +339,73 @@ class SubscriberController {
 
     Subscription.findById(subscriptionId)
       .then((result) =>
-        //stripe
-        //await stripe.customers.create({source}})
-        //.then(customer => stripe.charges.create({
-        //    amount:result.price,
-        //    currency:result.currency,
-        //    customer: customer.id
-        //  }))
+      //stripe
+      //await stripe.customers.create({source}})
+      //.then(customer => stripe.charges.create({
+      //    amount:result.price,
+      //    currency:result.currency,
+      //    customer: customer.id
+      //  }))
 
-        //.then(charge =>
-        {
-          const subscriber = new Subscriber({
-            breederId: req.user._id,
-            description,
-            fromDate: Date.now(),
-            toDate: Date.now() + result.period * 24 * 60 * 60 * 1000,
-            subscriptionId: result.subscriptionId,
-            allowedEmp: result.allowedEmp,
-            allowedAnimal: result.allowedAnimal,
-            name: result.name,
-            price: result.price,
-            currency: result.currency,
-            payment_gateway: "stripe",
-            //   price:charge.amount,   email:charge.billing_details.name
-            // ,created:charge.created,    currency:charge.currency, customer:charge.customer,
-            // brand:charge.payment_method_details.card.brand,  country:charge.payment_method_details.card.country,
-          });
+      //.then(charge =>
+      {
+        const subscriber = new Subscriber({
+          breederId: req.user._id,
+          description,
+          fromDate: Date.now(),
+          toDate: Date.now() + result.period * 24 * 60 * 60 * 1000,
+          subscriptionId: result.subscriptionId,
+          allowedEmp: result.allowedEmp,
+          allowedAnimal: result.allowedAnimal,
+          name: result.name,
+          price: result.price,
+          currency: result.currency,
+          payment_gateway: "stripe",
+          //   price:charge.amount,   email:charge.billing_details.name
+          // ,created:charge.created,    currency:charge.currency, customer:charge.customer,
+          // brand:charge.payment_method_details.card.brand,  country:charge.payment_method_details.card.country,
+        });
 
-          /////transaction not delete it is for lof purpose
-          const transaction = new Transaction({
-            breederId: req.user._id,
-            description,
-            fromDate: Date.now(),
-            toDate: Date.now() + result.period * 24 * 60 * 60 * 1000,
-            subscriptionId: result.subscriptionId,
-            allowedEmp: result.allowedEmp,
-            allowedAnimal: result.allowedAnimal,
-          });
-          transaction.save((err, doc) => {
-            if (err)
-              return res.json({
-                status: 400,
-                message: "Subscriber Payment error in transaction",
-                errors: err,
-                data: {},
-              });
-          });
-          ///////////////
-
-          subscriber.save(async (err, doc) => {
-            if (err)
-              return res.json({
-                status: 400,
-                message: "Subscriber Payment error",
-                errors: err,
-                data: {},
-              });
-
-            ///delete older
-            await LogicController.SubscriberdeleteFirst(req.user._id);
-            ///
-            return res.status(200).json({
-              status: 200,
-              message: "Subscriber Payment made successfully",
-              data: doc,
+        /////transaction not delete it is for lof purpose
+        const transaction = new Transaction({
+          breederId: req.user._id,
+          description,
+          fromDate: Date.now(),
+          toDate: Date.now() + result.period * 24 * 60 * 60 * 1000,
+          subscriptionId: result.subscriptionId,
+          allowedEmp: result.allowedEmp,
+          allowedAnimal: result.allowedAnimal,
+        });
+        transaction.save((err, doc) => {
+          if (err)
+            return res.json({
+              status: 400,
+              message: "Subscriber Payment error in transaction",
+              errors: err,
+              data: {},
             });
+        });
+        ///////////////
+
+        subscriber.save(async (err, doc) => {
+          if (err)
+            return res.json({
+              status: 400,
+              message: "Subscriber Payment error",
+              errors: err,
+              data: {},
+            });
+
+          ///delete older
+          await LogicController.SubscriberdeleteFirst(req.user._id);
+          ///
+          return res.status(200).json({
+            status: 200,
+            message: "Subscriber Payment made successfully",
+            data: doc,
           });
-        }
+        });
+      }
       )
       .catch((err) => {
         return res.json({
@@ -543,9 +544,9 @@ class SubscriberController {
   }
 
   async getSubscribedPackageOfBreeder(req, res, next) {
-    try  {
-      const {id} = req.params;
-      Subscriber.findOne({userId: id}).populate('subscriptionId').sort({createdAt: 1}).then(resultSubscribed  => {
+    try {
+      const { id } = req.params;
+      Subscriber.findOne({ userId: id }).populate('subscriptionId').sort({ createdAt: 1 }).then(resultSubscribed => {
         console.log(resultSubscribed);
         return res.status(200).json({
           status: 200,
@@ -553,7 +554,7 @@ class SubscriberController {
           data: resultSubscribed,
         });
       });
-    } catch(error) {
+    } catch (error) {
       return next(error);
     }
   }
@@ -561,9 +562,9 @@ class SubscriberController {
   async updatebyId(req, res) {
     console.log(req.body)
     try {
-      req.body.fromDate=new Date()
-      req.body.toDate= req.body.toDate ? req.body.toDate : new Date(new Date().setMonth(new Date().getMonth()+1))
-      req.body.type=req.body.type ? req.body.type : 'monthly'
+      req.body.fromDate = new Date()
+      req.body.toDate = req.body.toDate ? req.body.toDate : new Date(new Date().setMonth(new Date().getMonth() + 1))
+      req.body.type = req.body.type ? req.body.type : 'monthly'
       const feed = await Subscriber.updateOne({ _id: req.params.id }, req.body);
       return res.status(200).json({
         status: 200,
@@ -581,18 +582,18 @@ class SubscriberController {
   }
 
 
-  async chargeForSubscription (subscriptionId, type, creditCardId, customerId) {
+  async chargeForSubscription(subscriptionId, type, creditCardId, customerId) {
     return new Promise(async (resolve, reject) => {
       // console.log(creditCardId,type);
       // console.log('the data to be passed is ', creditCardId, '  and ',  customerId)
       try {
         const subscription = await Subscription.findById(subscriptionId);
-        const subscriptionAmount = (type==='monthly') ? subscription.monthlyPrice : (type ==='yearly') ? subscription.yearlyPrice : subscription.lifetimePrice; 
+        const subscriptionAmount = (type === 'monthly') ? subscription.monthlyPrice : (type === 'yearly') ? subscription.yearlyPrice : subscription.lifetimePrice;
         // const cardToken = await payment.createCardToken(creditCardId, customerId);
-        const chargeResult = await payment.charge(subscriptionAmount, creditCardId,customerId, 'Charge for subscription' );
+        const chargeResult = await payment.charge(subscriptionAmount, creditCardId, customerId, 'Charge for subscription');
         resolve(chargeResult);
-  
-      } catch(error) {
+
+      } catch (error) {
         reject(error);
       };
     });
@@ -611,7 +612,7 @@ class SubscriberController {
     }
 
     try {
-      if(!req.user.creditCard[0]) return res.json({
+      if (!req.user.creditCard[0]) return res.json({
         status: 400,
         message: "No card added!",
         data: {},
@@ -625,17 +626,17 @@ class SubscriberController {
       const chargeResult = await this.chargeForSubscription(req.body.subscriptionId, req.body.type, req.user.creditCard[0].card.id, req.user.stripeCustomer.id);
       console.log('Stripe charge result: ');
       console.log(chargeResult);
-      
+
 
 
       if (!breederpresent) {
-        console.log(req.body,"<---")
+        console.log(req.body, "<---")
         req.body.userId = req.user._id;
         req.body.fromDate = new Date();
         // toDate: new Date(Date.now() +  * 24 * 60 * 60 * 1000),
-        req.body.toDate = (req.body.type === 'monthly') ? (new Date(new Date().setMonth(new Date().getMonth()+1))) : 
-        (req.body.type === 'yearly') ? (new Date(new Date().setFullYear(new Date().getFullYear()+1)))
-        : (new Date(new Date().setFullYear(new Date().getFullYear()+100)))
+        req.body.toDate = (req.body.type === 'monthly') ? (new Date(new Date().setMonth(new Date().getMonth() + 1))) :
+          (req.body.type === 'yearly') ? (new Date(new Date().setFullYear(new Date().getFullYear() + 1)))
+            : (new Date(new Date().setFullYear(new Date().getFullYear() + 100)))
         const subscriberData = await Subscriber.create(req.body);
         SubscriptionHistory({
           ...req.body,
@@ -644,20 +645,20 @@ class SubscriberController {
         }).save();
 
 
-      
-          console.log('notification in subscription case');
-          const notifMessage = notificationMessages.changeSubscription();
-          const subdata = {
-            title: notifMessage.title,
-            description: notifMessage.description,
-            notificationType:  notificationConfig.notificationType.admin,
-            notificationSubType: notificationConfig.notificationSubType.announcement,
-            type: notificationConfig.type.adminnotification,
-            data: {},
-          }
-          notificationController.sendToAdmin(notifMessage.type, subdata);
 
-        
+        console.log('notification in subscription case');
+        const notifMessage = notificationMessages.changeSubscription();
+        const subdata = {
+          title: notifMessage.title,
+          description: notifMessage.description,
+          notificationType: notificationConfig.notificationType.admin,
+          notificationSubType: notificationConfig.notificationSubType.announcement,
+          type: notificationConfig.type.adminnotification,
+          data: {},
+        }
+        notificationController.sendToAdmin(notifMessage.type, subdata);
+
+
 
 
         return res.status(200).json({
@@ -670,9 +671,9 @@ class SubscriberController {
         console.log(req.user._id);
         req.body.fromDate = new Date();
         // toDate: new Date(Date.now() +  * 24 * 60 * 60 * 1000),
-        req.body.toDate = (req.body.type === 'monthly') ? (new Date(new Date().setMonth(new Date().getMonth()+1))) : 
-        (req.body.type === 'yearly') ? (new Date(new Date().setFullYear(new Date().getFullYear()+1))) :
-        (new Date(new Date().setFullYear(new Date().getFullYear()+100)));
+        req.body.toDate = (req.body.type === 'monthly') ? (new Date(new Date().setMonth(new Date().getMonth() + 1))) :
+          (req.body.type === 'yearly') ? (new Date(new Date().setFullYear(new Date().getFullYear() + 1))) :
+            (new Date(new Date().setFullYear(new Date().getFullYear() + 100)));
 
         const subscriberUpdate = await Subscriber.findOneAndUpdate(
           { userId: mnogoose.Types.ObjectId(req.user._id) },
@@ -680,7 +681,7 @@ class SubscriberController {
           { new: true }
         );
 
-        SubscriptionHistory.findOneAndUpdate({userId: req.user._id, isActive: true}, {isActive: false}).then(resultSubscription => {
+        SubscriptionHistory.findOneAndUpdate({ userId: req.user._id, isActive: true }, { isActive: false }).then(resultSubscription => {
           console.log(resultSubscription);
           SubscriptionHistory({
             ...req.body,
@@ -694,7 +695,7 @@ class SubscriberController {
         const subdata = {
           title: notifMessage.title,
           description: notifMessage.description,
-          notificationType:  notificationConfig.notificationType.admin,
+          notificationType: notificationConfig.notificationType.admin,
           notificationSubType: notificationConfig.notificationSubType.announcement,
           type: notificationConfig.type.adminnotification,
           data: {},

@@ -5,24 +5,25 @@ var idvalidator = require('mongoose-id-validator');
 //subscriber details
 const SubscriberSchema = mongoose.Schema({
     userId: {
-        type:Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'User'
     },
     subscriptionId: {
-        type:Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'Subscription'
     },
     userType: {
         type: String,
         enum: ['breeder', 'employee']
     },
-    fromDate:{type:Date},
-    toDate:{type:Date},
-    type: {type: String, enum: ['monthly', 'yearly','lifetime']},
-    payment: {type: Object},
-    productId:{type: String},
-    transactionId:{type: String},
-    transactionDate:{type: Date},
+    fromDate: { type: Date },
+    toDate: { type: Date },
+    type: { type: String, enum: ['monthly', 'yearly', 'lifetime'] },
+    payment: { type: Object },
+    productId: { type: String },
+    transactionId: { type: String },
+    transactionDate: { type: Date },
+    transactionReceipt: { type: String },
     // payment_gateway:{type:String},
     // email:String,
     // description:{type:String },
@@ -38,10 +39,10 @@ const SubscriberSchema = mongoose.Schema({
     // allowedEmp:{type:Number},
     // name:{type:String}
     ///
-},{timestamps: true})
+}, { timestamps: true })
 
 
 SubscriberSchema.plugin(idvalidator);
-const Subscriber= mongoose.model('Subscriber', SubscriberSchema);
+const Subscriber = mongoose.model('Subscriber', SubscriberSchema);
 
 module.exports = { Subscriber }
