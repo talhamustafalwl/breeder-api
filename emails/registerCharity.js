@@ -51,7 +51,7 @@ module.exports = (secretToken, Servername, type, uid, files, charityUrl) => {
             <div style="text-align:center; justify-content:center">
             <p class="heading">Welcome to Logly</p>
             <p class="primaryText">HELLO </p>
-            <p class="underline seventy grey">THANK YOU FOR REGISTERING (Charity Account) WITH LOGLY TEXHNOLOGY. WELCOME TO OUR CIRCLE OF LOVE</p>
+            <p class="underline seventy grey">THANK YOU FOR REGISTERING (Charity Account) WITH LOGLY TECHNOLOGY. WELCOME TO OUR CIRCLE OF LOVE</p>
             <p class="grey">Care Giver ID: ${uid}</p>
             <p class="grey">Please click below link to verify your account</p>
             <a href=${Servername}/user/verify/${secretToken} class="Refbtn">VERIFY</a>
@@ -65,12 +65,12 @@ module.exports = (secretToken, Servername, type, uid, files, charityUrl) => {
             </div>
             <br/>
             <p class="underline seventy" >
-            <span style="display:none">THANK YOU FOR REGISTERING WITH LOGLY TEXHNOLOGY. WELCOME TO OUR CIRCLE OF LOVE</span></p>	
+            <span style="display:none">THANK YOU FOR REGISTERING WITH LOGLY TECHNOLOGY. WELCOME TO OUR CIRCLE OF LOVE</span></p>	
             
             <p class="grey">LOVE LOTS, LOGLY</p>
             <p class="grey">If you have any questions, please email us at</p>
             <p class="grey">hello@logly.us</p>
-            <img src="https://i.ibb.co/QnsWKTg/Logly-Logo.png" alt="LOGLY" width="200" height="50">
+            <img src="https://i.ibb.co/dDk7vpR/Logo-Logly-colour.png" alt="LOGLY" width="250" height="75">
             </div>
          </div>
          </div>

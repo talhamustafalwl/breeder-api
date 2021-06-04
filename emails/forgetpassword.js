@@ -56,7 +56,7 @@ module.exports = (email, Servername, token) => {
             <p class="grey">LOVE LOTS, LOGLY</p>
             <p class="grey">If you have any questions, please email us at</p>
             <p class="grey">hello@logly.us</p>
-            <img src="https://i.ibb.co/QnsWKTg/Logly-Logo.png" alt="LOGLY" width="200" height="50">
+            <img src="https://i.ibb.co/dDk7vpR/Logo-Logly-colour.png" alt="LOGLY" width="250" height="75">
             </div>
          </div>
          </div>
