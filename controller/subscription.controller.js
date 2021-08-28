@@ -109,6 +109,49 @@ class SubscriptionController {
             return res.json({ status: 400, message: "Error in updating Subscription", errors: err, data: {} });
         }
     }
+
+
+    async getallTypesMin(req, res) {
+      let description="This description would be added by admin later on, while creating packages"
+      try {
+        const feed = await Subscription.aggregate([
+          { $group: { _id: `$packageType`,
+           "minprice": { "$min": "$monthlyPrice" }
+          , detail: { $last: "$$ROOT" } } },
+         ]);
+         let data=feed.map(e => 
+              ({type: e._id,minprice:e.minprice, description, packageType:e.detail.packageType})
+          )
+         let business=feed.find(e => e._id === "Business");
+         let OtherData=["Business Service Provider" , "Business Listing"].map(e => 
+          ({type: e ,minprice:business.minprice, description, packageType:"Business"})
+          )
+        return res.status(200).json({ status: 200, message: "Subscription detail", data: [...data,...OtherData] }); 
+          } catch (err) {
+        return res.json({ status: 400, message: "Error in getting Subscriptions", errors: err, data: {} });
+      }
+    }
+
+
+
+    async packageByType(req, res) {
+      try {
+        const feed = await Subscription.aggregate([
+           {$match: {packageType: req.params.packageType}},
+          { $group: { _id: `$priceMethod`, packages: { $push: "$$ROOT" } } },
+          { $project: {  
+            _id: 0,
+            packageType: "$_id",
+            packages: "$packages"
+         }
+      }
+         ]);
+        
+        return res.status(200).json({ status: 200, message: "Subscription pakages detail", data: feed }); 
+          } catch (err) {
+        return res.json({ status: 400, message: "Error in getting Subscriptions", errors: err, data: {} });
+      }
+    }
     
 };
 

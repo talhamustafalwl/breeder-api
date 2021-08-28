@@ -18,8 +18,10 @@ const SubscriptionSchema = mongoose.Schema({
     defaultPackage:{type:Boolean,default:false},
 
     priceMethod:  {type: String,  enum: ["Both", "Lifetime", "Monthly & Yearly"] },
-    packageType: {type: String,  enum: ["Individual", "Business","Charity Organization"] },
-    businessType: {type: String,  enum: ["Animals & Products", "Business Services"] },
+    packageType: {type: String,  enum: ["Individual", "Business","Charity Organization"
+    ,"Business Service Provider", "Business Listing"] },
+    businessType: {type: String,  enum: ["Animals & Products", "Business Services",
+    ,"Business Service Provider", "Business Listing"] },
 }, { timestamps: true })
 
 
