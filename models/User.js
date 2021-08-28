@@ -40,7 +40,9 @@ const userSchema = mongoose.Schema({
     website: {
         type: String
     },
-
+    mobile: {
+        type: Number
+    },
     password: {
         type: String, minglength: 6
     },

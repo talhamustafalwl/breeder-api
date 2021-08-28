@@ -1,4 +1,4 @@
-module.exports = (email, Servername, token) => {
+module.exports = (email, Servername, token, code) => {
    const today = new Date();
    return `
     <!doctype html>
@@ -51,8 +51,10 @@ module.exports = (email, Servername, token) => {
             <div style="text-align:center; justify-content:center">
             <p class="heading">FORGET PASSWORD</p>	
             <p class="grey">Dear ${email},</p>	   
-            <p class="underline seventy grey">You requested for a password reset, kindly use this <a href=${Servername}/changepassword/${token}>link</a> to reset your password</p>
+            <p class="grey">You requested for a password reset, kindly use this <a href=${Servername}/changepassword/${token}>link</a> to reset your password</p>
             
+            <p class="grey">Or</p>	 
+            <p class=" underline seventy grey">By using Verification Code :${code} </p>	 
             <p class="grey">LOVE LOTS, LOGLY</p>
             <p class="grey">If you have any questions, please email us at</p>
             <p class="grey">hello@logly.us</p>

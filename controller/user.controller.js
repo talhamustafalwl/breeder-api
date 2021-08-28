@@ -17,6 +17,7 @@ const { Sale } = require("../models/Sales");
 
 const config = require("../config/key");
 const registeremail = require("../emails/register");
+const registeremailMobile = require("../emails/registerMobile");
 const registerCharity = require("../emails/registerCharity");
 const adminCharity = require("../emails/adminCharity");
 const employeeEmail = require("../emails/employeeRegister");
@@ -1110,7 +1111,9 @@ class UserController {
 
 
   async registerBreeder(req, res, next) {
-    console.log(req.body)
+    if(req.body.mobile){
+      req.body.mobile=Math.floor(Math.random() * 90000) + 100000;
+    }
     // console.log(req.files,"<----")
     // return res.send({message:"success",status:200})
 
@@ -1321,6 +1324,20 @@ class UserController {
             });
 
           }
+          else if(body.mobile){
+              const html = registeremailMobile(body.uid, body.mobile);
+              mailer.sendEmail(
+                config.mailthrough,
+                doc.email,
+                "Please verify your email!",
+                html
+              );
+              return resolve({
+                status: 200,
+                message: "Verification email is send",
+                data: doc,
+              });
+            }
           else {
             const html = registeremail(doc.secretToken, config.webServer, role, body.uid);
             mailer.sendEmail(
@@ -1459,7 +1476,6 @@ class UserController {
           data: {},
         });
       }
-
       User.findOne({ email: req.body.email }).then((user) => {
         if (!user) {
           return res.json({
@@ -1478,10 +1494,11 @@ class UserController {
         //
         const token = randomstring.generate();
         user.resetToken = token;
+        user.mobile=Math.floor(Math.random() * 90000) + 100000;
         //user.resetToken_expires=Date.now();
         user.save();
         //email send
-        let html = forgetpasswordemail(req.body.email, config.webServer, token);
+        let html = forgetpasswordemail(req.body.email, config.webServer, token, user.mobile);
         mailer.sendEmail(
           config.mailthrough,
           req.body.email,
@@ -2010,6 +2027,72 @@ class UserController {
       });
     } catch (error) {
       console.log(error, "<--error addCreditCard ");
+      return next(error);
+    }
+  }
+
+
+ async verifyByCode(req, res,) {
+    try {
+      const {code} = req.body;
+      // Find account with matching secret token
+      const user = await User.findOne({ 'mobile': code });
+      if (!user) {
+        return res.json({ status: 404, message: "Invalid verification code", data: {} });
+      }
+      user.verified = true; user.secretToken = '';
+      user.mobile = null;
+      await user.save();
+      return res.status(200).json({ status: 200, message: "Account is verified", data: user });
+  
+    } catch (error) {
+      return res.json({ status: 400, message: "Account verification issue", error: error, data: {} });
+    }
+  }
+
+  async verifyByCodePassword(req, res,) {
+    try {
+      const {code} = req.body;
+      const user = await User.findOne({ 'mobile': code });
+      if (!user) {
+        return res.json({ status: 404, message: "Invalid code", data: {} });
+      }
+      await user.save();
+      return res.status(200).json({ status: 200, message: "Valid code", data: user });
+  
+    } catch (error) {
+      return res.json({ status: 400, message: "Issue in verification", error: error, data: {} });
+    }
+  }
+
+
+
+
+  async resetForgetPasswordByCode(req, res, next) {
+    try {
+      const { errors, isValid } = validateResetPassword(req.body);
+      if (!isValid)
+        return res.json({
+          status: 400,
+          message: "Error presents",
+          errors: errors,
+          data: {},
+        });
+      const { password, code } = req.body;
+      User.findOne({ mobile: code }).then((user) => {
+        if (!user)
+          return res.json({ status: 400, message: "Invalid verification code", data: {} });
+        user.password = password;
+        user.resetToken = ""; user.mobile = null;
+        user.save().then((resultSaved) => {
+          res.status(200).json({
+            status: 200,
+            message: "Password changed successfully",
+            data: resultSaved,
+          });
+        });
+      });
+    } catch (error) {
       return next(error);
     }
   }
