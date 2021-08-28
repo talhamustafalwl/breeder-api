@@ -718,6 +718,35 @@ class SubscriberController {
       });
     }
   }
+
+
+  async packagesByCount(req, res) {
+    try {
+      const feed = await Subscriber.aggregate([
+        {
+          $lookup: {
+            from: "subscriptions",localField: "subscriptionId",
+            foreignField: "_id",as: "package",
+          },
+        },
+        { $unwind: { path: `$package` } },
+        { $group: { _id: `$package.packageType`,count: { $sum: 1 }, detail: { $last: "$$ROOT" } } },
+        { $project: {  
+          _id: 0, packageType: "$_id",count: "$count"
+       }}
+    ]);
+    let OtherData=["Business Service Provider" , "Business Listing"].map(e => 
+     ({packageType:e, count: 0 ,})
+     )
+
+     
+      return res.status(200).json({ status: 200, message: "Subscribers packages detail", data: [...feed, ...OtherData] }); 
+        } catch (err) {
+      return res.json({ status: 400, message: "Error in getting Subscribers", errors: err, data: {} });
+    }
+  }
+
+
 }
 
 module.exports = new SubscriberController();

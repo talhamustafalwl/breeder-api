@@ -42,4 +42,7 @@ router.get('/check' , (req, res) => {
   res.send('OK')
 });
 
+router.get('/packages/byCount', auth, allowAdmin, allowBreeder, allowEmployee, authenticateRole, SubscriberController.packagesByCount);
+
+
 module.exports=router
