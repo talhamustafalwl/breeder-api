@@ -52,7 +52,8 @@ class SubscriptionController {
 
     async getall(req, res) {
         try {
-          const feed = await Subscription.find({});
+          // "Business Service Provider", "Business Listing"
+          const feed = await Subscription.find( { packageType: { $nin: ["Business Service Provider", "Business Listing"] } });
           return res.status(200).json({ status: 200, message: "All Subscriptions", data: feed.map(e=>e.toObject()).map(e => ({...e,   icon: e.icon ?  `${config.baseImageURL}${e.icon}` : null,})) });
         } catch (err) {
           return res.json({ status: 400, message: "Error in get Subscriptions", errors: err, data: {} });
@@ -122,11 +123,11 @@ class SubscriptionController {
          let data=feed.map(e => 
               ({type: e._id,minprice:e.minprice, description, packageType:e.detail.packageType})
           )
-         let business=feed.find(e => e._id === "Business");
-         let OtherData=["Business Service Provider" , "Business Listing"].map(e => 
-          ({type: e ,minprice:business.minprice, description, packageType:"Business"})
-          )
-        return res.status(200).json({ status: 200, message: "Subscription detail", data: [...data,...OtherData] }); 
+        //  let business=feed.find(e => e._id === "Business");
+        //  let OtherData=["Business Service Provider" , "Business Listing"].map(e => 
+        //   ({type: e ,minprice:business.minprice, description, packageType:"Business"})
+        //   )
+        return res.status(200).json({ status: 200, message: "Subscription detail", data: data }); 
           } catch (err) {
         return res.json({ status: 400, message: "Error in getting Subscriptions", errors: err, data: {} });
       }

@@ -232,5 +232,6 @@ router.post("/verifyByCode", UserController.verifyByCode);
 router.post("/verifyByCodePassword", UserController.verifyByCodePassword);
 router.post('/resetForgetPasswordByCode', UserController.resetForgetPasswordByCode);
 router.post("/resendCodeVerification", UserController.resendCodeVerification);
+router.post("/getMatchingEmails", UserController.getMatchingEmails);
 
 module.exports = router;

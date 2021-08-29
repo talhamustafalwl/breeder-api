@@ -2139,6 +2139,34 @@ class UserController {
   }
 
 
+  async getMatchingEmails(req, res, next) {
+    try {
+      if (!req.body.email) {
+        return res.json({
+          status: 400,
+          message: "Email field is required",
+          data: {},
+        });
+      }
+      User.find({ email: req.body.email }).then((user) => {
+        if (user.length === 0) {
+          return res.json({
+            status: 400,
+            message: "Email does not exist",
+            data: {},
+          });
+        }
+        res.status(200).json({
+          status: 200,
+          message: "All matching email",
+          data: user,
+        });
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
 }
 
 
