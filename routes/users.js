@@ -231,5 +231,6 @@ function bcrypt_password(password) {
 router.post("/verifyByCode", UserController.verifyByCode);
 router.post("/verifyByCodePassword", UserController.verifyByCodePassword);
 router.post('/resetForgetPasswordByCode', UserController.resetForgetPasswordByCode);
+router.post("/resendCodeVerification", UserController.resendCodeVerification);
 
 module.exports = router;

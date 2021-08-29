@@ -17,6 +17,7 @@ const { Sale } = require("../models/Sales");
 
 const config = require("../config/key");
 const registeremail = require("../emails/register");
+const resendVerification = require("../emails/resendVerification");
 const registeremailMobile = require("../emails/registerMobile");
 const registerCharity = require("../emails/registerCharity");
 const adminCharity = require("../emails/adminCharity");
@@ -2040,7 +2041,7 @@ class UserController {
       if (!user) {
         return res.json({ status: 404, message: "Invalid verification code", data: {} });
       }
-      user.verified = true; user.secretToken = '';
+      user.verified = true; user.secretToken = ''; user.resetToken = '';
       user.mobile = null;
       await user.save();
       return res.status(200).json({ status: 200, message: "Account is verified", data: user });
@@ -2096,6 +2097,47 @@ class UserController {
       return next(error);
     }
   }
+
+
+  async resendCodeVerification(req, res, next) {
+    try {
+      if (!req.body.email) {
+        return res.json({
+          status: 400,
+          message: "Email field is required",
+          data: {},
+        });
+      }
+      User.findOne({ email: req.body.email }).then((user) => {
+        if (!user) {
+          return res.json({
+            status: 400,
+            message: "Email does not exist",
+            data: {},
+          });
+        }
+        
+        user.mobile=Math.floor(Math.random() * 90000) + 100000;
+        user.save();
+        //email send
+        let html = resendVerification(req.body.email, user.mobile);
+        mailer.sendEmail(
+          config.mailthrough,
+          req.body.email,
+          "Verification code",
+          html
+        );
+        res.status(200).json({
+          status: 200,
+          message: "Verification code is send",
+          data: { id: user._id, resettoken: user.resetToken },
+        });
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
 
 }
 
