@@ -1,25 +1,27 @@
-// require('dotenv').config()
-// module.exports = {
-//     mongoURI:process.env.MONGO_URI,
-//     Server:process.env.Server,
-//     mailthrough:process.env.mailthrough,
-
-// }
 require('dotenv').config();
+
 
 module.exports = {
   mongoURI: 'mongodb+srv://breeder:GtmwECDdd3sL26N3@breederdb-vruiv.mongodb.net/breeder?retryWrites=true&w=majority',
   //   mongoURI:'mongodb://localhost:27017/breeder_official'
 
 
-  // Server: 'https://breeder-livewireapps-api.herokuapp.com',
-  // webServer: 'https://breeder-dev.herokuapp.com',
-  // baseAPIUrl: 'https://breeder-livewireapps-api.herokuapp.com/',
-  // baseImageURL: 'https://breeder-livewireapps-api.herokuapp.com/uploads/images/',
-  // serverURL: 'https://breeder-livewireapps-api.herokuapp.com',
-  // imageURL: 'https://breeder-livewireapps-api.herokuapp.com/uploads/images/form/',
-  // baseDocumentURL: 'https://breeder-livewireapps-api.herokuapp.com/uploads/documents/',
+  // Server: 'http://192.168.137.36:5000/api',
+  // webServer: 'http://192.168.137.36:5000/api',
+  // baseAPIUrl: 'http://192.168.137.36:5000/api',
+  // baseImageURL: 'http://192.168.137.36:5000/api/uploads/images/',
+  // serverURL: 'http://192.168.137.36:5000/api',
+  // imageURL: 'http://192.168.137.36:5000/api/uploads/images/form/',
+  // baseDocumentURL: 'http://192.168.137.36:5000/api/uploads/documents/',
 
+
+  // Server: 'http://192.168.100.29:5000/api',
+  // webServer: 'http://192.168.100.29:5000/api',
+  // baseAPIUrl: 'http://192.168.100.29:5000/api',
+  // baseImageURL: 'http://192.168.100.29:5000/api/uploads/images/',
+  // serverURL: 'http://192.168.100.29:5000/api',
+  // imageURL: 'http://192.168.100.29:5000/api/uploads/images/form/',
+  // baseDocumentURL: 'http://192.168.100.29:5000/api/uploads/documents/',
 
 
   // Server: 'http://localhost:5000/api',
@@ -37,6 +39,9 @@ module.exports = {
   // serverURL: 'https://breeder-api.herokuapp.com',
   // imageURL: 'https://breeder-api.herokuapp.com/uploads/images/form/',
   // baseDocumentURL: 'https://breeder-api.herokuapp.com/uploads/documents/',
+
+
+
 
   // Server: 'http://3.21.129.23/api',
   // webServer: 'http://3.21.129.23',
@@ -56,9 +61,13 @@ module.exports = {
   baseDocumentURL: 'https://logly.us/api/uploads/documents/',
   basecharityDoc: 'https://logly.us/api/uploads/charityDoc/',
 
+
+
+
+
   mailthrough: 'hello@logly.us',
   mailFeedback: 'hello@logly.us',
-  sendgridAPIKey: "", //talha@livewirelabs.co
+  sendgridAPIKey: "",
 
 
   //stripe client
@@ -75,15 +84,9 @@ module.exports = {
 
   //paypal
   paypalId: "",
+
   paypalSecret: "",
 
-  sendgridAPIKey: process.env.SENDGRID_API_KEY,
-
-
-  // imageURL: 'http://192.168.88.129:5000/uploads/images/form/',
-  // mailthrough: 'admin@breeder.com',
-  // baseDocumentURL: 'http://192.168.88.129:5000/uploads/documents/',
-  // sendgridAPIKey: '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',
 
 
   //Server: 'https://breeder-api.herokuapp.com',
@@ -91,8 +94,7 @@ module.exports = {
   // Server: 'https://breeder-dev.herokuapp.com',
   // baseAPIUrl: 'http://localhost:3000/',
 
-  // sendgridAPIKey: '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',
-  // sendgridAPIKey: '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',
+  sendgridAPIKey: process.env.SENDGRID_API_KEY,
 
 
 }
