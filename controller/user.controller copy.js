@@ -472,7 +472,7 @@ class UserController {
                 //check for active user
                 if (user.active == 0)
                     return res.json({
-                        status: 400, message: "Kindly verify your email first", data: {}
+                        status: 400, message: "Kindly verify your email first", data: user
                     });
                 //
                 const token = randomstring.generate()

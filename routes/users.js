@@ -161,7 +161,7 @@ router.post("/login", (req, res) => {
       console.log(user.verified)
     if (!user.verified)
       return res.json({
-        status: 400, message: "Kindly verify your email", data: {}
+        status: 400, message: "Kindly verify your email", data: user
       });
 
     user.comparePassword(req.body.password, (err, isMatch) => {

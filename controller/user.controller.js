@@ -249,7 +249,7 @@ class UserController {
       // console.log( "Breeder==>",user.role.includes("breeder"))
       if (!user.verified && user.role.includes("breeder"))
         return res.json({
-          status: 400, message: "Kindly verify your email", data: {}
+          status: 400, message: "Kindly verify your email", data: user
         });
 
       if (!user.isEmployeeActive)
@@ -1490,7 +1490,7 @@ class UserController {
           return res.json({
             status: 400,
             message: "Kindly verify your email first",
-            data: {},
+            data: user,
           });
         //
         const token = randomstring.generate();
@@ -2164,6 +2164,110 @@ class UserController {
       });
     } catch (error) {
       return next(error);
+    }
+  }
+
+
+
+  async registerBreederMobile(req, res, next) {
+    if(req.body.mobile){
+      req.body.mobile=Math.floor(Math.random() * 90000) + 100000;
+    }
+
+    try {
+      const { errors, isValid } = validateRegisterInputBreeder(req.body);
+      if (!isValid) {
+        return res.json({
+          status: 400,
+          message: "errors present",
+          errors: errors,
+          data: {},
+        });
+      }
+
+      User.findOne({ email: req.body.email, role: "breeder" }).then(
+        async (resultUser) => {
+          if (!resultUser) {
+            req.body.uid = randomstring.generate({
+              length: 8,
+              charset: "numeric",
+            });
+            try {
+              req.body.stripeCustomer = await payment.createCustomer(req.body.name, req.body.email, 'Breeder for logly platform');
+            }
+            catch (err) {
+              console.log(err)
+            }
+            this.registerUserWithRole(
+              req.body,
+              "breeder",
+              req.body.verified ? false : true,
+              req.files ? req.files : [],
+            )
+              .then((success) => {
+                console.log("success result ===> ");
+                console.log(success);
+
+                subscriberController
+                  .initialSubscribeBreeder(success.data._id, req.body)
+                  .then((resultSubscriber) => {
+                    User.updateOne(
+                      { _id: success.data._id },
+                      {
+                        activeSubscription: resultSubscriber._id,
+                        ...(req.files &&
+                        {
+                          $push: {
+                            documents: {
+                              $each: req.files.map((file) => ({
+                                filename: file.filename,
+                                size: file.size,
+                                type: file.mimetype,
+                              })),
+                            },
+                          }
+                        })
+                      }
+                    ).then(async (userSuccess) => {
+                      // Send Notification to admin..
+                      User.findOne({ isAdmin: true }).then((reusltAdmin) => {
+                        const notifData = {
+                          token: reusltAdmin.deviceToken,
+                          title: "Breeder Registered!",
+                          description: "Breeder has beeen registered.",
+                          data: {},
+                          userId: reusltAdmin.userId,
+                          notificationType: "admin",
+                          type: "adminnotification",
+                          breederId: success.data._id,
+                        };
+                        notificationController.create(notifData, true);
+                      });
+                      return res.status(200).send(success);
+                    });
+                  });
+
+              })
+              .catch((error) => {
+                console.log(error);
+                return res.json({
+                  status: 400,
+                  message: "Something wents wrong",
+                });
+              });
+          } else if (resultUser.role.includes("admin")) {
+            return res.json({ status: 400, message: "Wrorng Email" });
+          } else if (resultUser.role.includes("breeder")) {
+            return res.json({
+              status: 400,
+              message: "Email is already registered as breeder",
+            });
+          }
+        }
+      );
+    } catch (err) {
+      console.log(err);
+      return next(err);
     }
   }
 
