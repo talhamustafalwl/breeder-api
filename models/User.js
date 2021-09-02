@@ -31,6 +31,7 @@ const userSchema = mongoose.Schema({
     name: {
         type: String, minglength: 5, maxlength: 50
     },
+    packageType: String,
     phone: {
         type: String, minglength: 10, maxlength: 15
     },

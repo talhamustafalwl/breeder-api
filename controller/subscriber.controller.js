@@ -22,6 +22,10 @@ class SubscriberController {
   async initialSubscribeBreeder(breederId, body = {}) {
     console.log(breederId)
     return new Promise((resolve, reject) => {
+      if(body.mobile){
+        resolve({});
+      }
+
       if (body.packageType && body.packageType == "Business") {
         Subscription.findOne({ _id: body.packageId }).then((result) => {
           console.log(result, "<<--initialSubscribeBreeder Business", body.packageId);
