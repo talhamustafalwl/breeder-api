@@ -4,17 +4,16 @@ const { auth } = require("../middleware/auth");
 const { adminauth } = require("../middleware/adminauth");
 const ZipcodeController = require('../controller/zipcode.controller');
 
-//create,delete zipcode only by admin
-router.post("/",adminauth,ZipcodeController.create)
 
-router.route('/all').delete(adminauth,ZipcodeController.deleteall)
-.get(auth,ZipcodeController.getall)
+router.route('/').delete(ZipcodeController.deleteall)
+.get(ZipcodeController.getall)
+.post(ZipcodeController.create)
 
-
+router.route('/city/:city').get(ZipcodeController.getbyCity)
 
 //for see/delete/update zipcode by id
-router.route('/:id').get(auth,ZipcodeController.getbyId)
-  .delete(auth,ZipcodeController.deletebyId)
-.patch(auth,ZipcodeController.updatebyId)
+router.route('/:id').get(ZipcodeController.getbyId)
+  .delete(ZipcodeController.deletebyId)
+.patch(ZipcodeController.updatebyId)
 
 module.exports=router

@@ -5,14 +5,11 @@ class ZipcodeController {
 
     //only admin
     async create(req,res){
-
-        try {      
-            const employee = await new Zipcode(req.body)
-            const doc=await employee.save()
-            return res.status(200).json({ status: 200, message: "Zipcode  created successfully", data: doc });
-        } catch (err) {
-            return res.json({ status: 400, message: "Error in creating Zipcode ", errors: err, data: {} });
-        }
+        Zipcode.insertMany(req.body).then(function(){ 
+            return res.status(200).json({ status: 200, message: "Zipcodes added", data: res.body });
+        }).catch(function(error){ 
+            return res.json({ status: 400, message: "Error in adding Zipcode", error: error });
+        });
     }
 
 
@@ -20,15 +17,10 @@ class ZipcodeController {
         let zipcode;
       
         try {
-            if(req.query.cityId){
-                zipcode = await Zipcode.find({cityId:req.query.cityId});
-            }
-            else{
-                zipcode = await Zipcode.find({});
-            }
-          return res.status(200).json({ status: 200, message: "All Zipcode", data: zipcode });
+          zipcode = await Zipcode.find({});
+          return res.status(200).json({ status: 200, message: "All Zipcodes", data: zipcode });
         } catch (err) {
-          return res.json({ status: 400, message: "Error in get Zipcode", errors: err, data: {} });
+          return res.json({ status: 400, message: "Error in getting Zipcodes", errors: err, data: {} });
         }
       }
 
@@ -47,7 +39,14 @@ class ZipcodeController {
         }
     }
 
-
+    async getbyCity(req, res){
+        try {
+          const zipcode = await Zipcode.find({City:req.params.city});
+          return res.status(200).json({ status: 200, message: "Zipcodes", data: zipcode });
+        } catch (err) {
+          return res.json({ status: 400, message: "Error in getting Zipcode", errors: err, data: {} });
+        }
+      }
 
     async getbyId(req, res){
         try {
