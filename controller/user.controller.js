@@ -20,6 +20,7 @@ const registeremail = require("../emails/register");
 const resendVerification = require("../emails/resendVerification");
 const registeremailMobile = require("../emails/registerMobile");
 const registerCharity = require("../emails/registerCharity");
+const registerCharityMobile = require("../emails/registerCharityMobile");
 const adminCharity = require("../emails/adminCharity");
 const employeeEmail = require("../emails/employeeRegister");
 const RegisterNewBreeder = require("../emails/RegisterNewBreeder");
@@ -1300,7 +1301,10 @@ class UserController {
         // Email is pending for later use..
         if (token) {
           if (body.packageType && body.packageType === "Charity Organization") {
-            const html = registerCharity(doc.secretToken, config.webServer, role, body.uid, files, config.basecharityDoc);
+            const html = body.mobile ?
+            registerCharityMobile(body.mobile, role, body.uid, files, config.basecharityDoc)
+            : 
+            registerCharity(doc.secretToken, config.webServer, role, body.uid, files, config.basecharityDoc);
             mailer.sendEmail(
               config.mailthrough,
               doc.email,
