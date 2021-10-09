@@ -83,7 +83,8 @@ router.delete('/dealcategories/:id', auth, allowAdmin, allowBreeder, authenticat
 router.get('/itemCount', auth, allowAdmin, allowEmployee, allowBreeder, authenticateRole, UserController.getItemsCount)
 
 
-router.get('/adminDashboardStatics',  UserController.adminDashboardStatics)
+router.get('/adminDashboardStatics',  UserController.adminDashboardStatics);
+router.post('/sendsms',  UserController.sendSms)
 
 
 router.post("/emailCheck", (req, res) => {
@@ -101,6 +102,23 @@ router.post("/emailCheck", (req, res) => {
   })
 }
 )
+
+//give detail of breeder by email
+router.post("/forgetpassword2", (req, res) => {
+  if (!req.body.email) {
+    return res.json({ status: 400, message: "Email is required", data: {} });
+  }
+  User.findOne({ email: req.body.email, role: "breeder" }, (err, user) => {
+    if (user) {
+      return res.json({ status: 400, message: "Email found", data: user });
+    }
+    else {
+      return res.status(200).json({ status: 200, message: "Email is not registered", data: {} });
+    }
+  })
+}
+)
+
 
 router.get('/verify/:id', async (req, res, next) => {
   //console.log("called verify")
@@ -198,7 +216,8 @@ router.get("/logout", auth, allowAdmin, allowBreeder, allowEmployee, authenticat
   });
 });
 
-
+router.post("/phonevalid", UserController.phonevalid);
+router.post("/forgetpasswordphone", UserController.forgetpasswordphone);
 router.post("/forgetpassword", UserController.forgotPassword);
 router.get('/isForgotTokenActive', UserController.isForgotTokenActive);
 router.post('/resetForgotPassword/:token', UserController.resetForgotPassword);
@@ -228,10 +247,14 @@ function bcrypt_password(password) {
   return password
 }
 
+router.post("/verifySmsMobile", UserController.verifySmsMobile);
 router.post("/verifyByCode", UserController.verifyByCode);
+router.post("/verifyBySms", UserController.verifyBySms);
 router.post("/verifyByCodePassword", UserController.verifyByCodePassword);
 router.post('/resetForgetPasswordByCode', UserController.resetForgetPasswordByCode);
 router.post("/resendCodeVerification", UserController.resendCodeVerification);
+router.post("/resendCodeVerificationSms", UserController.resendCodeVerificationSms);
+router.post("/resendVerificationCodes", UserController.resendVerificationCodes);
 router.post("/getMatchingEmails", UserController.getMatchingEmails);
 router.post("/breeder/registerPackage", UserController.updatePackageMobile);
 

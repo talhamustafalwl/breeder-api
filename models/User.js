@@ -44,6 +44,9 @@ const userSchema = mongoose.Schema({
     mobile: {
         type: Number
     },
+    smscode: {
+        type: Number
+    },
     password: {
         type: String, minglength: 6
     },

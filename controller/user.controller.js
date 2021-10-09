@@ -35,6 +35,9 @@ const { reject } = require("async");
 const subscriberController = require("./subscriber.controller");
 const payment = require("../misc/payment");
 
+const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+require('dotenv').config()
+
 // var superagent = require('superagent');
 // var mailchimpInstance   = 'us1',
 //     listUniqueId        = '7e53e2afa6',
@@ -47,6 +50,11 @@ class UserController {
     this.registerBreeder = this.registerBreeder.bind(this);
     this.registerEmployees = this.registerEmployees.bind(this);
     this.setupWizard = this.setupWizard.bind(this);
+    this.sendSms = this.sendSms.bind(this);
+    this.forgetpasswordphone = this.forgetpasswordphone.bind(this);
+    this.resendCodeVerificationSms = this.resendCodeVerificationSms.bind(this);
+    this.resendVerificationCodes = this.resendVerificationCodes.bind(this);
+    
   }
 
   async getAllUsers(req, res, next) {
@@ -1114,8 +1122,9 @@ class UserController {
 
   async registerBreeder(req, res, next) {
     if(req.body.mobile){
-      req.body.mobile=Math.floor(Math.random() * 90000) + 100000;
-    }
+      req.body.mobile=randomstring.generate({length: 6, charset: 'numeric'});
+      req.body.smscode=randomstring.generate({length: 6, charset: 'numeric'});
+    } 
     // console.log(req.files,"<----")
     // return res.send({message:"success",status:200})
 
@@ -1296,6 +1305,13 @@ class UserController {
           });
 
         console.log(doc);
+
+        //Send sms if smscode
+        if(body.smscode && body.phone){
+          this.sendSmsHelper(body.phone, process.env.TWILIO_REGISTRATION_MSG + body.smscode)
+          .then(send => console.log("registration sms send",send))
+          .catch(err => console.log("registration sms error", err))
+        }
 
         // Send email to breeder..
         // Email is pending for later use..
@@ -1493,7 +1509,7 @@ class UserController {
         if (user.active == 0)
           return res.json({
             status: 400,
-            message: "Kindly verify your email first",
+            message: "Kindly verify your account first",
             data: user,
           });
         //
@@ -1520,6 +1536,94 @@ class UserController {
       return next(error);
     }
   }
+
+
+
+  async forgetpasswordphone(req, res, next) {
+    try {
+      if (!req.body.phone) {
+        return res.json({
+          status: 400,
+          message: "Phone field is required",
+          data: {},
+        });
+      }
+      
+      User.findOne({ phone: req.body.phone, role: "breeder" }).then((user) => {
+        if (!user) {
+          return res.json({
+            status: 400,
+            message: "User not found",
+            data: {},
+          });
+        }
+        //check for active user
+        if (user.active == 0)
+          return res.json({
+            status: 400,
+            message: "Kindly verify your account first",
+            data: user,
+          });
+        //
+        const token = randomstring.generate();
+        user.resetToken = token;
+        user.mobile=randomstring.generate({length: 6, charset: 'numeric'})
+        user.save();
+        //sms send
+        this.sendSmsHelper(req.body.phone, process.env.TWILIO_FORGET_MSG + user.mobile)
+          .then(send => {
+            return res.status(200).json({
+              status: 200,
+              message: "sms is send to recover password",
+              data: { id: user._id, resettoken: user.resetToken },
+            });
+          })
+          .catch(err => {
+            return res.json({
+              status: 400,
+              message: err.message,
+              data: {  },
+              error: err
+            });
+          })
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+
+  async phonevalid(req, res, next) {
+    try {
+      if (!req.body.phone) {
+        return res.json({
+          status: 400,
+          message: "Phone field is required",
+          data: {},
+        });
+      }
+      return client.lookups.v1.phoneNumbers(req.body.phone) 
+      .fetch()
+      .then(phone_number => {
+        res.json({
+          status: 400,
+          message: "Phone number is valid",
+          data: {phone_number},
+        });
+      })
+      .catch(err  => {
+        res.json({
+          status: 400,
+          message: "Invalid phone number",
+          data: {},
+          error:err
+        });
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
 
   async isForgotTokenActive(req, res, next) {
     try {
@@ -2055,6 +2159,51 @@ class UserController {
     }
   }
 
+
+  async verifyBySms(req, res,) {
+    try {
+      const {code} = req.body;
+      // Find account with matching secret token
+      const user = await User.findOne({ 'smscode': code });
+      if (!user) {
+        return res.json({ status: 404, message: "Invalid Verification code", data: {} });
+      }
+      user.verified = true; user.secretToken = ''; user.resetToken = '';
+      user.smscode = null;
+      await user.save();
+      return res.status(200).json({ status: 200, message: "Account is verified", data: user });
+  
+    } catch (error) {
+      return res.json({ status: 400, message: "Account verification issue", error: error, data: {} });
+    }
+  }
+
+
+  async verifySmsMobile(req, res,) {
+    const {mobile,smscode} = req.body;
+    if (!mobile || !smscode) {
+      return res.json({
+        status: 400,
+        message: "Kindly provide all required data",
+        data: {},
+      });
+    }
+    try {
+      // Find account with matching secret token
+      const user = await User.findOne({ smscode,  mobile });
+      if (!user) {
+        return res.json({ status: 404, message: "Invalid email or phone code!", data: {} });
+      }
+      user.verified = true; user.secretToken = ''; user.resetToken = '';
+      user.smscode = null;user.mobile = null;
+      await user.save();
+      return res.status(200).json({ status: 200, message: "Account is verified", data: user });
+  
+    } catch (error) {
+      return res.json({ status: 400, message: "Account verification issue", error: error, data: {} });
+    }
+  }
+
   async verifyByCodePassword(req, res,) {
     try {
       const {code} = req.body;
@@ -2143,6 +2292,97 @@ class UserController {
   }
 
 
+  async resendCodeVerificationSms(req, res, next) {
+    try {
+      if (!req.body.phone) {
+        return res.json({
+          status: 400,
+          message: "Phone field is required",
+          data: {},
+        });
+      }
+      User.findOne({ phone: req.body.phone, role:"breeder" }).then((user) => {
+        if (!user) {
+          return res.json({
+            status: 400,
+            message: "Phone does not exist",
+            data: {},
+          });
+        }
+        
+        user.smscode=Math.floor(Math.random() * 90000) + 100000;
+        user.save();
+         //sms send
+         this.sendSmsHelper(req.body.phone, process.env.TWILIO_REGISTRATION_MSG + user.smscode)
+         .then(send => {
+           return res.status(200).json({
+             status: 200,
+             message: "Verification code send successfully",
+             data: { id: user._id, resettoken: user.resetToken },
+           });
+         })
+         .catch(err => {
+           return res.json({
+             status: 400,
+             message: err.message,
+             data: {  },
+             error: err
+           });
+         })
+        
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+
+  async resendVerificationCodes(req, res, next) {
+    try {
+      if (!req.body.email) {
+        return res.json({
+          status: 400,
+          message: "Email field is required",
+          data: {},
+        });
+      }
+      User.findOne({ email: req.body.email, role: "breeder" }).then((user) => {
+        if (!user) {
+          return res.json({
+            status: 400,
+            message: "Email does not exist",
+            data: {},
+          });
+        }
+        
+        user.mobile=randomstring.generate({length: 6, charset: 'numeric'});
+        user.smscode=randomstring.generate({length: 6, charset: 'numeric'});
+        user.save();
+        //send sms
+        this.sendSmsHelper(user.phone, process.env.TWILIO_REGISTRATION_MSG + user.smscode)
+        .then(send => console.log("registration sms send",send))
+        .catch(err => console.log("registration sms error", err))
+        //email send
+        let html = resendVerification(req.body.email, user.mobile);
+        mailer.sendEmail(
+          config.mailthrough,
+          req.body.email,
+          "Verification code",
+          html
+        );
+        res.status(200).json({
+          status: 200,
+          message: "Verification codes send successfully",
+          data: { id: user._id, resettoken: user.resetToken },
+        });
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+
+
   async getMatchingEmails(req, res, next) {
     try {
       if (!req.body.email) {
@@ -2193,6 +2433,51 @@ class UserController {
     } catch (error) {
       return next(error);
     }
+  }
+
+
+  async sendSms(req, res, next) {
+    const {phone}=req.body;
+    try {
+      if (!phone) {
+        return res.json({
+          status: 400,
+          message: "Kindly provide all required data",
+          data: {},
+        });
+      }
+     this.sendSmsHelper(phone,"message").then((result) => {
+            console.log(result)
+            res.status(200).json({
+              status: 200,
+              message: "Sms send success",
+              data: result,
+            });
+      }).catch(err =>  {return next(err)})
+    } catch (error) {
+      console.log(error,"<--error")
+      return next(error);
+    }
+  }
+
+  
+  async sendSmsHelper(phone,message) {
+        return new Promise((resolve, reject) => {
+          client.messages
+            .create({
+               body: message,
+               from: process.env.TWILIO_PHONE,
+               to: phone
+             })
+            .then(message => {
+              console.log(message,"error sendSmsHelper")
+              resolve(message);
+            })
+            .catch((error) => {
+              console.log(error,"error sendSmsHelper")
+              reject(error);
+            });
+        });
   }
 
 }
