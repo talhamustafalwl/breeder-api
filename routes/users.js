@@ -110,10 +110,10 @@ router.post("/forgetpassword2", (req, res) => {
   }
   User.findOne({ email: req.body.email, role: "breeder" }, (err, user) => {
     if (user) {
-      return res.json({ status: 400, message: "Email found", data: user });
+      return res.status(200).json({ status: 200, message: "Email found", data: user });
     }
     else {
-      return res.status(200).json({ status: 200, message: "Email is not registered", data: {} });
+      return res.json({ status: 400, message: "Email is not registered", data: {} });
     }
   })
 }
