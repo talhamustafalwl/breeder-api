@@ -11,7 +11,7 @@ const randomstring = require("randomstring");
 const { Animal } = require("../models/Animal/Animal");
 const { Product } = require("../models/Product");
 const { Subscriber } = require("../models/Subscription/Subscriber");
-
+const { BusinessDetail } = require("../models/BusinessDetail");
 const { Form } = require("../models/Form/Form");
 const { Sale } = require("../models/Sales");
 
@@ -35,14 +35,16 @@ const { reject } = require("async");
 const subscriberController = require("./subscriber.controller");
 const payment = require("../misc/payment");
 
-const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-require('dotenv').config()
+const client = require("twilio")(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
+require("dotenv").config();
 
 // var superagent = require('superagent');
 // var mailchimpInstance   = 'us1',
 //     listUniqueId        = '7e53e2afa6',
 //     mailchimpApiKey     = '99525a128cda82bb5d6e1037a8f98fca-us1';
-
 
 class UserController {
   constructor() {
@@ -54,7 +56,6 @@ class UserController {
     this.forgetpasswordphone = this.forgetpasswordphone.bind(this);
     this.resendCodeVerificationSms = this.resendCodeVerificationSms.bind(this);
     this.resendVerificationCodes = this.resendVerificationCodes.bind(this);
-    
   }
 
   async getAllUsers(req, res, next) {
@@ -64,7 +65,8 @@ class UserController {
           ? { role: req.query.role }
           : {}),
         ...(req.user.isAdmin ? {} : { breederId: req.user._id }),
-      }).sort({ createdAt: -1 })
+      })
+        .sort({ createdAt: -1 })
         .populate({
           path: "activeSubscription",
           populate: {
@@ -178,7 +180,9 @@ class UserController {
 
   async authentication(req, res, next) {
     let countallowed;
-    countallowed = await Subscriber.findOne({ userId: req.user.breederId ? req.user.breederId : req.user._id }).populate('subscriptionId')
+    countallowed = await Subscriber.findOne({
+      userId: req.user.breederId ? req.user.breederId : req.user._id,
+    }).populate("subscriptionId");
 
     try {
       return res.status(200).json({
@@ -189,7 +193,9 @@ class UserController {
         data: {
           _id: req.user._id,
           uid: req.user.uid,
-          breederUniqueId: req.user.breederUniqueId ? req.user.breederUniqueId : null,
+          breederUniqueId: req.user.breederUniqueId
+            ? req.user.breederUniqueId
+            : null,
           email: req.user.email,
           name: req.user.name,
           businessName: req.user.businessName,
@@ -203,7 +209,7 @@ class UserController {
           businessInfoSettings: req.user.businessInfoSettings,
           socialConnects: req.user.socialConnects,
           paymentInformation: req.user.paymentInformation,
-          subscriber: countallowed ? countallowed : {}
+          subscriber: countallowed ? countallowed : {},
         },
       });
     } catch (err) {
@@ -258,7 +264,9 @@ class UserController {
       // console.log( "Breeder==>",user.role.includes("breeder"))
       if (!user.verified && user.role.includes("breeder"))
         return res.json({
-          status: 400, message: "Kindly verify your email", data: user
+          status: 400,
+          message: "Kindly verify your email",
+          data: user,
         });
 
       if (!user.isEmployeeActive)
@@ -304,7 +312,9 @@ class UserController {
           //io.emit("userSet", { msg: "email is registered", email: req.body.email });
 
           //Subscriber package
-          const countallowed = await Subscriber.findOne({ userId: user.breederId ? user.breederId : user._id }).populate('subscriptionId')
+          const countallowed = await Subscriber.findOne({
+            userId: user.breederId ? user.breederId : user._id,
+          }).populate("subscriptionId");
           // console.log(user.breederId,"countallowed==>>",countallowed)
           return res.status(200).json({
             status: 200,
@@ -313,7 +323,7 @@ class UserController {
               userId: user._id,
               token: user.token,
               email: user.email,
-              subscriber: countallowed ? countallowed : {}
+              subscriber: countallowed ? countallowed : {},
             },
           });
         });
@@ -335,7 +345,7 @@ class UserController {
     }
     try {
       if (req.body.isblocked) {
-        req.body.token = ""
+        req.body.token = "";
       }
       const user = await User.updateMany(
         { $or: [{ _id: req.params.id }, { breederId: req.params.id }] },
@@ -345,7 +355,7 @@ class UserController {
         status: 200,
         message: `Breeder and all its employees ${
           req.body.isblocked === false ? "Active" : "Blocked"
-          } successfully`,
+        } successfully`,
         data: user,
       });
     } catch (err) {
@@ -487,7 +497,7 @@ class UserController {
   // }
 
   async getBreederForSales(req, res) {
-    console.log(req.query, "<--req.query")
+    console.log(req.query, "<--req.query");
     try {
       const keyword = req.query.keyword.replace(/['"]+/g, "");
       if (!keyword) {
@@ -523,11 +533,14 @@ class UserController {
                 });
               });
           });
-      }
-      else if ((req.query.uid && req.query.uid === "uid") || (!isNaN(keyword) && (keyword.length === 7 || keyword.length === 8))) {
-        console.log("<--here1")
+      } else if (
+        (req.query.uid && req.query.uid === "uid") ||
+        (!isNaN(keyword) && (keyword.length === 7 || keyword.length === 8))
+      ) {
+        console.log("<--here1");
         User.find({
-          role: "breeder", uid: keyword
+          role: "breeder",
+          uid: keyword,
         })
           .then((result) => {
             console.log(result.length);
@@ -554,10 +567,8 @@ class UserController {
               data: {},
             });
           });
-      }
-
-      else {
-        console.log("<--here2")
+      } else {
+        console.log("<--here2");
         User.find({
           role: "breeder",
           $or: [
@@ -595,7 +606,7 @@ class UserController {
           });
       }
     } catch (err) {
-      console.log(err)
+      console.log(err);
       return res.json({
         status: 400,
         message: "Error fetching breeder",
@@ -711,7 +722,8 @@ class UserController {
                 if (req.body.changePassword === req.body.password) {
                   return res.json({
                     status: 400,
-                    message: "New password and Current Password must be different",
+                    message:
+                      "New password and Current Password must be different",
                     data: {},
                   });
                 }
@@ -759,16 +771,16 @@ class UserController {
 
   async registerEmployees(req, res, next) {
     try {
-      const { errors, isValid } = validateRegisterInputEmp(req.body);
+      // const { errors, isValid } = validateRegisterInputEmp(req.body);
       // Check validation
-      if (!isValid) {
-        return res.json({
-          status: 400,
-          message: "errors present",
-          errors: errors,
-          data: {},
-        });
-      }
+      // if (!isValid) {
+      //   return res.json({
+      //     status: 400,
+      //     message: "errors present",
+      //     errors: errors,
+      //     data: {},
+      //   });
+      // }
       // if (req.body.role == "employee") {
 
       //   }
@@ -786,7 +798,10 @@ class UserController {
 
       // if email donot exist then create user.
       console.log("Inside register employeeee");
-      console.log(req.body.email === req.user.email);
+      console.log(
+        "req.body.email === req.user.email",
+        req.body.email === req.user.email
+      );
       if (!(req.body.email === req.user.email)) {
         User.findOne({
           email: req.body.email,
@@ -794,7 +809,7 @@ class UserController {
           breederId: req.user._id,
           //isEmployeeActive: true,
         }).then((resultUser) => {
-          console.log(resultUser + " user");
+          console.log(resultUser + "result user");
           if (!resultUser) {
             req.body.breederUniqueId = req.user.uid;
             // Register user...
@@ -803,7 +818,7 @@ class UserController {
             req.body.image = req.file ? req.file.filename : null;
             this.registerUserWithRole(req.body, "employee", false)
               .then((success) => {
-                console.log(success);
+                console.log(("success", success));
 
                 notificationController
                   .create(
@@ -893,7 +908,10 @@ class UserController {
   async editEmployee(req, res, next) {
     try {
       console.log("edit employee called");
-      console.log({ ...req.body, ...(req.file ? { image: req.file.filename } : {}) });
+      console.log({
+        ...req.body,
+        ...(req.file ? { image: req.file.filename } : {}),
+      });
       //console.log(req.body);
       User.findByIdAndUpdate(
         req.params.id,
@@ -917,7 +935,7 @@ class UserController {
           });
         });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return next(error);
     }
   }
@@ -1117,14 +1135,17 @@ class UserController {
     });
   }
 
-
-
-
   async registerBreeder(req, res, next) {
-    if(req.body.mobile){
-      req.body.mobile=randomstring.generate({length: 6, charset: 'numeric'});
-      req.body.smscode=randomstring.generate({length: 6, charset: 'numeric'});
-    } 
+    if (req.body.mobile) {
+      req.body.mobile = randomstring.generate({
+        length: 6,
+        charset: "numeric",
+      });
+      req.body.smscode = randomstring.generate({
+        length: 6,
+        charset: "numeric",
+      });
+    }
     // console.log(req.files,"<----")
     // return res.send({message:"success",status:200})
 
@@ -1186,16 +1207,19 @@ class UserController {
               charset: "numeric",
             });
             try {
-              req.body.stripeCustomer = await payment.createCustomer(req.body.name, req.body.email, 'Breeder for logly platform');
-            }
-            catch (err) {
-              console.log(err)
+              req.body.stripeCustomer = await payment.createCustomer(
+                req.body.name,
+                req.body.email,
+                "Breeder for logly platform"
+              );
+            } catch (err) {
+              console.log(err);
             }
             this.registerUserWithRole(
               req.body,
               "breeder",
               req.body.verified ? false : true,
-              req.files ? req.files : [],
+              req.files ? req.files : []
             )
               .then((success) => {
                 console.log("success result ===> ");
@@ -1208,8 +1232,7 @@ class UserController {
                       { _id: success.data._id },
                       {
                         activeSubscription: resultSubscriber._id,
-                        ...(req.files &&
-                        {
+                        ...(req.files && {
                           $push: {
                             documents: {
                               $each: req.files.map((file) => ({
@@ -1218,8 +1241,8 @@ class UserController {
                                 type: file.mimetype,
                               })),
                             },
-                          }
-                        })
+                          },
+                        }),
                       }
                     ).then(async (userSuccess) => {
                       // Send Notification to admin..
@@ -1307,20 +1330,35 @@ class UserController {
         console.log(doc);
 
         //Send sms if smscode
-        if(body.smscode && body.phone){
-          this.sendSmsHelper(body.phone, process.env.TWILIO_REGISTRATION_MSG + body.smscode)
-          .then(send => console.log("registration sms send",send))
-          .catch(err => console.log("registration sms error", err))
+        if (body.smscode && body.phone) {
+          this.sendSmsHelper(
+            body.phone,
+            process.env.TWILIO_REGISTRATION_MSG + body.smscode
+          )
+            .then((send) => console.log("registration sms send", send))
+            .catch((err) => console.log("registration sms error", err));
         }
 
         // Send email to breeder..
         // Email is pending for later use..
         if (token) {
           if (body.packageType && body.packageType === "Charity Organization") {
-            const html = body.mobile ?
-            registerCharityMobile(body.mobile, role, body.uid, files, config.basecharityDoc)
-            : 
-            registerCharity(doc.secretToken, config.webServer, role, body.uid, files, config.basecharityDoc);
+            const html = body.mobile
+              ? registerCharityMobile(
+                  body.mobile,
+                  role,
+                  body.uid,
+                  files,
+                  config.basecharityDoc
+                )
+              : registerCharity(
+                  doc.secretToken,
+                  config.webServer,
+                  role,
+                  body.uid,
+                  files,
+                  config.basecharityDoc
+                );
             mailer.sendEmail(
               config.mailthrough,
               doc.email,
@@ -1328,7 +1366,14 @@ class UserController {
               html
             );
 
-            const html2 = adminCharity(doc.email, config.webServer, role, body, files, config.basecharityDoc);
+            const html2 = adminCharity(
+              doc.email,
+              config.webServer,
+              role,
+              body,
+              files,
+              config.basecharityDoc
+            );
             mailer.sendEmail(
               config.mailthrough,
               config.mailFeedback,
@@ -1336,31 +1381,32 @@ class UserController {
               html2
             );
 
-
             console.log("sending emails");
             return resolve({
               status: 200,
               message: "Verification email is send",
               data: doc,
             });
-
-          }
-          else if(body.mobile){
-              const html = registeremailMobile(body.uid, body.mobile);
-              mailer.sendEmail(
-                config.mailthrough,
-                doc.email,
-                "Please verify your email!",
-                html
-              );
-              return resolve({
-                status: 200,
-                message: "Verification email is send",
-                data: doc,
-              });
-            }
-          else {
-            const html = registeremail(doc.secretToken, config.webServer, role, body.uid);
+          } else if (body.mobile) {
+            const html = registeremailMobile(body.uid, body.mobile);
+            mailer.sendEmail(
+              config.mailthrough,
+              doc.email,
+              "Please verify your email!",
+              html
+            );
+            return resolve({
+              status: 200,
+              message: "Verification email is send",
+              data: doc,
+            });
+          } else {
+            const html = registeremail(
+              doc.secretToken,
+              config.webServer,
+              role,
+              body.uid
+            );
             mailer.sendEmail(
               config.mailthrough,
               doc.email,
@@ -1413,26 +1459,34 @@ class UserController {
 
   async resendEmailBreeder(req, res, next) {
     try {
-      User.findById(req.params.id).then(response => {
-        if (!response) return res.json({
-          status: 400,
-          message: "Email field is required",
-          data: {},
-        });
-
-        const html = registeremail(response.secretToken, config.webServer, '', response.uid);
-        mailer.sendEmail(
-          config.mailthrough,
-          response.email,
-          "Email for logly Breeder",
-          html
-        ).catch(error => {
+      User.findById(req.params.id).then((response) => {
+        if (!response)
           return res.json({
             status: 400,
             message: "Email field is required",
-            error
+            data: {},
           });
-        });
+
+        const html = registeremail(
+          response.secretToken,
+          config.webServer,
+          "",
+          response.uid
+        );
+        mailer
+          .sendEmail(
+            config.mailthrough,
+            response.email,
+            "Email for logly Breeder",
+            html
+          )
+          .catch((error) => {
+            return res.json({
+              status: 400,
+              message: "Email field is required",
+              error,
+            });
+          });
         return res.json({
           status: 200,
           message: "Verification email resend successfully",
@@ -1515,11 +1569,16 @@ class UserController {
         //
         const token = randomstring.generate();
         user.resetToken = token;
-        user.mobile=Math.floor(Math.random() * 90000) + 100000;
+        user.mobile = Math.floor(Math.random() * 90000) + 100000;
         //user.resetToken_expires=Date.now();
         user.save();
         //email send
-        let html = forgetpasswordemail(req.body.email, config.webServer, token, user.mobile);
+        let html = forgetpasswordemail(
+          req.body.email,
+          config.webServer,
+          token,
+          user.mobile
+        );
         mailer.sendEmail(
           config.mailthrough,
           req.body.email,
@@ -1537,8 +1596,6 @@ class UserController {
     }
   }
 
-
-
   async forgetpasswordphone(req, res, next) {
     try {
       if (!req.body.phone) {
@@ -1548,7 +1605,7 @@ class UserController {
           data: {},
         });
       }
-      
+
       User.findOne({ phone: req.body.phone, role: "breeder" }).then((user) => {
         if (!user) {
           return res.json({
@@ -1567,31 +1624,33 @@ class UserController {
         //
         const token = randomstring.generate();
         user.resetToken = token;
-        user.mobile=randomstring.generate({length: 6, charset: 'numeric'})
+        user.mobile = randomstring.generate({ length: 6, charset: "numeric" });
         user.save();
         //sms send
-        this.sendSmsHelper(req.body.phone, process.env.TWILIO_FORGET_MSG + user.mobile)
-          .then(send => {
+        this.sendSmsHelper(
+          req.body.phone,
+          process.env.TWILIO_FORGET_MSG + user.mobile
+        )
+          .then((send) => {
             return res.status(200).json({
               status: 200,
               message: "sms is send to recover password",
               data: { id: user._id, resettoken: user.resetToken },
             });
           })
-          .catch(err => {
+          .catch((err) => {
             return res.json({
               status: 400,
               message: err.message,
-              data: {  },
-              error: err
+              data: {},
+              error: err,
             });
-          })
+          });
       });
     } catch (error) {
       return next(error);
     }
   }
-
 
   async phonevalid(req, res, next) {
     try {
@@ -1602,28 +1661,28 @@ class UserController {
           data: {},
         });
       }
-      return client.lookups.v1.phoneNumbers(req.body.phone) 
-      .fetch()
-      .then(phone_number => {
-        res.json({
-          status: 400,
-          message: "Phone number is valid",
-          data: {phone_number},
+      return client.lookups.v1
+        .phoneNumbers(req.body.phone)
+        .fetch()
+        .then((phone_number) => {
+          res.json({
+            status: 400,
+            message: "Phone number is valid",
+            data: { phone_number },
+          });
+        })
+        .catch((err) => {
+          res.json({
+            status: 400,
+            message: "Invalid phone number",
+            data: {},
+            error: err,
+          });
         });
-      })
-      .catch(err  => {
-        res.json({
-          status: 400,
-          message: "Invalid phone number",
-          data: {},
-          error:err
-        });
-      });
     } catch (error) {
       return next(error);
     }
   }
-
 
   async isForgotTokenActive(req, res, next) {
     try {
@@ -1699,9 +1758,9 @@ class UserController {
               gallery:
                 resultUser.gallery && resultUser.gallery[0]
                   ? resultUser.toObject().gallery.map((e) => ({
-                    ...e,
-                    ...{ filename: `${config.baseImageURL}${e.filename}` },
-                  }))
+                      ...e,
+                      ...{ filename: `${config.baseImageURL}${e.filename}` },
+                    }))
                   : [],
             },
           });
@@ -1793,7 +1852,7 @@ class UserController {
     }
   }
 
-  async resetPassword() { }
+  async resetPassword() {}
 
   async getAllBreedersId() {
     return User.find({ role: "breeder" }).then((breederResult) =>
@@ -1860,8 +1919,12 @@ class UserController {
   async getItemsCount(req, res, next) {
     try {
       const query = req.user.isAdmin ? {} : { breederId: req.user._id };
-      const getAnimalCount = Promise.resolve(Animal.find({ ...query, isArchived: false }).count());
-      const getProductCount = Promise.resolve(Product.find({ ...query, isArchived: false }).count());
+      const getAnimalCount = Promise.resolve(
+        Animal.find({ ...query, isArchived: false }).count()
+      );
+      const getProductCount = Promise.resolve(
+        Product.find({ ...query, isArchived: false }).count()
+      );
       const getEmployeesCount = Promise.resolve(
         User.find({
           ...query,
@@ -2008,13 +2071,18 @@ class UserController {
         selectedAnimalForms,
         selectedProductForm,
         employeeArray,
+        businessDetails,
       } = req.body;
+
+      console.log("businessDetails", businessDetails);
       console.log(selectedAnimalForms);
       console.log(employeeArray);
       Promise.all([
         new Promise(async (resolve, reject) => {
           let resultForm = await Form.find({
-            _id: { $in: [...selectedAnimalForms, ...selectedProductForm] },
+            _id: {
+              $in: [...selectedAnimalForms, ...selectedProductForm],
+            },
           });
           resultForm = resultForm.map((e) => e.toObject());
           resultForm = resultForm.map((e) => ({
@@ -2025,18 +2093,63 @@ class UserController {
               breedersId: [...fs.breedersId, ...[{ _id: req.user._id }]],
             })),
           }));
-          // console.log(resultForm);
+
           // resultForm[0].save().then(resultComplete=> {
           //     console.log('saved [0]');
           // })
 
           resultForm.forEach((form) => {
+            console.log("form", form);
             Form.updateOne({ _id: form._id }, form).then((resultModified) => {
               console.log("modified successfully");
             });
           });
           resolve();
         }),
+        //
+
+        new Promise((resolve, reject) => {
+          const {
+            businessInfo,
+            daysOpen,
+            openHrStart,
+            openHrEnd,
+            breakTimeStart,
+            breakTimeEnd,
+            holidays,
+            taxPercentage,
+          } = businessDetails;
+          // const businessDetailvar = BusinessDetail.updateOne(
+          const businessDetailvar = BusinessDetail.findOneAndUpdate(
+            { breederId: req.user._id },
+            {
+              businessInfo: businessInfo,
+              daysOpen: daysOpen,
+              openHrStart: openHrStart,
+              openHrEnd: openHrEnd,
+              breakTimeStart: breakTimeStart,
+              breakTimeEnd: breakTimeEnd,
+              holidays: holidays,
+              taxPercentage: taxPercentage,
+              // breederId: req.user._id,
+            },
+            { upsert: true }
+          ).then((resultModified) => {
+            console.log("modified peacefully");
+          });
+          console.log("businessDetailvar", businessDetailvar);
+          // const doc = businessDetailvar.save();
+          // return res.status(200).json({
+          //   status: 200,
+          //   message: "Business Details created successfully",
+          //   data: doc,
+          // });
+
+          resolve();
+        }),
+
+        //
+
         new Promise((resolve, reject) => {
           employeeArray.forEach((employee) => {
             employee.breederUniqueId = req.user.uid;
@@ -2058,7 +2171,7 @@ class UserController {
           });
           resolve();
         }),
-      ]).then(([animal, product, employee]) => {
+      ]).then(([animal, product, employee, BusinessDetails]) => {
         User.updateOne(
           { _id: req.user._id },
           { $set: { setupWizardCompleted: true } }
@@ -2071,116 +2184,195 @@ class UserController {
     }
   }
 
-
   async addCreditCardBusiness(req, res, next) {
-    console.log(req.body, "<--addCreditCardBusiness")
+    console.log(req.body, "<--addCreditCardBusiness");
     try {
-      const { name, cardNumber, expiryDate, cvc, customerId, userId } = req.body;
+      const {
+        name,
+        cardNumber,
+        expiryDate,
+        cvc,
+        customerId,
+        userId,
+      } = req.body;
       let CVC = cvc;
-      const [expiryMonth, expiryYear] = expiryDate.split(' / ');
+      const [expiryMonth, expiryYear] = expiryDate.split(" / ");
 
-      payment.createSource(cardNumber, expiryMonth.trim(), expiryYear.trim(), CVC, customerId).then(response => {
-        console.log('response is :: addCreditCardBusiness');
-        console.log(response);
-        User.updateOne(
-          { _id: userId },
-          { $push: { creditCard: { name: name, card: response, customer: customerId } } }
-        ).then(responseUser => {
-          return res.send({ status: 200, message: "Credit Card Added Successfully!", result: responseUser });
-        })
-      });
+      payment
+        .createSource(
+          cardNumber,
+          expiryMonth.trim(),
+          expiryYear.trim(),
+          CVC,
+          customerId
+        )
+        .then((response) => {
+          console.log("response is :: addCreditCardBusiness");
+          console.log(response);
+          User.updateOne(
+            { _id: userId },
+            {
+              $push: {
+                creditCard: {
+                  name: name,
+                  card: response,
+                  customer: customerId,
+                },
+              },
+            }
+          ).then((responseUser) => {
+            return res.send({
+              status: 200,
+              message: "Credit Card Added Successfully!",
+              result: responseUser,
+            });
+          });
+        });
     } catch (error) {
       console.log(error);
       return next(error);
     }
   }
 
-
   async addCreditCard(req, res, next) {
-    console.log(req.body, "<---req.body")
+    console.log(req.body, "<---req.body");
     try {
       const { name, cardNumber, expiryDate } = req.body;
-      const [expiryMonth, expiryYear] = expiryDate.split(' / ');
+      const [expiryMonth, expiryYear] = expiryDate.split(" / ");
       const { id } = req.user.stripeCustomer;
-      let CVC = req.body.CVC ? req.body.CVC : req.body.cvc
-      payment.createSource(cardNumber, expiryMonth.trim(), expiryYear.trim(), CVC, id).then(response => {
-        console.log('response is ::');
-        console.log(response);
-        if (req.body.businessName && req.body.individualChange) {
-          User.updateOne(
-            { _id: req.user._id },
-            {
-              $push: { creditCard: { name: name, card: response, customer: id } },
-              businessName: req.body.businessName, noOfEmployees: req.body.noOfEmployees, website: req.body.website ? req.body.website : "",
-            }
-          ).then(responseUser => {
-            return res.send({ status: 200, message: "Business Info Added Successfully!", result: responseUser });
-          })
-            .catch(err => {
-              return res.send({ status: 400, message: "Error updating Business info ", result: [], error: err });
-            })
-        }
-        else {
-          User.updateOne(
-            { _id: req.user._id },
-            { $push: { creditCard: { name: name, card: response, customer: id } } }
-          ).then(responseUser => {
-            return res.send({ status: 200, message: "Credit Card Added Successfully!", result: responseUser });
-          })
-            .catch(err => {
-              return res.send({ status: 400, message: "Error adding/updating card info ", result: [], error: err });
-            })
-        }
-
-
-      });
+      let CVC = req.body.CVC ? req.body.CVC : req.body.cvc;
+      payment
+        .createSource(
+          cardNumber,
+          expiryMonth.trim(),
+          expiryYear.trim(),
+          CVC,
+          id
+        )
+        .then((response) => {
+          console.log("response is ::");
+          console.log(response);
+          if (req.body.businessName && req.body.individualChange) {
+            User.updateOne(
+              { _id: req.user._id },
+              {
+                $push: {
+                  creditCard: { name: name, card: response, customer: id },
+                },
+                businessName: req.body.businessName,
+                noOfEmployees: req.body.noOfEmployees,
+                website: req.body.website ? req.body.website : "",
+              }
+            )
+              .then((responseUser) => {
+                return res.send({
+                  status: 200,
+                  message: "Business Info Added Successfully!",
+                  result: responseUser,
+                });
+              })
+              .catch((err) => {
+                return res.send({
+                  status: 400,
+                  message: "Error updating Business info ",
+                  result: [],
+                  error: err,
+                });
+              });
+          } else {
+            User.updateOne(
+              { _id: req.user._id },
+              {
+                $push: {
+                  creditCard: { name: name, card: response, customer: id },
+                },
+              }
+            )
+              .then((responseUser) => {
+                return res.send({
+                  status: 200,
+                  message: "Credit Card Added Successfully!",
+                  result: responseUser,
+                });
+              })
+              .catch((err) => {
+                return res.send({
+                  status: 400,
+                  message: "Error adding/updating card info ",
+                  result: [],
+                  error: err,
+                });
+              });
+          }
+        });
     } catch (error) {
       console.log(error, "<--error addCreditCard ");
       return next(error);
     }
   }
 
-
- async verifyByCode(req, res,) {
+  async verifyByCode(req, res) {
     try {
-      const {code} = req.body;
+      const { code } = req.body;
       // Find account with matching secret token
-      const user = await User.findOne({ 'mobile': code });
+      const user = await User.findOne({ mobile: code });
       if (!user) {
-        return res.json({ status: 404, message: "Invalid verification code", data: {} });
+        return res.json({
+          status: 404,
+          message: "Invalid verification code",
+          data: {},
+        });
       }
-      user.verified = true; user.secretToken = ''; user.resetToken = '';
+      user.verified = true;
+      user.secretToken = "";
+      user.resetToken = "";
       user.mobile = null;
       await user.save();
-      return res.status(200).json({ status: 200, message: "Account is verified", data: user });
-  
+      return res
+        .status(200)
+        .json({ status: 200, message: "Account is verified", data: user });
     } catch (error) {
-      return res.json({ status: 400, message: "Account verification issue", error: error, data: {} });
+      return res.json({
+        status: 400,
+        message: "Account verification issue",
+        error: error,
+        data: {},
+      });
     }
   }
 
-
-  async verifyBySms(req, res,) {
+  async verifyBySms(req, res) {
     try {
-      const {code} = req.body;
+      const { code } = req.body;
       // Find account with matching secret token
-      const user = await User.findOne({ 'smscode': code });
+      const user = await User.findOne({ smscode: code });
       if (!user) {
-        return res.json({ status: 404, message: "Invalid Verification code", data: {} });
+        return res.json({
+          status: 404,
+          message: "Invalid Verification code",
+          data: {},
+        });
       }
-      user.verified = true; user.secretToken = ''; user.resetToken = '';
+      user.verified = true;
+      user.secretToken = "";
+      user.resetToken = "";
       user.smscode = null;
       await user.save();
-      return res.status(200).json({ status: 200, message: "Account is verified", data: user });
-  
+      return res
+        .status(200)
+        .json({ status: 200, message: "Account is verified", data: user });
     } catch (error) {
-      return res.json({ status: 400, message: "Account verification issue", error: error, data: {} });
+      return res.json({
+        status: 400,
+        message: "Account verification issue",
+        error: error,
+        data: {},
+      });
     }
   }
 
-
-  async verifySmsMobile(req, res,) {
-    const {mobile,smscode} = req.body;
+  async verifySmsMobile(req, res) {
+    const { mobile, smscode } = req.body;
     if (!mobile || !smscode) {
       return res.json({
         status: 400,
@@ -2190,37 +2382,53 @@ class UserController {
     }
     try {
       // Find account with matching secret token
-      const user = await User.findOne({ smscode,  mobile });
+      const user = await User.findOne({ smscode, mobile });
       if (!user) {
-        return res.json({ status: 404, message: "Invalid email or phone code!", data: {} });
+        return res.json({
+          status: 404,
+          message: "Invalid email or phone code!",
+          data: {},
+        });
       }
-      user.verified = true; user.secretToken = ''; user.resetToken = '';
-      user.smscode = null;user.mobile = null;
+      user.verified = true;
+      user.secretToken = "";
+      user.resetToken = "";
+      user.smscode = null;
+      user.mobile = null;
       await user.save();
-      return res.status(200).json({ status: 200, message: "Account is verified", data: user });
-  
+      return res
+        .status(200)
+        .json({ status: 200, message: "Account is verified", data: user });
     } catch (error) {
-      return res.json({ status: 400, message: "Account verification issue", error: error, data: {} });
+      return res.json({
+        status: 400,
+        message: "Account verification issue",
+        error: error,
+        data: {},
+      });
     }
   }
 
-  async verifyByCodePassword(req, res,) {
+  async verifyByCodePassword(req, res) {
     try {
-      const {code} = req.body;
-      const user = await User.findOne({ 'mobile': code });
+      const { code } = req.body;
+      const user = await User.findOne({ mobile: code });
       if (!user) {
         return res.json({ status: 404, message: "Invalid code", data: {} });
       }
       await user.save();
-      return res.status(200).json({ status: 200, message: "Valid code", data: user });
-  
+      return res
+        .status(200)
+        .json({ status: 200, message: "Valid code", data: user });
     } catch (error) {
-      return res.json({ status: 400, message: "Issue in verification", error: error, data: {} });
+      return res.json({
+        status: 400,
+        message: "Issue in verification",
+        error: error,
+        data: {},
+      });
     }
   }
-
-
-
 
   async resetForgetPasswordByCode(req, res, next) {
     try {
@@ -2235,9 +2443,14 @@ class UserController {
       const { password, code } = req.body;
       User.findOne({ mobile: code }).then((user) => {
         if (!user)
-          return res.json({ status: 400, message: "Invalid verification code", data: {} });
+          return res.json({
+            status: 400,
+            message: "Invalid verification code",
+            data: {},
+          });
         user.password = password;
-        user.resetToken = ""; user.mobile = null;
+        user.resetToken = "";
+        user.mobile = null;
         user.save().then((resultSaved) => {
           res.status(200).json({
             status: 200,
@@ -2250,7 +2463,6 @@ class UserController {
       return next(error);
     }
   }
-
 
   async resendCodeVerification(req, res, next) {
     try {
@@ -2269,8 +2481,8 @@ class UserController {
             data: {},
           });
         }
-        
-        user.mobile=Math.floor(Math.random() * 90000) + 100000;
+
+        user.mobile = Math.floor(Math.random() * 90000) + 100000;
         user.save();
         //email send
         let html = resendVerification(req.body.email, user.mobile);
@@ -2291,7 +2503,6 @@ class UserController {
     }
   }
 
-
   async resendCodeVerificationSms(req, res, next) {
     try {
       if (!req.body.phone) {
@@ -2301,7 +2512,7 @@ class UserController {
           data: {},
         });
       }
-      User.findOne({ phone: req.body.phone, role:"breeder" }).then((user) => {
+      User.findOne({ phone: req.body.phone, role: "breeder" }).then((user) => {
         if (!user) {
           return res.json({
             status: 400,
@@ -2309,33 +2520,34 @@ class UserController {
             data: {},
           });
         }
-        
-        user.smscode=Math.floor(Math.random() * 90000) + 100000;
+
+        user.smscode = Math.floor(Math.random() * 90000) + 100000;
         user.save();
-         //sms send
-         this.sendSmsHelper(req.body.phone, process.env.TWILIO_REGISTRATION_MSG + user.smscode)
-         .then(send => {
-           return res.status(200).json({
-             status: 200,
-             message: "Verification code send successfully",
-             data: { id: user._id, resettoken: user.resetToken },
-           });
-         })
-         .catch(err => {
-           return res.json({
-             status: 400,
-             message: err.message,
-             data: {  },
-             error: err
-           });
-         })
-        
+        //sms send
+        this.sendSmsHelper(
+          req.body.phone,
+          process.env.TWILIO_REGISTRATION_MSG + user.smscode
+        )
+          .then((send) => {
+            return res.status(200).json({
+              status: 200,
+              message: "Verification code send successfully",
+              data: { id: user._id, resettoken: user.resetToken },
+            });
+          })
+          .catch((err) => {
+            return res.json({
+              status: 400,
+              message: err.message,
+              data: {},
+              error: err,
+            });
+          });
       });
     } catch (error) {
       return next(error);
     }
   }
-
 
   async resendVerificationCodes(req, res, next) {
     try {
@@ -2354,14 +2566,17 @@ class UserController {
             data: {},
           });
         }
-        
-        user.mobile=randomstring.generate({length: 6, charset: 'numeric'});
-        user.smscode=randomstring.generate({length: 6, charset: 'numeric'});
+
+        user.mobile = randomstring.generate({ length: 6, charset: "numeric" });
+        user.smscode = randomstring.generate({ length: 6, charset: "numeric" });
         user.save();
         //send sms
-        this.sendSmsHelper(user.phone, process.env.TWILIO_REGISTRATION_MSG + user.smscode)
-        .then(send => console.log("registration sms send",send))
-        .catch(err => console.log("registration sms error", err))
+        this.sendSmsHelper(
+          user.phone,
+          process.env.TWILIO_REGISTRATION_MSG + user.smscode
+        )
+          .then((send) => console.log("registration sms send", send))
+          .catch((err) => console.log("registration sms error", err));
         //email send
         let html = resendVerification(req.body.email, user.mobile);
         mailer.sendEmail(
@@ -2380,8 +2595,6 @@ class UserController {
       return next(error);
     }
   }
-
-
 
   async getMatchingEmails(req, res, next) {
     try {
@@ -2411,10 +2624,14 @@ class UserController {
     }
   }
 
-
   async updatePackageMobile(req, res, next) {
     try {
-      if (!req.body.userId || !req.body.packageType || !req.body.packageId || !req.body.type) {
+      if (
+        !req.body.userId ||
+        !req.body.packageType ||
+        !req.body.packageId ||
+        !req.body.type
+      ) {
         return res.json({
           status: 400,
           message: "Kindly provide all required data",
@@ -2422,22 +2639,21 @@ class UserController {
         });
       }
       subscriberController
-          .initialSubscribeBreeder(req.body.userId, req.body)
-          .then((resultSubscriber) => {
-            res.status(200).json({
-              status: 200,
-              message: "Package has been subscribed successfully",
-              data: resultSubscriber,
-            });
-      });
+        .initialSubscribeBreeder(req.body.userId, req.body)
+        .then((resultSubscriber) => {
+          res.status(200).json({
+            status: 200,
+            message: "Package has been subscribed successfully",
+            data: resultSubscriber,
+          });
+        });
     } catch (error) {
       return next(error);
     }
   }
 
-
   async sendSms(req, res, next) {
-    const {phone}=req.body;
+    const { phone } = req.body;
     try {
       if (!phone) {
         return res.json({
@@ -2446,41 +2662,42 @@ class UserController {
           data: {},
         });
       }
-     this.sendSmsHelper(phone,"message").then((result) => {
-            console.log(result)
-            res.status(200).json({
-              status: 200,
-              message: "Sms send success",
-              data: result,
-            });
-      }).catch(err =>  {return next(err)})
+      this.sendSmsHelper(phone, "message")
+        .then((result) => {
+          console.log(result);
+          res.status(200).json({
+            status: 200,
+            message: "Sms send success",
+            data: result,
+          });
+        })
+        .catch((err) => {
+          return next(err);
+        });
     } catch (error) {
-      console.log(error,"<--error")
+      console.log(error, "<--error");
       return next(error);
     }
   }
 
-  
-  async sendSmsHelper(phone,message) {
-        return new Promise((resolve, reject) => {
-          client.messages
-            .create({
-               body: message,
-               from: process.env.TWILIO_PHONE,
-               to: phone
-             })
-            .then(message => {
-              console.log(message,"error sendSmsHelper")
-              resolve(message);
-            })
-            .catch((error) => {
-              console.log(error,"error sendSmsHelper")
-              reject(error);
-            });
+  async sendSmsHelper(phone, message) {
+    return new Promise((resolve, reject) => {
+      client.messages
+        .create({
+          body: message,
+          from: process.env.TWILIO_PHONE,
+          to: phone,
+        })
+        .then((message) => {
+          console.log(message, "error sendSmsHelper");
+          resolve(message);
+        })
+        .catch((error) => {
+          console.log(error, "error sendSmsHelper");
+          reject(error);
         });
+    });
   }
-
 }
-
 
 module.exports = new UserController();

@@ -1,7 +1,6 @@
 const Validator = require("validator");
 const isEmpty = require("is-empty");
-const { roles } = require('../config/roles');
-
+const { roles } = require("../config/roles");
 
 function validateRegisterInput(data) {
   let errors = {};
@@ -44,14 +43,11 @@ function validateRegisterInput(data) {
   //   errors.password2 = "Passwords must match";
   // }
 
-
-
   return {
     errors,
-    isValid: isEmpty(errors)
+    isValid: isEmpty(errors),
   };
-};
-
+}
 
 function validateLoginInput(data) {
   let errors = {};
@@ -59,7 +55,7 @@ function validateLoginInput(data) {
   // Convert empty fields to an empty string so we can use validator functions
   data.email = !isEmpty(data.email) ? data.email : "";
   data.password = !isEmpty(data.password) ? data.password : "";
-  data.role = !isEmpty(data.role) ? data.role: "" ;
+  data.role = !isEmpty(data.role) ? data.role : "";
 
   // Email checks
   if (Validator.isEmpty(data.email)) {
@@ -80,22 +76,21 @@ function validateLoginInput(data) {
 
   return {
     errors,
-    isValid: isEmpty(errors)
+    isValid: isEmpty(errors),
   };
-};
+}
 
 function validateRegisterInputBreeder(data) {
   let errors = {};
 
-  data.name = !isEmpty(data.name) ? data.name : '';
-  data.email = !isEmpty(data.email) ? data.email : '';
-  data.password = !isEmpty(data.password) ? data.password : '';
-  data.phone = !isEmpty(data.phone) ? data.phone : '';
-  data.city = !isEmpty(data.city) ? data.city : '';
-  data.state = !isEmpty(data.state) ? data.state : '';
+  data.name = !isEmpty(data.name) ? data.name : "";
+  data.email = !isEmpty(data.email) ? data.email : "";
+  data.password = !isEmpty(data.password) ? data.password : "";
+  data.phone = !isEmpty(data.phone) ? data.phone : "";
+  data.city = !isEmpty(data.city) ? data.city : "";
+  data.state = !isEmpty(data.state) ? data.state : "";
   // data.businessName = !isEmpty(data.businessName) ? data.businessName : '';
   // data.noOfEmployees = !isEmpty(data.noOfEmployees) ? data.noOfEmployees : '';
-
 
   if (Validator.isEmpty(data.name)) {
     errors.name = "Name field is required";
@@ -129,14 +124,11 @@ function validateRegisterInputBreeder(data) {
   //   errors.noOfEmployees = "No of Employees field is required";
   // }
 
-
   return {
     errors,
-    isValid: isEmpty(errors)
+    isValid: isEmpty(errors),
   };
-
 }
-
 
 function validateResetPassword(data) {
   let errors = {};
@@ -144,16 +136,14 @@ function validateResetPassword(data) {
   // Convert empty fields to an empty string
   data.password = !isEmpty(data.password) ? data.password : "";
 
-
   if (Validator.isEmpty(data.password)) {
     errors.password = "Password is required";
   }
 
-
   return {
     errors,
-    isValid: isEmpty(errors)
-  }
+    isValid: isEmpty(errors),
+  };
 }
 
 ////////for employee
@@ -166,6 +156,9 @@ function validateRegisterInputEmp(data) {
   data.password = !isEmpty(data.password) ? data.password : "";
   data.address = !isEmpty(data.address) ? data.address : "";
   data.phone = !isEmpty(data.phone.toString()) ? data.phone : "";
+  // data.emergencyContact = !isEmpty(data.emergencyContact.toString())
+  //   ? data.emergencyContact
+  //   : "";
 
   // data.password2 = !isEmpty(data.password2) ? data.password2 : "";
 
@@ -178,7 +171,8 @@ function validateRegisterInputEmp(data) {
     errors.canAccessMobileApp = "Can Access Mobile App field is required";
   }
   if (data.canAccessInventoryManagement === undefined) {
-    errors.canAccessInventoryManagement = "Can Access Inventory Management field is required";
+    errors.canAccessInventoryManagement =
+      "Can Access Inventory Management field is required";
   }
   if (data.active === undefined) {
     errors.active = "Active field is required";
@@ -205,8 +199,6 @@ function validateRegisterInputEmp(data) {
     errors.password = "Password field is required";
   }
 
-
-
   if (!Validator.isLength(data.password, { min: 6, max: 30 })) {
     errors.password = "Password must be at least 6 characters";
   }
@@ -215,35 +207,36 @@ function validateRegisterInputEmp(data) {
   //   errors.password2 = "Passwords muvalidateRegisterInputst match";
   // }
 
-
-  // // appointmentDate 
+  // // appointmentDate
   // if (Validator.isEmpty(data.appointmentDate)) {
   //   errors.appointmentDate = "appointmentDate field is required";
   // }
 
-  // breederId 
+  // breederId
   // if (Validator.isEmpty(data.breederId)) {
   //   errors.breederId = "breederId field is required";
   // }
 
-  // // farmId 
+  // // farmId
   // if (Validator.isEmpty(data.farmId)) {
   //   errors.farmId = "farmId field is required";
   // }
 
-  // designationName 
+  // designationName
   // if (Validator.isEmpty(data.designationName)) {
   //   errors.designationName = "designationName field is required";
   // }
 
-
   return {
     errors,
-    isValid: isEmpty(errors)
+    isValid: isEmpty(errors),
   };
-};
-
+}
 
 module.exports = {
-  validateLoginInput, validateRegisterInput, validateRegisterInputEmp, validateRegisterInputBreeder, validateResetPassword
+  validateLoginInput,
+  validateRegisterInput,
+  validateRegisterInputEmp,
+  validateRegisterInputBreeder,
+  validateResetPassword,
 };

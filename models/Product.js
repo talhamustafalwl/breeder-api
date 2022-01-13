@@ -23,12 +23,16 @@ const ProductSchema = mongoose.Schema(
       enum: ["In stock", "Out of stock"],
       default: "In stock",
     },
-    conditionStatus:  {
+    conditionStatus: {
       type: String,
       enum: ["Good Condition", "Damaged", "Expired"],
       default: "Good Condition",
     },
     quantity: {
+      type: Number,
+      default: 0,
+    },
+    unit_quantity: {
       type: Number,
       default: 0,
     },
@@ -49,10 +53,10 @@ const ProductSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-    soldQuantityPending:  {
+    soldQuantityPending: {
       type: Number,
       default: 0,
-  },
+    },
     // model: {type: Number,required:true},
     // price: {type: Number,required:true},
     categoryId: {
@@ -85,9 +89,9 @@ const ProductSchema = mongoose.Schema(
 
     qrcodepath: { type: String },
     status: { type: String },
-    isArchived: {type: Boolean,default: false, },
+    isArchived: { type: Boolean, default: false },
   },
-  
+
   { timestamps: true }
 );
 
@@ -104,19 +108,22 @@ const ProductSchema = mongoose.Schema(
 //     next()
 // });
 
-const QRCode = require('qrcode')
-ProductSchema.pre('save', function (next) {
-    const product = this;
-    console.log(this);
-    const dat = Date.now()
-    QRCode.toFile(`uploads/qrcode/${this._id}-${dat}.png`, [{data: (this._id).toString(), mode: 'byte'}], {
-    }, function (err) {
-        if (err) return next(err);
-        console.log('qrcode done')
-        product.qrcodepath = `uploads/qrcode/${product._id}-${dat}.png`
-        return next()
-    })
-    
+const QRCode = require("qrcode");
+ProductSchema.pre("save", function (next) {
+  const product = this;
+  console.log(this);
+  const dat = Date.now();
+  QRCode.toFile(
+    `uploads/qrcode/${this._id}-${dat}.png`,
+    [{ data: this._id.toString(), mode: "byte" }],
+    {},
+    function (err) {
+      if (err) return next(err);
+      console.log("qrcode done");
+      product.qrcodepath = `uploads/qrcode/${product._id}-${dat}.png`;
+      return next();
+    }
+  );
 });
 
 ProductSchema.plugin(idvalidator);
