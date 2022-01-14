@@ -90,12 +90,8 @@ const userSchema = mongoose.Schema(
       type: String,
       enum: ["male", "female"],
     },
-    emergencyContact: [
-      {
-        name: String,
-        contactNumber: Number,
-      },
-    ],
+    data: Object,
+
     dataOfBirth: {
       type: Date,
     },

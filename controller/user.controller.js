@@ -803,6 +803,8 @@ class UserController {
         req.body.email === req.user.email
       );
       if (!(req.body.email === req.user.email)) {
+        const data = JSON.parse(req.body.data);
+
         User.findOne({
           email: req.body.email,
           role: "employee",
@@ -814,7 +816,7 @@ class UserController {
             req.body.breederUniqueId = req.user.uid;
             // Register user...
             req.body.breederId = req.user._id;
-
+            req.body.data = JSON.parse(req.body.data);
             req.body.image = req.file ? req.file.filename : null;
             this.registerUserWithRole(req.body, "employee", false)
               .then((success) => {
