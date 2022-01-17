@@ -36,7 +36,6 @@ module.exports = {
   // serverURL: 'https://breeder-api.herokuapp.com',
   // imageURL: 'https://breeder-api.herokuapp.com/uploads/images/form/',
   // baseDocumentURL: 'https://breeder-api.herokuapp.com/uploads/documents/',
-
   Server: "http://3.140.247.226/api",
   webServer: "http://3.140.247.226",
   baseAPIUrl: "http://3.140.247.226/api/",
