@@ -14,31 +14,32 @@ const groupController = require("./group.controller");
 class AnimalController {
   constructor() {}
 
-
   async isAnimalAvailableByCategory(categoryId) {
     return new Promise((resolve, reject) => {
-      Animal.find({categoryId}).then(result => {
-        if(result[0]) resolve(true);
+      Animal.find({ categoryId }).then((result) => {
+        if (result[0]) resolve(true);
         resolve(false);
-      })
+      });
     });
   }
 
   //admin get delete all animals
-  
+
   async getall(req, res) {
     try {
       const animals = await Animal.find({});
-      return res
-        .status(200)
-        .json({ status: 200, message: "All Animals", data: animals.map(e => ({
+      return res.status(200).json({
+        status: 200,
+        message: "All Animals",
+        data: animals.map((e) => ({
           ...e.toObject(),
           ...{
             image: e.toObject().image
               ? `${config.baseImageURL}${e.toObject().image}`
               : null,
           },
-        })) });
+        })),
+      });
     } catch (err) {
       return res.json({
         status: 400,
@@ -186,49 +187,59 @@ class AnimalController {
                 //     },
                 //   },
                 // },
-                
-
-
 
                 ...{
-                  parent2: (e.toObject().family.parent2 && e.toObject().family.parent2[0]) ? {
-                    0: {
-                      ...e.toObject().family.parent2[0],
-                      image: e.toObject().family.parent2[0].image ?  `${config.baseImageURL}${
-                        e.toObject().family.parent2[0].image
-                      }` : null
-                    }, 
-                    ...{
-                      image: e.toObject().family.parent2 &&  e.toObject().family.parent2[0].image ? 
-                        e.toObject().family.parent2 &&
-                        `${config.baseImageURL}${
-                          e.toObject().family.parent2[0].image
-                        }` : null,
-                    },
-                  } : {},
+                  parent2:
+                    e.toObject().family.parent2 &&
+                    e.toObject().family.parent2[0]
+                      ? {
+                          0: {
+                            ...e.toObject().family.parent2[0],
+                            image: e.toObject().family.parent2[0].image
+                              ? `${config.baseImageURL}${
+                                  e.toObject().family.parent2[0].image
+                                }`
+                              : null,
+                          },
+                          ...{
+                            image:
+                              e.toObject().family.parent2 &&
+                              e.toObject().family.parent2[0].image
+                                ? e.toObject().family.parent2 &&
+                                  `${config.baseImageURL}${
+                                    e.toObject().family.parent2[0].image
+                                  }`
+                                : null,
+                          },
+                        }
+                      : {},
                 },
                 ...{
-                  parent1:  (e.toObject().family.parent1 && e.toObject().family.parent1[0]) ? {
-                    0: {
-                      ...e.toObject().family.parent1[0],
-                      image:  e.toObject().family.parent1[0].image ?  `${config.baseImageURL}${
-                        e.toObject().family.parent1[0].image
-                      }` : null
-                    }, 
-                    ...{
-                      image: e.toObject().family.parent2 &&  e.toObject().family.parent1[0].image ? 
-                        e.toObject().family.parent1 &&
-                        `${config.baseImageURL}${
-                          e.toObject().family.parent1[0].image
-                        }` : null,
-                    },
-                  }: {},
+                  parent1:
+                    e.toObject().family.parent1 &&
+                    e.toObject().family.parent1[0]
+                      ? {
+                          0: {
+                            ...e.toObject().family.parent1[0],
+                            image: e.toObject().family.parent1[0].image
+                              ? `${config.baseImageURL}${
+                                  e.toObject().family.parent1[0].image
+                                }`
+                              : null,
+                          },
+                          ...{
+                            image:
+                              e.toObject().family.parent2 &&
+                              e.toObject().family.parent1[0].image
+                                ? e.toObject().family.parent1 &&
+                                  `${config.baseImageURL}${
+                                    e.toObject().family.parent1[0].image
+                                  }`
+                                : null,
+                          },
+                        }
+                      : {},
                 },
-         
-
-
-
-
               },
             },
           },
@@ -247,36 +258,36 @@ class AnimalController {
   //only breeder owner and admin can delete animal
   async deleteanimal(req, res) {
     try {
-      console.log('delete animal');
-      groupController.isAnimalAvailable(req.params.id).then(async resultGroup => {
-        console.log(resultGroup);
-          if(resultGroup)  return res.json({
-            status: 400,
-            message: "Can not remove! Animal is assign to group.",
-            data: {},
-          });
+      console.log("delete animal");
+      groupController
+        .isAnimalAvailable(req.params.id)
+        .then(async (resultGroup) => {
+          console.log(resultGroup);
+          if (resultGroup)
+            return res.json({
+              status: 400,
+              message: "Can not remove! Animal is assign to group.",
+              data: {},
+            });
           const data = await Animal.findOne({ _id: req.params.id });
-           
-            // await LogicController.deleteqr(data, data, (nextRes) => {
-            //   console.log(nextRes);
-            // });
-            // // await LogicController.delete
-            // const animal = await Animal.deleteOne({
-            //   _id: req.params.id,
-            //   ...req.user.role.includes('admin') ? {}: {breederId: req.user._id},
-            // });
-            data.isArchived = !data.isArchived;
-            data.save().then(() => {
-              return res.status(200).json({
-                status: 200,
-                message: "Animal updated successfully",
-                data: animal,
-              });
-            })
 
-      });
-
-      
+          // await LogicController.deleteqr(data, data, (nextRes) => {
+          //   console.log(nextRes);
+          // });
+          // // await LogicController.delete
+          // const animal = await Animal.deleteOne({
+          //   _id: req.params.id,
+          //   ...req.user.role.includes('admin') ? {}: {breederId: req.user._id},
+          // });
+          data.isArchived = !data.isArchived;
+          data.save().then(() => {
+            return res.status(200).json({
+              status: 200,
+              message: "Animal updated successfully",
+              data: animal,
+            });
+          });
+        });
     } catch (err) {
       console.log(err);
       return res.json({
@@ -351,7 +362,6 @@ class AnimalController {
               //    ...{image:  e.toObject().family.parent2 ? `${config.baseImageURL}${e.toObject().family.parent2.image}`: null}
               //   },
 
-
               // ...{
               //   parent2: {
               //     ...e.toObject().family.parent2,
@@ -377,40 +387,45 @@ class AnimalController {
               //   },
               // },
 
-
               ...{
-                parent2: (e.toObject().family.parent2 && e.toObject().family.parent2[0]) ? {
-                  0: {
-                    ...e.toObject().family.parent2[0],
-                    image:  `${config.baseImageURL}${
-                      e.toObject().family.parent2[0].image
-                    }`
-                  }, 
-                  ...{
-                    image:
-                      e.toObject().family.parent2 &&
-                      `${config.baseImageURL}${
-                        e.toObject().family.parent2[0].image
-                      }`,
-                  },
-                } : {},
+                parent2:
+                  e.toObject().family.parent2 && e.toObject().family.parent2[0]
+                    ? {
+                        0: {
+                          ...e.toObject().family.parent2[0],
+                          image: `${config.baseImageURL}${
+                            e.toObject().family.parent2[0].image
+                          }`,
+                        },
+                        ...{
+                          image:
+                            e.toObject().family.parent2 &&
+                            `${config.baseImageURL}${
+                              e.toObject().family.parent2[0].image
+                            }`,
+                        },
+                      }
+                    : {},
               },
               ...{
-                parent1:  (e.toObject().family.parent1 && e.toObject().family.parent1[0]) ? {
-                  0: {
-                    ...e.toObject().family.parent1[0],
-                    image:  `${config.baseImageURL}${
-                      e.toObject().family.parent1[0].image
-                    }`
-                  }, 
-                  ...{
-                    image:
-                      e.toObject().family.parent1 &&
-                      `${config.baseImageURL}${
-                        e.toObject().family.parent1[0].image
-                      }`,
-                  },
-                }: {},
+                parent1:
+                  e.toObject().family.parent1 && e.toObject().family.parent1[0]
+                    ? {
+                        0: {
+                          ...e.toObject().family.parent1[0],
+                          image: `${config.baseImageURL}${
+                            e.toObject().family.parent1[0].image
+                          }`,
+                        },
+                        ...{
+                          image:
+                            e.toObject().family.parent1 &&
+                            `${config.baseImageURL}${
+                              e.toObject().family.parent1[0].image
+                            }`,
+                        },
+                      }
+                    : {},
               },
             },
           },
@@ -428,8 +443,8 @@ class AnimalController {
 
   async updateAnimalData(req, res, next) {
     // console.log(req.body,"<--req.body")
-    if(req.body.aliveQuantity && req.body.aliveQuantity > 0){
-      req.body.status="Alive"
+    if (req.body.aliveQuantity && req.body.aliveQuantity > 0) {
+      req.body.status = "Alive";
     }
     try {
       Animal.findByIdAndUpdate(req.params.id, req.body)
@@ -607,15 +622,15 @@ class AnimalController {
     const breederId =
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     query.breederId = { $in: breederId };
-    const {activationType} = req.query;
-    if(activationType) {
-      if(!(activationType==="Both")) {
-        console.log ('working');
-        query.isArchived = req.query.activationType==='Active' ? false : true;
+    const { activationType } = req.query;
+    if (activationType) {
+      if (!(activationType === "Both")) {
+        console.log("working");
+        query.isArchived = req.query.activationType === "Active" ? false : true;
       }
     }
 
-    console.log(query)
+    console.log(query);
     try {
       //const animals = await Animal.find({ breederId });
       if (req.user.role == "employee") {
@@ -659,10 +674,11 @@ class AnimalController {
           })),
         });
       } else {
-        const animals = await Animal.find({...query,
+        const animals = await Animal.find({
+          ...query,
           ...(req.query.featured ? { featured: req.query.featured } : {}),
         })
-        .sort({ createdAt: -1 })
+          .sort({ createdAt: -1 })
           .populate("addedBy")
           .populate("categoryId");
         Animal.populate(
@@ -797,12 +813,10 @@ class AnimalController {
             resultAnimal.healthRecord.filter((e) => !(e._id == req.params.id))
           );
           resultAnimal.save().then((_) => {
-            return res
-              .status(200)
-              .json({
-                status: 200,
-                message: "Animal health record deleted successfully",
-              });
+            return res.status(200).json({
+              status: 200,
+              message: "Animal health record deleted successfully",
+            });
           });
         })
         .catch((error) => {
@@ -879,19 +893,30 @@ class AnimalController {
   async updateAnimalAfterSale(animalArr, buyer, seller) {
     // animalId, price, quantity
     return new Promise((resolve, reject) => {
-      
       async
         .eachSeries(animalArr, function updateObj(obj, done) {
-          console.log('Calling each series ... ');
-          Animal.updateOne({_id: obj.animalId}, {$inc: {aliveQuantity: -obj.quantity, 'data.quantity': -obj.quantity, healthyQuantity: -obj.quantity, soldQuantityPending: obj.quantity}}).then(resultDone => {
-            console.log(resultDone);
-            console.log('This is done condition ... ');
-            done();
-          }).catch(error => {
-            console.log('this is error condition... ');
-            console.log(error);
-            done();
-          });
+          console.log("Calling each series ... ");
+          Animal.updateOne(
+            { _id: obj.animalId },
+            {
+              $inc: {
+                aliveQuantity: -obj.quantity,
+                "data.quantity": -obj.quantity,
+                healthyQuantity: -obj.quantity,
+                soldQuantityPending: obj.quantity,
+              },
+            }
+          )
+            .then((resultDone) => {
+              console.log(resultDone);
+              console.log("This is done condition ... ");
+              done();
+            })
+            .catch((error) => {
+              console.log("this is error condition... ");
+              console.log(error);
+              done();
+            });
         })
         .then((alldone) => {
           console.log("all done");
@@ -905,84 +930,80 @@ class AnimalController {
     });
   }
 
-
-
   async transferAnimal(req, res, next) {
     try {
-      const {animalId, quantity,  buyerId, sellerId, breederId } = req.body;
-      Animal.findById(animalId).then(animalResult => {
+      const { animalId, quantity, buyerId, sellerId, breederId } = req.body;
+      Animal.findById(animalId).then((animalResult) => {
         animalResult = animalResult.toObject();
         // console.log(animalResult);
-        console.log(' ==== > animal result');
-        const isBuyerAvailable = animalResult.buyer
-          .map((e) => ""+e.id)
-          .includes(""+buyerId) || animalResult.transferBreeder.map((e) => ""+e.id).includes(""+buyerId);
+        console.log(" ==== > animal result");
+        const isBuyerAvailable =
+          animalResult.buyer.map((e) => "" + e.id).includes("" + buyerId) ||
+          animalResult.transferBreeder
+            .map((e) => "" + e.id)
+            .includes("" + buyerId);
         //console.log(buyerId,'This is is buyer available : ', isBuyerAvailable);
-        animalResult.aliveQuantity = parseInt(animalResult.aliveQuantity) - parseInt(quantity);
+        animalResult.aliveQuantity =
+          parseInt(animalResult.aliveQuantity) - parseInt(quantity);
         animalResult.healthyQuantity =
           parseInt(animalResult.healthyQuantity) - parseInt(quantity);
         animalResult.data.quantity =
           parseInt(animalResult.data.quantity) - parseInt(quantity);
         animalResult.transferQuantity =
           parseInt(animalResult.transferQuantity) + parseInt(quantity);
-          animalResult.soldQuantity =parseInt(animalResult.soldQuantity) + parseInt(quantity);
-        
-        if(animalResult.aliveQuantity === 0){
-          animalResult.status="Sold"
+        animalResult.soldQuantity =
+          parseInt(animalResult.soldQuantity) + parseInt(quantity);
+
+        if (animalResult.aliveQuantity === 0) {
+          animalResult.status = "Sold";
         }
 
         animalResult.transferBreeder = [
           ...animalResult.transferBreeder,
           ...[{ id: buyerId, quantity: quantity, date: new Date() }],
         ];
-        console.log('After updating data animal result is :: ');
+        console.log("After updating data animal result is :: ");
         console.log(animalResult.data);
-        Animal.updateOne({_id: animalResult._id}, animalResult).then((_)=> { 
+        Animal.updateOne({ _id: animalResult._id }, animalResult).then((_) => {
           // animalResult = animalResult.toObject();
           const currentSellerAnimalId = animalResult._id;
           delete animalResult._id;
           delete animalResult.transferBreeder;
-          if(isBuyerAvailable) {
-            Animal.findOne({ sellerAnimalId: animalId, breederId: buyerId }).then(
-              (partnerAnimal) => {
-                console.log('partner animal===> ',partnerAnimal);
-                // console.log(partnerAnimal);
-                partnerAnimal.status="Alive"
-                partnerAnimal.aliveQuantity =
-                  parseInt(partnerAnimal.aliveQuantity) +
-                  parseInt(quantity);
-                partnerAnimal.healthyQuantity =
-                  parseInt(partnerAnimal.healthyQuantity) +
-                  parseInt(quantity);
-                partnerAnimal.data.quantity =
-                  parseInt(partnerAnimal.data.quantity) +
-                  parseInt(quantity);
-                partnerAnimal.transferBreederReceived = [
-                  ...partnerAnimal.transferBreederReceived,
-                  ...[
-                    {
-                      id: sellerId,
-                      quantity: quantity,
-                      date: new Date(),
-                    },
-                  ],
-                ];
-                partnerAnimal.save().then((_) => {
-                  formController
-                    .addBreederInForm(
-                      buyerId,
-                      animalResult.categoryId,
-                      sellerId
-                    )
-                    .then((all_done) => {
-                      return res.status(200).json({
-                        status: 200,
-                        message: "Animals transfered successfully",
-                      });
+          if (isBuyerAvailable) {
+            Animal.findOne({
+              sellerAnimalId: animalId,
+              breederId: buyerId,
+            }).then((partnerAnimal) => {
+              console.log("partner animal===> ", partnerAnimal);
+              // console.log(partnerAnimal);
+              partnerAnimal.status = "Alive";
+              partnerAnimal.aliveQuantity =
+                parseInt(partnerAnimal.aliveQuantity) + parseInt(quantity);
+              partnerAnimal.healthyQuantity =
+                parseInt(partnerAnimal.healthyQuantity) + parseInt(quantity);
+              partnerAnimal.data.quantity =
+                parseInt(partnerAnimal.data.quantity) + parseInt(quantity);
+              partnerAnimal.transferBreederReceived = [
+                ...partnerAnimal.transferBreederReceived,
+                ...[
+                  {
+                    id: sellerId,
+                    quantity: quantity,
+                    date: new Date(),
+                  },
+                ],
+              ];
+              partnerAnimal.save().then((_) => {
+                formController
+                  .addBreederInForm(buyerId, animalResult.categoryId, sellerId)
+                  .then((all_done) => {
+                    return res.status(200).json({
+                      status: 200,
+                      message: "Animals transfered successfully",
                     });
-                });
-
+                  });
               });
+            });
           } else {
             console.log(animalResult);
             const newAnimal = new Animal({
@@ -997,15 +1018,15 @@ class AnimalController {
               pregnantQuantity: 0,
               sellerAnimalId: currentSellerAnimalId,
               seller: [],
-              status:"Alive",
+              status: "Alive",
               transferBreederReceived: [
                 { id: sellerId, quantity: quantity, date: new Date() },
-              ]
+              ],
             });
             newAnimal.save().then((_) => {
               formController
                 .addBreederInForm(buyerId, animalResult.categoryId, sellerId)
-                .then(_ => {
+                .then((_) => {
                   return res.status(200).json({
                     status: 200,
                     message: "Animals transfered successfully",
@@ -1013,11 +1034,9 @@ class AnimalController {
                 });
             });
           }
-
         });
-    
-      })
-    } catch(error) {
+      });
+    } catch (error) {
       return res.json({
         status: 400,
         message: "Error in transfer animal",
@@ -1026,7 +1045,6 @@ class AnimalController {
       });
     }
   }
-
 
   async updateAnimalAfterPaid(animalArr, buyer, seller) {
     // animalId, price, quantity
@@ -1060,37 +1078,34 @@ class AnimalController {
               const currentSellerAnimalId = animalResult._id;
               delete animalResult._id;
               if (isBuyerAvailable) {
-                Animal.findOne({ sellerAnimalId: obj.animalId, breederId: seller }).then(
-                  (partnerAnimal) => {
-                    // console.log('partner animal===> ');
-                    // console.log(partnerAnimal);
-                    partnerAnimal.aliveQuantity =
-                      parseInt(partnerAnimal.aliveQuantity) +
-                      parseInt(obj.quantity);
-                    partnerAnimal.healthyQuantity =
-                      parseInt(partnerAnimal.healthyQuantity) +
-                      parseInt(obj.quantity);
-                    partnerAnimal.seller = [
-                      ...partnerAnimal.seller,
-                      ...[
-                        {
-                          id: seller,
-                          quantity: obj.quantity,
-                          date: new Date(),
-                        },
-                      ],
-                    ];
-                    partnerAnimal.save().then((_) => {
-                      formController
-                        .addBreederInForm(
-                          buyer,
-                          animalResult.categoryId,
-                          seller
-                        )
-                        .then(done);
-                    });
-                  }
-                );
+                Animal.findOne({
+                  sellerAnimalId: obj.animalId,
+                  breederId: seller,
+                }).then((partnerAnimal) => {
+                  // console.log('partner animal===> ');
+                  // console.log(partnerAnimal);
+                  partnerAnimal.aliveQuantity =
+                    parseInt(partnerAnimal.aliveQuantity) +
+                    parseInt(obj.quantity);
+                  partnerAnimal.healthyQuantity =
+                    parseInt(partnerAnimal.healthyQuantity) +
+                    parseInt(obj.quantity);
+                  partnerAnimal.seller = [
+                    ...partnerAnimal.seller,
+                    ...[
+                      {
+                        id: seller,
+                        quantity: obj.quantity,
+                        date: new Date(),
+                      },
+                    ],
+                  ];
+                  partnerAnimal.save().then((_) => {
+                    formController
+                      .addBreederInForm(buyer, animalResult.categoryId, seller)
+                      .then(done);
+                  });
+                });
               } else {
                 // console.log(animalResult);
                 const newAnimal = new Animal({
@@ -1237,11 +1252,17 @@ class AnimalController {
           ];
         }
         Animal.findById(req.body.animalId).then((parentChildAnimal) => {
+          console.log("parentChildAnimal", parentChildAnimal);
           if (type === "parent1" || type === "parent2") {
-            parentChildAnimal.family["children"] = [
-              ...parentChildAnimal.family["children"],
-              ...[req.body.id],
-            ];
+            console.log("children", parentChildAnimal.family["children"]);
+            const childrenArray = parentChildAnimal.family["children"];
+            console.log(req.body.id);
+            childrenArray[0] = req.body.id;
+            console.log(parentChildAnimal);
+            // parentChildAnimal.family["children"] = [
+            //   ...parentChildAnimal.family["children"],
+            //   ...[req.body.id],
+            // ];
             // console.log(parentChildAnimal.family["children"]);
             animalResult.save().then((_) => {
               parentChildAnimal.save().then((_) => {
