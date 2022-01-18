@@ -171,7 +171,7 @@ const userSchema = mongoose.Schema(
 
     emergencyContact: {
       emergencyName: { type: String },
-      contactNumber: { type: Number },
+      contactNumber: { type: String },
     },
 
     businessInfoSettings: {

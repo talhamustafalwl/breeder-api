@@ -104,13 +104,14 @@ class AnimalController {
   //get specific animal  by id
   async getanimal(req, res) {
     try {
+      console.log("req.param", req.params.id);
       const ea = await Animal.findOne({ _id: req.params.id })
         .populate("family.parent1")
         .populate("family.parent2")
         .populate("family.children")
         .populate("healthRecord.addedBy")
         .populate("categoryId");
-
+      console.log("ea", ea);
       Animal.populate(ea, { path: "categoryId.parentId" }, (err, e) => {
         console.log(e);
         if (e == "") {
@@ -304,11 +305,15 @@ class AnimalController {
       req.body.image = req.file.filename;
     }
     req.body.data = JSON.parse(req.body.data);
+    req.body.family = JSON.parse(req.body.family);
     req.body.quantity = req.body.data.quantity;
-    req.body.aliveQuantity = req.body.data.quantity;
-    req.body.healthyQuantity = req.body.data.quantity;
+    // req.body.aliveQuantity = req.body.data.quantity;
+    // req.body.healthyQuantity = req.body.data.quantity;
+
     try {
-      await Animal.updateOne({ _id: req.params.id }, req.body);
+      const ani = await Animal.updateOne({ _id: req.params.id }, req.body);
+      console.log("ani", ani);
+
       const e = await Animal.findOne({ _id: req.params.id })
         .populate("family.parent1")
         .populate("family.parent2")
@@ -1242,9 +1247,15 @@ class AnimalController {
       // console.log(req.body.animalId);
       Animal.findById(req.body.id).then((animalResult) => {
         if (type === "parent1") {
-          animalResult.family["parent1"] = { id: req.body.animalId };
+          animalResult.family["parent1"] = {
+            id: req.body.animalId,
+            name: req.body.name,
+          };
         } else if (type === "parent2") {
-          animalResult.family["parent2"] = { id: req.body.animalId };
+          animalResult.family["parent2"] = {
+            id: req.body.animalId,
+            name: req.body.name,
+          };
         } else {
           animalResult.family.children = [
             ...animalResult.family.children,
