@@ -48,7 +48,7 @@ require("dotenv").config();
 
 class UserController {
   constructor() {
-    // this.registerUserWithRole = this.registerUserWithRole.bind(this);
+    this.registerUserWithRole = this.registerUserWithRole.bind(this);
     this.registerBreeder = this.registerBreeder.bind(this);
     this.registerEmployees = this.registerEmployees.bind(this);
     this.setupWizard = this.setupWizard.bind(this);
@@ -56,6 +56,156 @@ class UserController {
     this.forgetpasswordphone = this.forgetpasswordphone.bind(this);
     this.resendCodeVerificationSms = this.resendCodeVerificationSms.bind(this);
     this.resendVerificationCodes = this.resendVerificationCodes.bind(this);
+  }
+
+  async registerUserWithRole(body, role, token = false, files = []) {
+    console.log("register with role");
+    console.log(body);
+    return new Promise((resolve, reject) => {
+      // console.log(token);
+      const user = new User({ ...body, ...{ role: role } });
+      if (token) user.secretToken = randomstring.generate();
+      user.save((err, doc) => {
+        console.log(err);
+        if (err)
+          reject({
+            error: err,
+            response: {
+              status: 400,
+              message: "Email is already registered",
+              errors: err,
+              data: {},
+            },
+          });
+
+        console.log("docc:", doc);
+
+        //Send sms if smscode
+        if (body.smscode && body.phone) {
+          this.sendSmsHelper(
+            body.phone,
+            process.env.TWILIO_REGISTRATION_MSG + body.smscode
+          )
+            .then((send) => console.log("registration sms send", send))
+            .catch((err) => console.log("registration sms error", err));
+        }
+
+        // Send email to breeder..
+        // Email is pending for later use..
+        if (token) {
+          if (body.packageType && body.packageType === "Charity Organization") {
+            const html = body.mobile
+              ? registerCharityMobile(
+                  body.mobile,
+                  role,
+                  body.uid,
+                  files,
+                  config.basecharityDoc
+                )
+              : registerCharity(
+                  doc.secretToken,
+                  config.webServer,
+                  role,
+                  body.uid,
+                  files,
+                  config.basecharityDoc
+                );
+            mailer.sendEmail(
+              config.mailthrough,
+              doc.email,
+              "Please verify your email!",
+              html
+            );
+
+            const html2 = adminCharity(
+              doc.email,
+              config.webServer,
+              role,
+              body,
+              files,
+              config.basecharityDoc
+            );
+            mailer.sendEmail(
+              config.mailthrough,
+              config.mailFeedback,
+              "Charity Acc!",
+              html2
+            );
+
+            console.log("sending emails");
+            return resolve({
+              status: 200,
+              message: "Verification email is send",
+              data: doc,
+            });
+          } else if (body.mobile) {
+            const html = registeremailMobile(body.uid, body.mobile);
+            mailer.sendEmail(
+              config.mailthrough,
+              doc.email,
+              "Please verify your email!",
+              html
+            );
+            return resolve({
+              status: 200,
+              message: "Verification email is send",
+              data: doc,
+            });
+          } else {
+            const html = registeremail(
+              doc.secretToken,
+              config.webServer,
+              role,
+              body.uid
+            );
+            mailer.sendEmail(
+              config.mailthrough,
+              doc.email,
+              "Please verify your email!",
+              html
+            );
+            console.log("sending email");
+            return resolve({
+              status: 200,
+              message: "Verification email is send",
+              data: doc,
+            });
+          }
+        } else {
+          if (role === "employee") {
+            console.log("employee email");
+            console.log(body);
+            const html = employeeEmail(
+              body.breederUniqueId,
+              body.email,
+              body.password
+            );
+            mailer.sendEmail(
+              config.mailthrough,
+              body.email,
+              "Email for logly employee",
+              html
+            );
+            console.log("sending email");
+          } else if (role === "breeder") {
+            // email for breeder when added by breeder.....
+            console.log(body.email, body.password);
+            const html = RegisterNewBreeder(body.email, body.password);
+            mailer.sendEmail(
+              config.mailthrough,
+              body.email,
+              "Email for logly Breeder",
+              html
+            );
+          }
+          return resolve({
+            status: 200,
+            message: "Registered Successfully",
+            data: doc,
+          });
+        }
+      });
+    });
   }
 
   async getAllUsers(req, res, next) {
@@ -769,6 +919,84 @@ class UserController {
   //     }
   // }
 
+  async regEmployees(req, res, next) {
+    // console.log("dataaaa", data);
+    try {
+      // Check is employee, isadmin and email is exist.. Manually
+      // user.findByEmailAndRoleNotAdmin(req.body.email, req.bodly.role, ())
+      // if email exist then add role
+
+      // if email donot exist then create user.
+      console.log("Inside reg employeeee");
+      if (!(req.body.email === req.user.email)) {
+        // const data = JSON.parse(req.body.data);
+        // req.body.email = data.email;
+
+        User.findOne({
+          email: req.body.email,
+          role: "employee",
+          breederId: req.user._id,
+          //isEmployeeActive: true,
+        }).then((resultUser) => {
+          console.log(resultUser + "result user");
+          if (!resultUser) {
+            req.body.breederUniqueId = req.user.uid;
+            // Register user...
+            req.body.breederId = req.user._id;
+            req.body.image = req.file ? req.file.filename : null;
+            // req.body.emergencyContact = JSON.parse(req.body.emergencyContact);
+            console.log("req.body", req.body);
+            this.registerUserWithRole(req.body, "employee", false)
+              .then((success) => {
+                console.log(("success", success));
+
+                notificationController
+                  .create(
+                    req.user._id,
+                    "mynotification",
+                    "employee",
+                    "Employee Registered Successfully",
+                    "You have registered a new employee",
+                    req.user._id,
+                    null,
+                    success.data._id,
+                    req.user.deviceToken,
+                    true
+                  )
+                  .then((resultNotifCreate) => {
+                    console.log(resultNotifCreate);
+                  });
+                return res.status(200).send({
+                  status: 200,
+                  message: "Employee Registered Successfully",
+                  data: success,
+                });
+              })
+              .catch((error) => {
+                console.log(error);
+                return res.json({
+                  status: 400,
+                  message: "Something wents wrong",
+                });
+              });
+          } else {
+            return res
+              .status(200)
+              .json({ status: 400, message: "Employee is already registered" });
+          }
+        });
+      } else {
+        return res.status(200).json({
+          status: 400,
+          message: "You are not allowed to register yourself as employee",
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      return next(err);
+    }
+  }
+
   async registerEmployees(req, res, next) {
     try {
       // const { errors, isValid } = validateRegisterInputEmp(req.body);
@@ -803,22 +1031,24 @@ class UserController {
         req.body.email === req.user.email
       );
       if (!(req.body.email === req.user.email)) {
-        const data = JSON.parse(req.body.data);
+        // const data = JSON.parse(req.body.data);
 
         User.findOne({
           email: req.body.email,
           role: "employee",
           breederId: req.user._id,
           //isEmployeeActive: true,
-        }).then((resultUser) => {
+        }).then(async (resultUser) => {
           console.log(resultUser + "result user");
           if (!resultUser) {
             req.body.breederUniqueId = req.user.uid;
             // Register user...
             req.body.breederId = req.user._id;
-            req.body.data = JSON.parse(req.body.data);
+            // req.body.data = JSON.parse(req.body.data);
             req.body.image = req.file ? req.file.filename : null;
-            this.registerUserWithRole(req.body, "employee", false)
+
+            req.body.emergencyContact = JSON.parse(req.body.emergencyContact);
+            await this.registerUserWithRole(req.body, "employee", false)
               .then((success) => {
                 console.log(("success", success));
 
@@ -1309,154 +1539,6 @@ class UserController {
       console.log(err);
       return next(err);
     }
-  }
-
-  async registerUserWithRole(body, role, token = false, files = []) {
-    return new Promise((resolve, reject) => {
-      console.log(token);
-      const user = new User({ ...body, ...{ role: role } });
-      if (token) user.secretToken = randomstring.generate();
-      user.save((err, doc) => {
-        console.log(err);
-        if (err)
-          reject({
-            error: err,
-            response: {
-              status: 400,
-              message: "Email is already registered",
-              errors: err,
-              data: {},
-            },
-          });
-
-        console.log(doc);
-
-        //Send sms if smscode
-        if (body.smscode && body.phone) {
-          this.sendSmsHelper(
-            body.phone,
-            process.env.TWILIO_REGISTRATION_MSG + body.smscode
-          )
-            .then((send) => console.log("registration sms send", send))
-            .catch((err) => console.log("registration sms error", err));
-        }
-
-        // Send email to breeder..
-        // Email is pending for later use..
-        if (token) {
-          if (body.packageType && body.packageType === "Charity Organization") {
-            const html = body.mobile
-              ? registerCharityMobile(
-                  body.mobile,
-                  role,
-                  body.uid,
-                  files,
-                  config.basecharityDoc
-                )
-              : registerCharity(
-                  doc.secretToken,
-                  config.webServer,
-                  role,
-                  body.uid,
-                  files,
-                  config.basecharityDoc
-                );
-            mailer.sendEmail(
-              config.mailthrough,
-              doc.email,
-              "Please verify your email!",
-              html
-            );
-
-            const html2 = adminCharity(
-              doc.email,
-              config.webServer,
-              role,
-              body,
-              files,
-              config.basecharityDoc
-            );
-            mailer.sendEmail(
-              config.mailthrough,
-              config.mailFeedback,
-              "Charity Acc!",
-              html2
-            );
-
-            console.log("sending emails");
-            return resolve({
-              status: 200,
-              message: "Verification email is send",
-              data: doc,
-            });
-          } else if (body.mobile) {
-            const html = registeremailMobile(body.uid, body.mobile);
-            mailer.sendEmail(
-              config.mailthrough,
-              doc.email,
-              "Please verify your email!",
-              html
-            );
-            return resolve({
-              status: 200,
-              message: "Verification email is send",
-              data: doc,
-            });
-          } else {
-            const html = registeremail(
-              doc.secretToken,
-              config.webServer,
-              role,
-              body.uid
-            );
-            mailer.sendEmail(
-              config.mailthrough,
-              doc.email,
-              "Please verify your email!",
-              html
-            );
-            console.log("sending email");
-            return resolve({
-              status: 200,
-              message: "Verification email is send",
-              data: doc,
-            });
-          }
-        } else {
-          if (role === "employee") {
-            console.log("employee email");
-            console.log(body);
-            const html = employeeEmail(
-              body.breederUniqueId,
-              body.email,
-              body.password
-            );
-            mailer.sendEmail(
-              config.mailthrough,
-              body.email,
-              "Email for logly employee",
-              html
-            );
-            console.log("sending email");
-          } else if (role === "breeder") {
-            // email for breeder when added by breeder.....
-            console.log(body.email, body.password);
-            const html = RegisterNewBreeder(body.email, body.password);
-            mailer.sendEmail(
-              config.mailthrough,
-              body.email,
-              "Email for logly Breeder",
-              html
-            );
-          }
-          return resolve({
-            status: 200,
-            message: "Registered Successfully",
-            data: doc,
-          });
-        }
-      });
-    });
   }
 
   async resendEmailBreeder(req, res, next) {

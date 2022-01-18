@@ -90,7 +90,6 @@ const userSchema = mongoose.Schema(
       type: String,
       enum: ["male", "female"],
     },
-    data: Object,
 
     dataOfBirth: {
       type: Date,
@@ -168,6 +167,11 @@ const userSchema = mongoose.Schema(
       employeeRegister: { type: Boolean, default: true }, // admin/breeder
       breederRegister: { type: Boolean, default: true }, // admin
       changeSubscription: { type: Boolean, default: true }, // admin
+    },
+
+    emergencyContact: {
+      emergencyName: { type: String },
+      contactNumber: { type: Number },
     },
 
     businessInfoSettings: {
