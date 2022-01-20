@@ -101,6 +101,30 @@ class AnimalController {
     }
   }
 
+  // get by animal By ID
+  async getAnimalbyId(req, res) {
+    try {
+      const animal = await Animal.find({ _id: req.params.id }).populate(
+        "family.children"
+      );
+
+      if (animal == "") {
+        return res.json({ status: 400, message: "Invalid Id", data: {} });
+      }
+      return res
+        .status(200)
+        .json({ status: 200, message: "Animal", data: animal });
+    } catch (err) {
+      return res.json({
+        status: 400,
+        message: "Error in get Animal",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+  ////
+
   //get specific animal  by id
   async getanimal(req, res) {
     try {
