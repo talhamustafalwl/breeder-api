@@ -123,7 +123,7 @@ router.put(
 //for specific animal update/view/delete
 router
   .route("/:id")
-  .get(AnimalController.getAnimalbyId)
+  .get(AnimalController.getanimal)
   .delete(
     auth,
     allowBreeder,

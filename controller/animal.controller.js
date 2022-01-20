@@ -101,30 +101,6 @@ class AnimalController {
     }
   }
 
-  // get by animal By ID
-  async getAnimalbyId(req, res) {
-    try {
-      const animal = await Animal.find({ _id: req.params.id }).populate(
-        "family.children"
-      );
-
-      if (animal == "") {
-        return res.json({ status: 400, message: "Invalid Id", data: {} });
-      }
-      return res
-        .status(200)
-        .json({ status: 200, message: "Animal", data: animal });
-    } catch (err) {
-      return res.json({
-        status: 400,
-        message: "Error in get Animal",
-        errors: err,
-        data: {},
-      });
-    }
-  }
-  ////
-
   //get specific animal  by id
   async getanimal(req, res) {
     try {
@@ -137,7 +113,7 @@ class AnimalController {
         .populate("categoryId");
       console.log("ea", ea);
       Animal.populate(ea, { path: "categoryId.parentId" }, (err, e) => {
-        console.log(e);
+        console.log("e", e);
         if (e == "") {
           return res.json({
             status: 400,
@@ -184,87 +160,59 @@ class AnimalController {
                     },
                   })),
                 },
-                // ...{parent2: e.toObject().family.parent2,
-                //    ...{image:  e.toObject().family.parent2 ? `${config.baseImageURL}${e.toObject().family.parent2.image}`: null}
-                //   },
 
                 // ...{
-                //   parent2: {
-                //     ...e.toObject().family.parent2,
-                //     ...{
-                //       image:
-                //         e.toObject().family.parent2 &&
-                //         `${config.baseImageURL}${
-                //           e.toObject().family.parent2.image
-                //         }`,
-                //     },
-                //   },
+                //   parent2:
+                //     e.toObject().family.parent2 &&
+                //     e.toObject().family.parent2[0]
+                //       ? {
+                //           0: {
+                //             ...e.toObject().family.parent2[0],
+                //             image: e.toObject().family.parent2[0].image
+                //               ? `${config.baseImageURL}${
+                //                   e.toObject().family.parent2[0].image
+                //                 }`
+                //               : null,
+                //           },
+                //           ...{
+                //             image:
+                //               e.toObject().family.parent2 &&
+                //               e.toObject().family.parent2[0].image
+                //                 ? e.toObject().family.parent2 &&
+                //                   `${config.baseImageURL}${
+                //                     e.toObject().family.parent2[0].image
+                //                   }`
+                //                 : null,
+                //           },
+                //         }
+                //       : {},
                 // },
                 // ...{
-                //   parent1: {
-                //     ...e.toObject().family.parent1,
-                //     ...{
-                //       image:
-                //         e.toObject().family.parent1 &&
-                //         `${config.baseImageURL}${
-                //           e.toObject().family.parent1.image
-                //         }`,
-                //     },
-                //   },
+                //   parent1:
+                //     e.toObject().family.parent1 &&
+                //     e.toObject().family.parent1[0]
+                //       ? {
+                //           0: {
+                //             ...e.toObject().family.parent1[0],
+                //             image: e.toObject().family.parent1[0].image
+                //               ? `${config.baseImageURL}${
+                //                   e.toObject().family.parent1[0].image
+                //                 }`
+                //               : null,
+                //           },
+                //           ...{
+                //             image:
+                //               e.toObject().family.parent2 &&
+                //               e.toObject().family.parent1[0].image
+                //                 ? e.toObject().family.parent1 &&
+                //                   `${config.baseImageURL}${
+                //                     e.toObject().family.parent1[0].image
+                //                   }`
+                //                 : null,
+                //           },
+                //         }
+                //       : {},
                 // },
-
-                ...{
-                  parent2:
-                    e.toObject().family.parent2 &&
-                    e.toObject().family.parent2[0]
-                      ? {
-                          0: {
-                            ...e.toObject().family.parent2[0],
-                            image: e.toObject().family.parent2[0].image
-                              ? `${config.baseImageURL}${
-                                  e.toObject().family.parent2[0].image
-                                }`
-                              : null,
-                          },
-                          ...{
-                            image:
-                              e.toObject().family.parent2 &&
-                              e.toObject().family.parent2[0].image
-                                ? e.toObject().family.parent2 &&
-                                  `${config.baseImageURL}${
-                                    e.toObject().family.parent2[0].image
-                                  }`
-                                : null,
-                          },
-                        }
-                      : {},
-                },
-                ...{
-                  parent1:
-                    e.toObject().family.parent1 &&
-                    e.toObject().family.parent1[0]
-                      ? {
-                          0: {
-                            ...e.toObject().family.parent1[0],
-                            image: e.toObject().family.parent1[0].image
-                              ? `${config.baseImageURL}${
-                                  e.toObject().family.parent1[0].image
-                                }`
-                              : null,
-                          },
-                          ...{
-                            image:
-                              e.toObject().family.parent2 &&
-                              e.toObject().family.parent1[0].image
-                                ? e.toObject().family.parent1 &&
-                                  `${config.baseImageURL}${
-                                    e.toObject().family.parent1[0].image
-                                  }`
-                                : null,
-                          },
-                        }
-                      : {},
-                },
               },
             },
           },
