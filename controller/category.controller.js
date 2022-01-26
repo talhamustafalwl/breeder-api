@@ -324,6 +324,7 @@ class CategoryController {
 
   async updatebyId(req, res) {
     const { name, active, animals } = req.body;
+
     if (!name) {
       return res.json({ status: 400, message: "name required", data: {} });
     }
@@ -623,7 +624,7 @@ class CategoryController {
             return {
               ...e,
               ...status,
-              total: status.alive + status.sold,
+              total: status.alive + status.died + status.sick + status.pregnant,
             };
           })
           .filter((e) => e.alive + e.sold + e.died + e.pregnant + e.sick > 0);
@@ -876,7 +877,7 @@ class CategoryController {
           } else {
             return res.json({
               status: 400,
-              message: "Same type name is already present",
+              message: "type is already defined",
             });
           }
         }

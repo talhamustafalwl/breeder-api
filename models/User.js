@@ -66,6 +66,20 @@ const userSchema = mongoose.Schema(
     role: {
       type: [{ type: String, enum: ["admin", "breeder", "employee"] }],
     },
+    accountType: {
+      type: [
+        {
+          type: String,
+          enum: [
+            "Individual",
+            "Business",
+            "Business Service Provider",
+            "Business Listing",
+            "Charity Organization",
+          ],
+        },
+      ],
+    },
     isAdmin: { type: Boolean, default: false },
     image: String,
     coverImage: String,
@@ -100,7 +114,7 @@ const userSchema = mongoose.Schema(
     },
     city: String,
     state: String,
-    zipcode: Number,
+    zipcode: String,
     address: String,
     gallery: [gallerySchema],
     dealCategories: [
