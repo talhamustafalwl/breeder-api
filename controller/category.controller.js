@@ -689,7 +689,8 @@ class CategoryController {
             return {
               ...e,
               ...status,
-              total: status.instock + status.sold,
+              total:
+                status.instock + status.sold + status.damaged + status.expired,
             };
           })
           .filter((e) => e.instock + e.sold + e.damaged + e.expired > 0);

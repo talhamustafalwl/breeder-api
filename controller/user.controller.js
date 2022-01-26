@@ -1,4 +1,6 @@
 const { User } = require("../models/User");
+const passwordGenerator = require("../config/passwordGenerator");
+
 const {
   validateLoginInput,
   validateRegisterInput,
@@ -58,12 +60,16 @@ class UserController {
     this.resendVerificationCodes = this.resendVerificationCodes.bind(this);
   }
 
-  async registerUserWithRole(body, role, token = false, files = []) {
+  async registerUserWithRole(body, role, pass, token = false, files = []) {
     console.log("register with role");
-    console.log(body);
+    console.log(pass);
     return new Promise((resolve, reject) => {
       // console.log(token);
-      const user = new User({ ...body, ...{ role: role } });
+      const user = new User({
+        ...body,
+        ...{ role: role },
+        ...{ password: pass },
+      });
       if (token) user.secretToken = randomstring.generate();
       user.save((err, doc) => {
         console.log(err);
@@ -175,11 +181,8 @@ class UserController {
           if (role === "employee") {
             console.log("employee email");
             console.log(body);
-            const html = employeeEmail(
-              body.breederUniqueId,
-              body.email,
-              body.password
-            );
+            console.log("pass", pass);
+            const html = employeeEmail(body.breederUniqueId, body.email, pass);
             mailer.sendEmail(
               config.mailthrough,
               body.email,
@@ -189,8 +192,8 @@ class UserController {
             console.log("sending email");
           } else if (role === "breeder") {
             // email for breeder when added by breeder.....
-            console.log(body.email, body.password);
-            const html = RegisterNewBreeder(body.email, body.password);
+            console.log(body.email, pass);
+            const html = RegisterNewBreeder(body.email, pass);
             mailer.sendEmail(
               config.mailthrough,
               body.email,
@@ -936,6 +939,7 @@ class UserController {
           email: req.body.email,
           role: "employee",
           breederId: req.user._id,
+
           //isEmployeeActive: true,
         }).then((resultUser) => {
           console.log(resultUser + "result user");
@@ -1032,11 +1036,13 @@ class UserController {
       );
       if (!(req.body.email === req.user.email)) {
         // const data = JSON.parse(req.body.data);
-
+        // console.log("password gen", passwordGenerator.generate(10));
+        const passw = passwordGenerator.generate(10);
         User.findOne({
           email: req.body.email,
           role: "employee",
           breederId: req.user._id,
+
           //isEmployeeActive: true,
         }).then(async (resultUser) => {
           console.log(resultUser + "result user");
@@ -1048,7 +1054,7 @@ class UserController {
             req.body.image = req.file ? req.file.filename : null;
 
             req.body.emergencyContact = JSON.parse(req.body.emergencyContact);
-            await this.registerUserWithRole(req.body, "employee", false)
+            await this.registerUserWithRole(req.body, "employee", passw, false)
               .then((success) => {
                 console.log(("success", success));
 

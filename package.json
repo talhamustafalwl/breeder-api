@@ -38,6 +38,7 @@
     "stripe": "^8.49.0",
     "superagent": "^6.1.0",
     "twilio": "^3.69.0",
+    "generate-password": "^1.5.1",
     "validator": "^13.0.0"
   }
 }
