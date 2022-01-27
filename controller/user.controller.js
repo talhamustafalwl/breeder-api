@@ -58,6 +58,7 @@ class UserController {
     this.forgetpasswordphone = this.forgetpasswordphone.bind(this);
     this.resendCodeVerificationSms = this.resendCodeVerificationSms.bind(this);
     this.resendVerificationCodes = this.resendVerificationCodes.bind(this);
+
   }
 
   async registerUserWithRole(body, role, token = false, files = []) {
@@ -2158,13 +2159,12 @@ class UserController {
         selectedAnimalForms,
         selectedProductForm,
         employeeArray,
-        businessDetails,
+        // businessDetails,
       } = req.body;
 
-      console.log("businessDetails", businessDetails);
       console.log(selectedAnimalForms);
       console.log(employeeArray);
-      Promise.allSettled([
+      Promise.all([
         new Promise(async (resolve, reject) => {
           let resultForm = await Form.find({
             _id: {
@@ -2195,38 +2195,38 @@ class UserController {
         }),
         //
 
-        new Promise((resolve, reject) => {
-          const {
-            businessInfo,
-            daysOpen,
-            openHrStart,
-            openHrEnd,
-            breakTimeStart,
-            breakTimeEnd,
-            holidays,
-            taxPercentage,
-          } = businessDetails;
-          const businessDetailvar = BusinessDetail.findOneAndUpdate(
-            { breederId: req.user._id },
-            {
-              businessInfo: businessInfo,
-              daysOpen: daysOpen,
-              openHrStart: openHrStart,
-              openHrEnd: openHrEnd,
-              breakTimeStart: breakTimeStart,
-              breakTimeEnd: breakTimeEnd,
-              holidays: holidays,
-              taxPercentage: taxPercentage,
-              // breederId: req.user._id,
-            },
-            { upsert: true }
-          ).then((resultModified) => {
-            console.log("modified peacefully");
-          });
-          console.log("businessDetailvar", businessDetailvar);
+        // new Promise((resolve, reject) => {
+        //   const {
+        //     businessInfo,
+        //     daysOpen,
+        //     openHrStart,
+        //     openHrEnd,
+        //     breakTimeStart,
+        //     breakTimeEnd,
+        //     holidays,
+        //     taxPercentage,
+        //   } = businessDetails;
+        //   const businessDetailvar = BusinessDetail.findOneAndUpdate(
+        //     { breederId: req.user._id },
+        //     {
+        //       businessInfo: businessInfo,
+        //       daysOpen: daysOpen,
+        //       openHrStart: openHrStart,
+        //       openHrEnd: openHrEnd,
+        //       breakTimeStart: breakTimeStart,
+        //       breakTimeEnd: breakTimeEnd,
+        //       holidays: holidays,
+        //       taxPercentage: taxPercentage,
+        //       // breederId: req.user._id,
+        //     },
+        //     { upsert: true }
+        //   ).then((resultModified) => {
+        //     console.log("modified peacefully");
+        //   });
+        //   console.log("businessDetailvar", businessDetailvar);
 
-          resolve();
-        }),
+        //   resolve();
+        // }),
 
         //
 
@@ -2252,7 +2252,7 @@ class UserController {
           resolve();
         }),
         // ]).then(([animal, product, employee, BusinessDetails]) => {
-      ]).then(([animal, product, employee, BusinessDetails]) => {
+      ]).then(([animal, product, employee]) => {
         User.updateOne(
           { _id: req.user._id },
           { $set: { setupWizardCompleted: true } }
@@ -2264,6 +2264,121 @@ class UserController {
       return next(error);
     }
   }
+
+  // formFunction(selectedAnimalForms, selectedProductForm) {
+  //   if (selectedAnimalForms && selectedProductForm) {
+  //     return new Promise((resolve, reject) => {
+  //       let resultForm = Form.find({
+  //         _id: {
+  //           $in: [...selectedAnimalForms, ...selectedProductForm],
+  //         },
+  //       });
+  //       resultForm = resultForm.map((e) => e.toObject());
+  //       resultForm = resultForm.map((e) => ({
+  //         ...e,
+  //         breedersId: [...e.breedersId, ...[req.user._id]],
+  //         formStructure: e.formStructure.map((fs) => ({
+  //           ...fs,
+  //           breedersId: [...fs.breedersId, ...[{ _id: req.user._id }]],
+  //         })),
+  //       }));
+
+  //       resultForm.forEach((form) => {
+  //         console.log("form", form);
+  //         Form.updateOne({ _id: form._id }, form).then((resultModified) => {
+  //           console.log("modified successfully");
+  //         });
+  //       });
+
+  //       resolve();
+  //     });
+  //   } else {
+  //     return [];
+  //   }
+  // }
+
+  // employeeFunc(employeeArray) {
+  //   if (employeeArray) {
+  //     return new Promise((resolve, reject) => {
+  //       employeeArray.forEach((employee) => {
+  //         employee.breederUniqueId = req.user.uid;
+  //         employee.breederId = req.user._id;
+  //         User.findOne({
+  //           email: employee.email,
+  //           role: "employee",
+  //           breederId: req.user._id,
+  //           isEmployeeActive: true,
+  //         }).then((resultUser) => {
+  //           if (!resultUser) {
+  //             this.registerUserWithRole(employee, "employee", false).then(
+  //               (success) => {
+  //                 console.log("employee added");
+  //               }
+  //             );
+  //           }
+  //         });
+  //       });
+
+  //       resolve();
+  //     });
+  //   } else {
+  //     return [];
+  //   }
+  // }
+
+  // businessFunc(businessDetails) {
+  //   if (businessDetails) {
+  //     return new Promise((resolve, reject) => {
+  //       const {
+  //         businessInfo,
+  //         daysOpen,
+  //         openHrStart,
+  //         openHrEnd,
+  //         breakTimeStart,
+  //         breakTimeEnd,
+  //         holidays,
+  //         taxPercentage,
+  //       } = businessDetails;
+  //       const businessDetailvar = BusinessDetail.findOneAndUpdate(
+  //         { breederId: req.user._id },
+  //         {
+  //           businessInfo: businessInfo,
+  //           daysOpen: daysOpen,
+  //           openHrStart: openHrStart,
+  //           openHrEnd: openHrEnd,
+  //           breakTimeStart: breakTimeStart,
+  //           breakTimeEnd: breakTimeEnd,
+  //           holidays: holidays,
+  //           taxPercentage: taxPercentage,
+  //           // breederId: req.user._id,
+  //         },
+  //         { upsert: true }
+  //       ).then((resultModified) => {
+  //         console.log("modified peacefully");
+  //       });
+  //       console.log("businessDetailvar", businessDetailvar);
+  //       resolve();
+  //     });
+  //   } else {
+  //     return [];
+  //   }
+  // }
+
+  // async  setupWizard2(req, res, next) {
+  //   try {
+  //     const {
+  //       selectedAnimalForms,
+  //       selectedProductForm,
+  //       employeeArray,
+  //       businessDetails,
+  //     } = req.body;
+  //     await this.formFunction(selectedAnimalForms, selectedProductForm).then(
+  //       employeeFunc(employeeArray).then(businessFunc(businessDetails))
+  //     );
+  //   } catch (error) {
+  //     return next(error);
+  //   }
+  // }
 
   async addCreditCardBusiness(req, res, next) {
     console.log(req.body, "<--addCreditCardBusiness");
