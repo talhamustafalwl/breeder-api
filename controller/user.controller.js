@@ -62,13 +62,11 @@ class UserController {
 
   async registerUserWithRole(body, role, token = false, files = []) {
     console.log("register with role");
-    console.log(pass);
     return new Promise((resolve, reject) => {
       // console.log(token);
       const user = new User({
         ...body,
         ...{ role: role },
-        // ...{ password: pass },
       });
       if (token) user.secretToken = randomstring.generate();
       user.save((err, doc) => {
