@@ -2164,7 +2164,7 @@ class UserController {
       console.log("businessDetails", businessDetails);
       console.log(selectedAnimalForms);
       console.log(employeeArray);
-      Promise.all([
+      Promise.allSettled([
         new Promise(async (resolve, reject) => {
           let resultForm = await Form.find({
             _id: {
@@ -2206,7 +2206,6 @@ class UserController {
             holidays,
             taxPercentage,
           } = businessDetails;
-          // const businessDetailvar = BusinessDetail.updateOne(
           const businessDetailvar = BusinessDetail.findOneAndUpdate(
             { breederId: req.user._id },
             {
@@ -2225,12 +2224,6 @@ class UserController {
             console.log("modified peacefully");
           });
           console.log("businessDetailvar", businessDetailvar);
-          // const doc = businessDetailvar.save();
-          // return res.status(200).json({
-          //   status: 200,
-          //   message: "Business Details created successfully",
-          //   data: doc,
-          // });
 
           resolve();
         }),
@@ -2258,6 +2251,7 @@ class UserController {
           });
           resolve();
         }),
+        // ]).then(([animal, product, employee, BusinessDetails]) => {
       ]).then(([animal, product, employee, BusinessDetails]) => {
         User.updateOne(
           { _id: req.user._id },
