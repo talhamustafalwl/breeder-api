@@ -1834,6 +1834,13 @@ class UserController {
   async getUserDetail(req, res, next) {
     try {
       console.log("user detail called");
+      const busDetails = await BusinessDetail.findOne({
+        breederId: req.user._id,
+      })
+        .populate("BusinessDetail._id")
+        .exec();
+
+      console.log("busDetails", busDetails);
       User.findById(req.user._id)
         .populate("dealCategories")
         .then((resultUser) => {
@@ -1854,6 +1861,7 @@ class UserController {
                       ...{ filename: `${config.baseImageURL}${e.filename}` },
                     }))
                   : [],
+              businessDetails: busDetails,
             },
           });
         })
