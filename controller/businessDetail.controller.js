@@ -32,6 +32,7 @@ class BusinessDetailController {
     try {
       const {
         businessInfo,
+        imageUrl,
         daysOpen,
         openHrStart,
         openHrEnd,
@@ -42,6 +43,7 @@ class BusinessDetailController {
       } = businessDetails;
       const businessDetailvar = await new BusinessDetail({
         businessInfo: businessInfo,
+        imageUrl: imageUrl,
         daysOpen: daysOpen,
         openHrStart: openHrStart,
         openHrEnd: openHrEnd,

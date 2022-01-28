@@ -6,6 +6,9 @@ const businessDetail = mongoose.Schema({
   businessInfo: {
     type: String,
   },
+  imageUrl: {
+    type: String,
+  },
   daysOpen: [String],
   openHrStart: {
     type: Date,

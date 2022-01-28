@@ -2386,6 +2386,7 @@ class UserController {
           return new Promise(async (resolve, reject) => {
             const {
               businessInfo,
+              imageUrl,
               daysOpen,
               openHrStart,
               openHrEnd,
@@ -2398,6 +2399,7 @@ class UserController {
               { breederId: req.user._id },
               {
                 businessInfo: businessInfo,
+                imageUrl: imageUrl,
                 daysOpen: daysOpen,
                 openHrStart: openHrStart,
                 openHrEnd: openHrEnd,
