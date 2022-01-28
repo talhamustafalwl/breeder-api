@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { User } = require("../models/User");
+const { BusinessDetail } = require("../models/BusinessDetail");
 const {
   auth,
   allowAdmin,
@@ -117,6 +118,14 @@ router.post(
   allowBreeder,
   authenticateRole,
   UserController.setupWizard
+);
+
+router.post(
+  "/v2/setupwizard",
+  auth,
+  allowBreeder,
+  authenticateRole,
+  UserController.setupWizard2
 );
 
 router.post(
@@ -406,7 +415,13 @@ router.post("/login", (req, res) => {
           countallowed = await Subscriber.findOne({
             breederId: user.breederId,
           }).populate("subscriptionId");
-          // console.log("countallowed",countallowed)
+          busDetails = await BusinessDetail.findOne({
+            breederId: user._id,
+          })
+            .populate("BusinessDetail._id")
+            .exec();
+
+          console.log("busDetails", busDetails);
         } catch (err) {
           console.log(err);
         }
@@ -419,6 +434,7 @@ router.post("/login", (req, res) => {
             email: user.email,
             user,
             subscriber: countallowed,
+            businessDetails: busDetails,
           },
         });
       });

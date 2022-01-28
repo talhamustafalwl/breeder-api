@@ -48,17 +48,18 @@ require("dotenv").config();
 //     listUniqueId        = '7e53e2afa6',
 //     mailchimpApiKey     = '99525a128cda82bb5d6e1037a8f98fca-us1';
 
+let updater = null;
 class UserController {
   constructor() {
     this.registerUserWithRole = this.registerUserWithRole.bind(this);
     this.registerBreeder = this.registerBreeder.bind(this);
     this.registerEmployees = this.registerEmployees.bind(this);
     this.setupWizard = this.setupWizard.bind(this);
+    this.setupWizard2 = this.setupWizard2.bind(this);
     this.sendSms = this.sendSms.bind(this);
     this.forgetpasswordphone = this.forgetpasswordphone.bind(this);
     this.resendCodeVerificationSms = this.resendCodeVerificationSms.bind(this);
     this.resendVerificationCodes = this.resendVerificationCodes.bind(this);
-
   }
 
   async registerUserWithRole(body, role, token = false, files = []) {
@@ -466,6 +467,9 @@ class UserController {
           const countallowed = await Subscriber.findOne({
             userId: user.breederId ? user.breederId : user._id,
           }).populate("subscriptionId");
+
+          //BusinessDetails
+
           // console.log(user.breederId,"countallowed==>>",countallowed)
           return res.status(200).json({
             status: 200,
@@ -2265,120 +2269,143 @@ class UserController {
     }
   }
 
-  // formFunction(selectedAnimalForms, selectedProductForm) {
-  //   if (selectedAnimalForms && selectedProductForm) {
-  //     return new Promise((resolve, reject) => {
-  //       let resultForm = Form.find({
-  //         _id: {
-  //           $in: [...selectedAnimalForms, ...selectedProductForm],
-  //         },
-  //       });
-  //       resultForm = resultForm.map((e) => e.toObject());
-  //       resultForm = resultForm.map((e) => ({
-  //         ...e,
-  //         breedersId: [...e.breedersId, ...[req.user._id]],
-  //         formStructure: e.formStructure.map((fs) => ({
-  //           ...fs,
-  //           breedersId: [...fs.breedersId, ...[{ _id: req.user._id }]],
-  //         })),
-  //       }));
+  async setupWizard2(req, res, next) {
+    try {
+      const {
+        selectedAnimalForms,
+        selectedProductForm,
+        employeeArray,
+        businessDetails,
+      } = req.body;
 
-  //       resultForm.forEach((form) => {
-  //         console.log("form", form);
-  //         Form.updateOne({ _id: form._id }, form).then((resultModified) => {
-  //           console.log("modified successfully");
-  //         });
-  //       });
+      const formFunction = async (selectedAnimalForms, selectedProductForm) => {
+        if (selectedAnimalForms && selectedProductForm) {
+          return new Promise(async (resolve, reject) => {
+            let resultForm = await Form.find({
+              _id: {
+                $in: [...selectedAnimalForms, ...selectedProductForm],
+              },
+            }).lean();
+            // resultForm = resultForm.map((e) => e.toObject());
+            resultForm = resultForm.map((e) => ({
+              ...e,
+              breedersId: [...e.breedersId, ...[req.user._id]],
+              formStructure: e.formStructure.map((fs) => ({
+                ...fs,
+                breedersId: [...fs.breedersId, ...[{ _id: req.user._id }]],
+              })),
+            }));
 
-  //       resolve();
-  //     });
-  //   } else {
-  //     return [];
-  //   }
-  // }
+            resultForm.forEach((form) => {
+              console.log("form", form);
+              Form.updateOne({ _id: form._id }, form).then((resultModified) => {
+                // console.log("modified successfully");
+              });
+            });
 
-  // employeeFunc(employeeArray) {
-  //   if (employeeArray) {
-  //     return new Promise((resolve, reject) => {
-  //       employeeArray.forEach((employee) => {
-  //         employee.breederUniqueId = req.user.uid;
-  //         employee.breederId = req.user._id;
-  //         User.findOne({
-  //           email: employee.email,
-  //           role: "employee",
-  //           breederId: req.user._id,
-  //           isEmployeeActive: true,
-  //         }).then((resultUser) => {
-  //           if (!resultUser) {
-  //             this.registerUserWithRole(employee, "employee", false).then(
-  //               (success) => {
-  //                 console.log("employee added");
-  //               }
-  //             );
-  //           }
-  //         });
-  //       });
+            // return "done";
 
-  //       resolve();
-  //     });
-  //   } else {
-  //     return [];
-  //   }
-  // }
+            resolve();
+          });
+        } else {
+          return [];
+        }
+      };
 
-  // businessFunc(businessDetails) {
-  //   if (businessDetails) {
-  //     return new Promise((resolve, reject) => {
-  //       const {
-  //         businessInfo,
-  //         daysOpen,
-  //         openHrStart,
-  //         openHrEnd,
-  //         breakTimeStart,
-  //         breakTimeEnd,
-  //         holidays,
-  //         taxPercentage,
-  //       } = businessDetails;
-  //       const businessDetailvar = BusinessDetail.findOneAndUpdate(
-  //         { breederId: req.user._id },
-  //         {
-  //           businessInfo: businessInfo,
-  //           daysOpen: daysOpen,
-  //           openHrStart: openHrStart,
-  //           openHrEnd: openHrEnd,
-  //           breakTimeStart: breakTimeStart,
-  //           breakTimeEnd: breakTimeEnd,
-  //           holidays: holidays,
-  //           taxPercentage: taxPercentage,
-  //           // breederId: req.user._id,
-  //         },
-  //         { upsert: true }
-  //       ).then((resultModified) => {
-  //         console.log("modified peacefully");
-  //       });
-  //       console.log("businessDetailvar", businessDetailvar);
-  //       resolve();
-  //     });
-  //   } else {
-  //     return [];
-  //   }
-  // }
+      const employeeFunc = (employeeArray) => {
+        if (employeeArray) {
+          console.log("employee ", employeeArray);
+          return new Promise((resolve, reject) => {
+            employeeArray.forEach((employee) => {
+              employee.breederUniqueId = req.user.uid;
+              employee.breederId = req.user._id;
+              User.findOne({
+                email: employee.email,
+                role: "employee",
+                breederId: req.user._id,
+                isEmployeeActive: true,
+              }).then((resultUser) => {
+                if (!resultUser) {
+                  this.registerUserWithRole(employee, "employee", false).then(
+                    (success) => {
+                      console.log("employee added");
+                    }
+                  );
+                }
+              });
+            });
 
-  // async  setupWizard2(req, res, next) {
-  //   try {
-  //     const {
-  //       selectedAnimalForms,
-  //       selectedProductForm,
-  //       employeeArray,
-  //       businessDetails,
-  //     } = req.body;
-  //     await this.formFunction(selectedAnimalForms, selectedProductForm).then(
-  //       employeeFunc(employeeArray).then(businessFunc(businessDetails))
-  //     );
-  //   } catch (error) {
-  //     return next(error);
-  //   }
-  // }
+            resolve();
+          });
+        } else {
+          return new Promise((resolve, reject) => {
+            resolve();
+          });
+        }
+      };
+
+      const businessFunc = async (businessDetails) => {
+        if (businessDetails) {
+          return new Promise(async (resolve, reject) => {
+            const {
+              businessInfo,
+              daysOpen,
+              openHrStart,
+              openHrEnd,
+              breakTimeStart,
+              breakTimeEnd,
+              holidays,
+              taxPercentage,
+            } = businessDetails;
+            const businessDetailvar = await BusinessDetail.findOneAndUpdate(
+              { breederId: req.user._id },
+              {
+                businessInfo: businessInfo,
+                daysOpen: daysOpen,
+                openHrStart: openHrStart,
+                openHrEnd: openHrEnd,
+                breakTimeStart: breakTimeStart,
+                breakTimeEnd: breakTimeEnd,
+                holidays: holidays,
+                taxPercentage: taxPercentage,
+                // breederId: req.user._id,
+              },
+              { upsert: true }
+            ).then((resultModified) => {
+              console.log("modified peacefully", resultModified);
+              updater = resultModified._id;
+
+              resolve();
+            });
+            console.log(req.user._id);
+            const docc = await User.findOneAndUpdate(
+              { _id: req.user._id },
+              { businessId: updater, setupWizardCompleted: true },
+              // { $set: { setupWizardCompleted: true } },
+
+              { upsert: true }
+            );
+            console.log("docc", docc);
+          });
+        } else {
+          return [];
+        }
+      };
+
+      const response1 = await formFunction(
+        selectedAnimalForms,
+        selectedProductForm
+      );
+
+      const response2 = await employeeFunc(employeeArray);
+
+      const response3 = await businessFunc(businessDetails);
+
+      return res.send({ status: 200, message: "Setup Wizard Completed!" });
+    } catch (error) {
+      return res.send({ status: 400, message: "Error in Setup Wizard" });
+    }
+  }
 
   async addCreditCardBusiness(req, res, next) {
     console.log(req.body, "<--addCreditCardBusiness");

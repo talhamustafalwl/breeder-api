@@ -229,6 +229,10 @@ const userSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Subscriber",
     },
+    businessId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "BusinessDetail",
+    },
     addedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
