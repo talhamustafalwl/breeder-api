@@ -138,6 +138,16 @@ router.post(
   UserController.updateImage
 );
 
+router.post(
+  "/v2/image/upload",
+  auth,
+  allowAdmin,
+  allowBreeder,
+  authenticateRole,
+  upload.single("file"),
+  UserController.updateImage2
+);
+
 // Register Employee only .. By Breeder..
 // employeesubscriber //// Will manage subscribe later..
 router.post(

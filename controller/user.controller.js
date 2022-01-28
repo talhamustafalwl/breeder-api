@@ -1952,6 +1952,35 @@ class UserController {
     }
   }
 
+  async updateImage2(req, res, next) {
+    try {
+      User.updateOne(
+        { _id: req.user._id },
+        { $set: { [req.body.name]: req.file.filename } }
+      )
+        .then((resultUser) => {
+          console.log("result image", req.file.path);
+          return res.send({
+            status: 200,
+            data: {
+              imageUrl: req.file.path,
+            },
+            message: "Image updated successfully",
+          });
+        })
+        .catch((error) => {
+          return res.json({
+            status: 400,
+            message: error.message ? error.message : "Internal Server Error",
+            data: {},
+            error,
+          });
+        });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
   async resetPassword() {}
 
   async getAllBreedersId() {
