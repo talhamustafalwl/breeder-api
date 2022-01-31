@@ -1217,16 +1217,21 @@ class AnimalController {
       // console.log(req.body.type);
       // console.log(req.body.id);
       // console.log(req.body.animalId);
+
+      const parent = await Animal.findById(req.body.animalId, {
+        data: 1,
+      }).lean();
+
       Animal.findById(req.body.id).then((animalResult) => {
         if (type === "parent1") {
           animalResult.family["parent1"] = {
             id: req.body.animalId,
-            name: req.body.name,
+            name: parent.data.name,
           };
         } else if (type === "parent2") {
           animalResult.family["parent2"] = {
             id: req.body.animalId,
-            name: req.body.name,
+            name: parent.data.name,
           };
         } else {
           animalResult.family.children = [
@@ -1235,33 +1240,41 @@ class AnimalController {
           ];
         }
         Animal.findById(req.body.animalId).then((parentChildAnimal) => {
-          console.log("parentChildAnimal", parentChildAnimal);
+          console.log("parent", parentChildAnimal);
           if (type === "parent1" || type === "parent2") {
             console.log("children", parentChildAnimal.family["children"]);
             const childrenArray = parentChildAnimal.family["children"];
-            console.log(req.body.id);
-            childrenArray[0] = req.body.id;
-            console.log(parentChildAnimal);
-            // parentChildAnimal.family["children"] = [
-            //   ...parentChildAnimal.family["children"],
-            //   ...[req.body.id],
-            // ];
-            // console.log(parentChildAnimal.family["children"]);
-            animalResult.save().then((_) => {
-              parentChildAnimal.save().then((_) => {
+            try {
+              if (!childrenArray.includes(req.body.id)) {
+                childrenArray.push(req.body.id);
+                animalResult.save().then((_) => {
+                  parentChildAnimal.save().then((_) => {
+                    console.log("here  in res:");
+
+                    return res.status(200).json({
+                      status: 200,
+                      message: "Animal added successfully",
+                    });
+                  });
+                });
+              } else {
                 return res.status(200).json({
                   status: 200,
-                  message: "Animal added successfully",
+                  message: "Same Child already exists in parent",
                 });
+              }
+            } catch (e) {
+              console.log({ e });
+              return res.status(400).json({
+                status: 400,
+                message: "Something went wrong",
               });
-            });
+            }
           } else {
             if (
               parentChildAnimal.family["parent1"].id &&
               parentChildAnimal.family["parent2"].id
             ) {
-              // console.log("in if condition");
-              // console.log(parentChildAnimal.family["parent1"]);
               return res.json({
                 status: 400,
                 message: "You can not be the parent of this animal.",
