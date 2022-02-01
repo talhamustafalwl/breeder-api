@@ -417,6 +417,24 @@ class AnimalController {
       });
     }
   }
+  async updateAnimalbyId(req, res) {
+    console.log(req.body, "req.body");
+    try {
+      const animals = Animal.findByIdAndUpdate(
+        req.params.id,
+        { ...req.body, ...(req.file ? { image: req.file.filename } : {}) },
+        { new: true }
+      ).then((animalres) => {
+        return res.status(200).json({
+          status: 200,
+          message: "Animals updated successfully",
+          data: animalres,
+        });
+      });
+    } catch (error) {
+      return error;
+    }
+  }
 
   async updateAnimalData(req, res, next) {
     // console.log(req.body,"<--req.body")
@@ -424,12 +442,12 @@ class AnimalController {
       req.body.status = "Alive";
     }
     try {
-      Animal.findByIdAndUpdate(req.params.id, req.body)
+      const animal = Animal.findByIdAndUpdate(req.params.id, req.body)
         .then((responseAnimal) => {
           return res.status(200).json({
             status: 200,
             message: "Animals updated successfully",
-            data: responseAnimal,
+            data: animal,
           });
         })
         .catch((error) => {

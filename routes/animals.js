@@ -120,6 +120,18 @@ router.put(
   AnimalController.updateAnimalData
 );
 
+// put request for updating animal
+router
+  .route("/updateAnimal/:id")
+  .put(
+    auth,
+    allowBreeder,
+    allowEmployee,
+    authenticateRole,
+    upload.single("file"),
+    AnimalController.updateAnimalbyId
+  );
+
 //for specific animal update/view/delete
 router
   .route("/:id")
