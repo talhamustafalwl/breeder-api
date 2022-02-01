@@ -61,9 +61,8 @@ const AnimalSchema = mongoose.Schema(
     //     type: String, minglength: 3,
     //     maxlength: 20, required: true
     // },
-    data: {
-      type: Object,
-    },
+    data: { type: Object },
+
     family: {
       parent1: {
         id: { type: Schema.Types.ObjectId, ref: "Animal" },

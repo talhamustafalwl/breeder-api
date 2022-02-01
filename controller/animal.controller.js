@@ -418,11 +418,25 @@ class AnimalController {
     }
   }
   async updateAnimalbyId(req, res) {
-    console.log(req.body, "req.body");
     try {
+      // console.log(req.body, "req.body");
+      const data = JSON.parse(req.body.data);
+      const categoryId = req.body.categoryId;
+      // req.body.data.quantity;
+      // req.body.quantity = data.quantity;
+      // req.body.aliveQuantity = data.quantity;
+      // req.body.healthyQuantity = data.quantity;
+      // req.body.data.quantity = parseInt(req.body.data.quantity);
+      // console.log(req.body);
+      // const udata = req.body;
       const animals = Animal.findByIdAndUpdate(
         req.params.id,
-        { ...req.body, ...(req.file ? { image: req.file.filename } : {}) },
+        {
+          data,
+          categoryId,
+
+          ...(req.file ? { image: req.file.filename } : {}),
+        },
         { new: true }
       ).then((animalres) => {
         return res.status(200).json({
