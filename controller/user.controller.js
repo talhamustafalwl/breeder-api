@@ -2896,7 +2896,7 @@ class UserController {
     } catch (err) {
       return res.json({
         status: 400,
-        message: "Error in getting email",
+        message: "Email not found",
         errors: err,
         data: {},
       });
