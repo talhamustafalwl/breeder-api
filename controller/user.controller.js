@@ -2866,7 +2866,7 @@ class UserController {
       console.log(req.user.email);
 
       if (req.user.email === req.query.email) {
-        return res.status(400).json({
+        return res.status(200).json({
           status: 400,
           message: "your Email is not required",
         });
