@@ -2858,6 +2858,42 @@ class UserController {
     }
   }
 
+  async getUserByEmail(req, res, next) {
+    let emailId;
+    let name, email, phone, state, city, image;
+
+    try {
+      if (req.query.email) {
+        emailId = await User.find({ email: req.query.email }).lean();
+        name = emailId[0].name;
+        email = emailId[0].email;
+        phone = emailId[0].phone;
+        state = emailId[0].state;
+        city = emailId[0].city;
+        image = emailId[0].image;
+      }
+      return res.status(200).json({
+        status: 200,
+        message: "Email Found",
+        data: {
+          name: name,
+          email,
+          phone,
+          state,
+          city,
+          image,
+        },
+      });
+    } catch (err) {
+      return res.json({
+        status: 400,
+        message: "Error in getting email",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
   async getMatchingEmails(req, res, next) {
     try {
       if (!req.body.email) {
