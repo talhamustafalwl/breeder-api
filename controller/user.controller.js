@@ -2860,16 +2860,24 @@ class UserController {
 
   async getUserByEmail(req, res, next) {
     let emailId;
-    let name, email, phone, state, city, image;
+    let name, email, phone, state, city, address, image;
 
     try {
-      if (req.query.email) {
+      console.log(req.user.email);
+
+      if (req.user.email === req.query.email) {
+        return res.status(400).json({
+          status: 400,
+          message: "your Email is not required",
+        });
+      } else {
         emailId = await User.find({ email: req.query.email }).lean();
         name = emailId[0].name;
         email = emailId[0].email;
         phone = emailId[0].phone;
         state = emailId[0].state;
         city = emailId[0].city;
+        address = emailId[0].address;
         image = emailId[0].image;
       }
       return res.status(200).json({
@@ -2882,6 +2890,7 @@ class UserController {
           state,
           city,
           image,
+          address,
         },
       });
     } catch (err) {
