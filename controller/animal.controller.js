@@ -1255,34 +1255,51 @@ class AnimalController {
       }).lean();
 
       Animal.findById(req.body.id).then((animalResult) => {
-        if (type === "parent1") {
-          animalResult.family["parent1"] = {
-            id: req.body.animalId,
-            name: parent.data.name,
-          };
-        } else if (type === "parent2") {
-          animalResult.family["parent2"] = {
-            id: req.body.animalId,
-            name: parent.data.name,
-          };
+        if (type === "parent1" || type === "parent2") {
+          const gender = parent.data.Sex;
+
+          if (gender === "Male") {
+            if (type == "parent1") {
+              animalResult.family[type] = {
+                id: req.body.animalId,
+                name: parent.data.name,
+              };
+            } else {
+              return res.status(400).json({
+                message: "Gender should be Male",
+              });
+            }
+          }
+
+          if (gender === "Female") {
+            if (type == "parent2") {
+              animalResult.family[type] = {
+                id: req.body.animalId,
+                name: parent.data.name,
+              };
+            } else {
+              return res.status(400).json({
+                message: "Gender should be Female",
+              });
+            }
+          }
         } else {
           animalResult.family.children = [
             ...animalResult.family.children,
             ...[req.body.animalId],
           ];
         }
+
         Animal.findById(req.body.animalId).then((parentChildAnimal) => {
           console.log("parent", parentChildAnimal);
           if (type === "parent1" || type === "parent2") {
-            console.log("children", parentChildAnimal.family["children"]);
             const childrenArray = parentChildAnimal.family["children"];
+
             try {
               if (!childrenArray.includes(req.body.id)) {
                 childrenArray.push(req.body.id);
                 animalResult.save().then((_) => {
                   parentChildAnimal.save().then((_) => {
-                    console.log("here  in res:");
-
                     return res.status(200).json({
                       status: 200,
                       message: "Animal added successfully",
@@ -1292,7 +1309,7 @@ class AnimalController {
               } else {
                 return res.status(200).json({
                   status: 200,
-                  message: "Same Child already exists in parent",
+                  message: `Animal Already exisits`,
                 });
               }
             } catch (e) {
