@@ -8,7 +8,6 @@ class ActivityController {
   constructor() {}
 
   async create(req, res) {
-
     const { errors, isValid } = await validateActivity(req.body);
     // Check validation
     if (!isValid) {
@@ -108,19 +107,30 @@ class ActivityController {
   }
 
   async getActivityData(req, res, next) {
-    let breederId =req.user.role == "employee" ? req.user.breederId : req.user._id;
+    let breederId =
+      req.user.role == "employee" ? req.user.breederId : req.user._id;
     try {
       // categoryController.allCategories('activity').then(categoryResult => {
 
       // });
       Category.aggregate([
-        {$match: {type: 'activity',$or: [{isDefault: true}, {addedBy:breederId}]}},
+        {
+          $match: {
+            type: "activity",
+            $or: [{ isDefault: true }, { addedBy: breederId }],
+          },
+        },
         {
           $lookup: {
             from: "activities",
             localField: "_id",
             foreignField: "categoryId",
             as: "activities",
+          },
+        },
+        {
+          $sort: {
+            createdAt: 1,
           },
         },
       ])

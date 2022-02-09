@@ -174,6 +174,9 @@ router.delete("/:id/parent/:parentName", AnimalController.removeAnimalParent);
 router.delete("/:id/child/:childId", AnimalController.removeAnimalChild);
 
 router.put("/addasparentchild", AnimalController.addAnimalAsParentChild);
+
+router.put("/type/addAnimal", AnimalController.addAnimalByType);
+
 router.post("/transferanimal", AnimalController.transferAnimal);
 
 module.exports = router;

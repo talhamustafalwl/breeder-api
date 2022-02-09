@@ -3,13 +3,13 @@ const mongoose = require("mongoose");
 //for Activity create to hold info
 const ActivitySchema = mongoose.Schema(
   {
-    name: { type: String },
+    // name: { type: String },
     categoryType: { type: String },
     description: { type: String },
     assignToType: {
-        type: String,
-        enum: ["Animal", "Group"],
-        default: "Animal",
+      type: String,
+      enum: ["Animal", "Group"],
+      default: "Animal",
     },
     categoryName: { type: String },
 
@@ -54,22 +54,30 @@ const ActivitySchema = mongoose.Schema(
       enum: ["Daily", "Weekly", "Montly", "Yearly", "Group"],
       default: "Daily",
     },
-    time: [{
+    time: [
+      {
         type: String,
-    }],
-    days: [{
+      },
+    ],
+    days: [
+      {
         type: String,
-    }],
-    months: [{
+      },
+    ],
+    months: [
+      {
         type: String,
-    }],
-    years: [{
+      },
+    ],
+    years: [
+      {
         type: String,
-    }],
-    timePeriod: {
-        type: String,
-        enum: ["P.M", "A.M"],
-    },
+      },
+    ],
+    // timePeriod: {
+    //     type: String,
+    //     enum: ["P.M", "A.M"],
+    // },
 
     //more...
   },

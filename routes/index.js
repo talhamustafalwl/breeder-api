@@ -45,8 +45,10 @@ const activityHistoryRoute = require("./activityHistory");
 const feedbackRoute = require("./feedback");
 const businessDetailRoute = require("./businessDetail");
 
-app.use("/businessDetails", businessDetailRoute);
+const searchRoute = require("./search");
 
+app.use("/businessDetails", businessDetailRoute);
+app.use("/search", searchRoute);
 app.use("/user", userRoute);
 app.use("/animal", animalRoute);
 app.use("/status", statusRoute); //animl status

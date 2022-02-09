@@ -23,6 +23,15 @@ class AnimalController {
     });
   }
 
+  // async filterFamily(arr) {
+
+  //   return new Promise((resolve, reject) => {
+
+  //     arr.
+  //   })
+
+  // }
+
   //admin get delete all animals
 
   async getall(req, res) {
@@ -1237,6 +1246,57 @@ class AnimalController {
       return res.json({
         status: 400,
         message: "Error in deleting Animal",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
+  async addAnimalByType(req, res) {
+    try {
+      let filteredArray = [];
+      const { categoryId, type, gender } = req.body;
+      // let type = req.body.type;
+      console.log("filter by category", categoryId);
+      // console.log("type", type);
+      // console.log(req.body.id);
+      // console.log(req.body.animalId);
+
+      const parent = await Animal.find({ categoryId });
+      const animalGender = await parent.filter(
+        (v) => v.data.Sex == `${gender}`
+      );
+      console.log("animalGender", animalGender);
+
+      if (type == "children") {
+        filteredArray = await animalGender.filter(
+          (v) => v.family.children == ""
+        );
+        console.log("filteredArray", filteredArray);
+      }
+      // if (type == "parent1") {
+      //   filteredArray = await animalGender.filter(
+      //     (v) => v.family.parent1 == undefined
+      //   );
+      //   console.log("filteredArray", filteredArray);
+      // }
+      // if (type == "parent2") {
+      //   filteredArray = await animalGender.filter(
+      //     (v) => v.family.parent2 == undefined
+      //   );
+
+      //   console.log("filteredArray", filteredArray);
+      // }
+
+      return res.status(200).json({
+        status: 200,
+        message: "Type Found Successfully",
+        data: filteredArray,
+      });
+    } catch (err) {
+      return res.json({
+        status: 400,
+        message: "Error in adding Animal",
         errors: err,
         data: {},
       });

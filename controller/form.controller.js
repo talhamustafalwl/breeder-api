@@ -135,11 +135,11 @@ class FormController {
                 ...{
                   categoryId: {
                     ...item.categoryId,
-                    ...{
-                      icon: item.categoryId
-                        ? `${config.imageURL}${item.categoryId.icon}`
-                        : "",
-                    },
+                    // ...{
+                    //   icon: item.categoryId
+                    //     ? `${config.imageURL}${item.categoryId.icon}`
+                    //     : "",
+                    // },
                   },
                 },
                 ...{
