@@ -850,6 +850,20 @@ class CategoryController {
     }
   }
 
+  async editType(req, res, next) {
+    req.body.type = req.body.type ? req.body.type.toLowerCase() : "";
+
+    try {
+      const edit = await Category.updateOne({ _id: req.params.id }, req.body);
+      return res
+        .status(200)
+        .json({ status: 200, message: "Updated successfully", data: edit });
+    } catch (err) {
+      console.log(error);
+      return next(error);
+    }
+  }
+
   // Activity section...
   async addType(req, res, next) {
     req.body.type = req.body.type ? req.body.type.toLowerCase() : "";
