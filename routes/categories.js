@@ -25,7 +25,7 @@ router.post(
   CategoryController.create
 );
 
-router.post(
+router.put(
   "/addtype/:id",
   auth,
   allowBreeder,
@@ -33,16 +33,6 @@ router.post(
   authenticateRole,
   // uploadCategory.single("file"),
   CategoryController.addType
-);
-
-router.put(
-  "/edittype/:id",
-  auth,
-  allowBreeder,
-  allowAdmin,
-  authenticateRole,
-  // uploadCategory.single("file"),
-  CategoryController.editType
 );
 
 router

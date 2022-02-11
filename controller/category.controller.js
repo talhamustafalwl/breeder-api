@@ -850,14 +850,14 @@ class CategoryController {
     }
   }
 
-  async editType(req, res, next) {
+  async addType(req, res, next) {
     req.body.type = req.body.type ? req.body.type.toLowerCase() : "";
 
     try {
-      const edit = await Category.updateOne({ _id: req.params.id }, req.body);
+      const add = await Category.updateOne({ _id: req.params.id }, req.body);
       return res
         .status(200)
-        .json({ status: 200, message: "Updated successfully", data: edit });
+        .json({ status: 200, message: "Updated successfully", data: add });
     } catch (err) {
       console.log(error);
       return next(error);
@@ -865,43 +865,6 @@ class CategoryController {
   }
 
   // Activity section...
-  async addType(req, res, next) {
-    req.body.type = req.body.type ? req.body.type.toLowerCase() : "";
-    try {
-      await Category.find({ _id: req.params.id, subType: req.body.type }).then(
-        (rs) => {
-          if (rs.length === 0) {
-            Category.update(
-              { _id: req.params.id },
-              { $push: { subType: req.body.type } }
-            )
-              .then((categoryResult) => {
-                return res.status(200).json({
-                  status: 200,
-                  message: "Type added successfully",
-                  data: categoryResult,
-                });
-              })
-              .catch((error) => {
-                console.log(error);
-                return res.json({
-                  status: 400,
-                  message: "Error in updating type",
-                });
-              });
-          } else {
-            return res.json({
-              status: 400,
-              message: "type is already defined",
-            });
-          }
-        }
-      );
-    } catch (error) {
-      console.log(error);
-      return next(error);
-    }
-  }
 }
 
 module.exports = new CategoryController();
