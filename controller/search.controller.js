@@ -22,7 +22,7 @@ class SearchController {
         if (!animal) {
           return res.json({
             status: 404,
-            message: "Animal Not FOund",
+            message: "Animal Not Found",
             data: {},
           });
         }
@@ -37,7 +37,13 @@ class SearchController {
 
       if (type == "business") {
         business = await User.find({
-          $and: [{ name: regex }, { accountType: "Business" }],
+          $and: [
+            {
+              //    name: regex
+              name: { $regex: req.params.name, $options: "i" },
+            },
+            { accountType: "Business" },
+          ],
         });
         if (!business) {
           return res.json({
@@ -57,7 +63,13 @@ class SearchController {
 
       if (type == "individual") {
         individual = await User.find({
-          $and: [{ name: regex }, { packageType: "Individual" }],
+          $and: [
+            {
+              //    name: regex
+              name: { $regex: req.params.name, $options: "i" },
+            },
+            { packageType: "Individual" },
+          ],
         });
         if (!individual) {
           return res.json({
@@ -76,7 +88,10 @@ class SearchController {
       }
 
       if (type == "product") {
-        product = await Product.find({ "data.name": regex });
+        product = await Product.find({
+          // "data.name": regex
+          "data.name": { $regex: req.params.name, $options: "i" },
+        });
 
         if (!product) {
           return res.json({
@@ -95,17 +110,33 @@ class SearchController {
       }
 
       if (type == "all") {
-        animal = await Animal.find({ "data.name": regex });
+        animal = await Animal.find({
+          "data.name": { $regex: req.params.name, $options: "i" },
+        });
         console.log("animal", animal);
-        product = await Product.find({ "data.name": regex });
+        product = await Product.find({
+          "data.name": { $regex: req.params.name, $options: "i" },
+        });
         console.log("product", product);
 
         business = await User.find({
-          $and: [{ name: regex }, { accountType: "Business" }],
+          $and: [
+            {
+              //   name: regex
+              name: { $regex: req.params.name, $options: "i" },
+            },
+            { accountType: "Business" },
+          ],
         });
         console.log("business", business);
         individual = await User.find({
-          $and: [{ name: regex }, { packageType: "Individual" }],
+          $and: [
+            {
+              //   name: regex
+              name: { $regex: req.params.name, $options: "i" },
+            },
+            { packageType: "Individual" },
+          ],
         });
         console.log("individual", individual);
 

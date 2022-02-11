@@ -106,6 +106,61 @@ class ActivityController {
     }
   }
 
+  //
+
+  async getScheduleData(req, res, next) {
+    let breederId =
+      req.user.role == "employee" ? req.user.breederId : req.user._id;
+    try {
+      Category.aggregate([
+        {
+          $match: {
+            type: "activity",
+            $or: [{ isDefault: true }, { addedBy: breederId }],
+          },
+        },
+        {
+          $lookup: {
+            from: "activities",
+            localField: "_id",
+            foreignField: "categoryId",
+            as: "activities",
+          },
+        },
+        {
+          $sort: {
+            createdAt: 1,
+          },
+        },
+      ])
+        .then((result) => {
+          console.log(result);
+          const mapArray = result
+            .map((item) => item.activities)
+            .filter((item) => item.length > 0);
+          const mergedArray = [].concat.apply([], mapArray);
+          const sortedArray = mergedArray.sort((a, b) => {
+            return b.createdAt - a.createdAt;
+          });
+          console.log("sorted array", sortedArray);
+
+          return res.status(200).json({
+            status: 200,
+            message: "Schedule Activities",
+            data: sortedArray,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          return res.status(200).json({ status: 400, message: "Error" });
+        });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  //
+
   async getActivityData(req, res, next) {
     let breederId =
       req.user.role == "employee" ? req.user.breederId : req.user._id;
