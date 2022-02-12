@@ -2,8 +2,8 @@ require("dotenv").config();
 
 module.exports = {
   mongoURI:
-    // "mongodb+srv://breeder:GtmwECDdd3sL26N3@breederdb-vruiv.mongodb.net/breeder?retryWrites=true&w=majority",
-    "mongodb+srv://breeder:Lwa12345@cluster0.6wbtp.mongodb.net/breeder?retryWrites=true&w=majority",
+    "mongodb+srv://breeder:GtmwECDdd3sL26N3@breederdb-vruiv.mongodb.net/breeder?retryWrites=true&w=majority",
+  // "mongodb+srv://breeder:Lwa12345@cluster0.6wbtp.mongodb.net/breeder?retryWrites=true&w=majority",
   // Server: 'http://192.168.137.36:5000/api',
   // webServer: 'http://192.168.137.36:5000/api',
   // baseAPIUrl: 'http://192.168.137.36:5000/api',
