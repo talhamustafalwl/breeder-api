@@ -51,7 +51,7 @@ const ActivitySchema = mongoose.Schema(
     date: { type: Date },
     period: {
       type: String,
-      enum: ["Daily", "Weekly", "Montly", "Yearly", "Group"],
+      enum: ["Daily", "Weekly", "Monthly", "Yearly", "Group"],
       default: "Daily",
     },
     time: [
