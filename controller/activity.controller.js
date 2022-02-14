@@ -181,11 +181,13 @@ class ActivityController {
     let breederId =
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     try {
+      // let data = [];
       Category.aggregate([
         {
           $match: {
             type: "activity",
-            $or: [{ isDefault: true }, { addedBy: breederId }],
+            addedBy: breederId,
+            // $or: [{ isDefault: true }, { addedBy: breederId }],
           },
         },
         {
@@ -203,11 +205,13 @@ class ActivityController {
         },
       ])
         .then((result) => {
-          console.log(result);
+          console.log("result", result);
+
           const mapArray = result
             .map((item) => item.activities)
             .filter((item) => item.length > 0);
           const mergedArray = [].concat.apply([], mapArray);
+
           const sortedArray = mergedArray.sort((a, b) => {
             return b.createdAt - a.createdAt;
           });
@@ -216,7 +220,7 @@ class ActivityController {
           return res.status(200).json({
             status: 200,
             message: "Schedule Activities",
-            data: sortedArray,
+            data: mergedArray,
           });
         })
         .catch((error) => {
