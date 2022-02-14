@@ -110,6 +110,50 @@ class CategoryController {
     }
   }
 
+  async getDataActivityType(req, res) {
+    const breederId =
+      req.user.role == "employee" ? req.user.breederId : req.user._id;
+    try {
+      console.log("getting categories");
+      // const category = await Category.find(
+      //   { type: req.params.activity },
+      //   { addedBy: "605dfeea2fc20a58e0826328" }
+      // ).sort({
+      //   createdAt: -1,
+      // });
+
+      Category.aggregate([
+        {
+          $match: {
+            type: "activity",
+            //  addedBy: breederId,
+            $or: [{ isDefault: true }, { addedBy: breederId }],
+          },
+        },
+      ]).then((result) => {
+        console.log("result", result);
+        return res.status(200).json({
+          status: 200,
+          message: "All Categories",
+          data: result,
+        });
+      });
+
+      // return res.status(200).json({
+      //   status: 200,
+      //   message: "All Categories",
+      // });
+    } catch (err) {
+      console.log(err);
+      return res.json({
+        status: 400,
+        message: "Error in get Categories",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
   async getall(req, res) {
     const breederId =
       req.user.role == "employee" ? req.user.breederId : req.user._id;

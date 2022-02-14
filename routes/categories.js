@@ -47,6 +47,18 @@ router
     CategoryController.getall
   );
 
+router
+  .route("/activity/all")
+
+  .get(
+    auth,
+    allowAdmin,
+    allowBreeder,
+    allowEmployee,
+    authenticateRole,
+    CategoryController.getDataActivityType
+  );
+
 //for see/delete/update category by id
 router.route("/:id").get(auth, CategoryController.getbyId);
 
