@@ -7,6 +7,75 @@ const { Category } = require("../models/Animal/Category");
 class ActivityController {
   constructor() {}
 
+  async createActivity(req, res) {
+    const { errors, isValid } = await validateActivity(req.body);
+    // Check validation
+    if (!isValid) {
+      return res.json({
+        status: 400,
+        message: "errors present",
+        errors: errors,
+        data: {},
+      });
+    }
+
+    req.body.breederId =
+      req.user.role == "employee" ? req.user.breederId : req.user._id;
+    req.body.addedBy = req.user._id;
+
+    try {
+      let data = [];
+      const activity = await new Activity(req.body);
+      const doc = await activity.save();
+      if (doc.period == "Daily") {
+        data.push({
+          ...doc["_doc"],
+        });
+      }
+
+      if (doc.days.length > 0) {
+        for (var i = 0; i < doc.days.length; i++) {
+          data.push({
+            ...doc["_doc"],
+            days: doc.days[i],
+          });
+        }
+      }
+
+      if (doc.months.length > 0) {
+        for (var i = 0; i < doc.months.length; i++) {
+          data.push({
+            ...doc["_doc"],
+            months: doc.months[i],
+          });
+        }
+      }
+
+      if (doc.years.length > 0) {
+        for (var i = 0; i < doc.years.length; i++) {
+          data.push({
+            ...doc["_doc"],
+            years: doc.years[i],
+          });
+        }
+      }
+
+      return res.status(200).json({
+        status: 200,
+        message: "Activity of animal created successfully",
+        data,
+      });
+    } catch (err) {
+      console.log(err);
+      return res.json({
+        status: 400,
+        message: "Error in creating Activity of animal",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
   async create(req, res) {
     const { errors, isValid } = await validateActivity(req.body);
     // Check validation

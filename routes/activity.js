@@ -21,6 +21,16 @@ router
     authenticateRole,
     contactController.create
   )
+  .post(
+    "/create",
+    auth,
+    allowAdmin,
+    allowBreeder,
+    allowEmployee,
+    autoCharge,
+    authenticateRole,
+    contactController.createActivity
+  )
   .get("/", auth, contactController.getall)
   .get(
     "/getActivityData",
