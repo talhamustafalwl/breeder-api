@@ -46,9 +46,11 @@ const feedbackRoute = require("./feedback");
 const businessDetailRoute = require("./businessDetail");
 
 const searchRoute = require("./search");
+const recentSearch = require("./recentSearch");
 
 app.use("/businessDetails", businessDetailRoute);
 app.use("/search", searchRoute);
+app.use("/recent", recentSearch);
 app.use("/user", userRoute);
 app.use("/animal", animalRoute);
 app.use("/status", statusRoute); //animl status

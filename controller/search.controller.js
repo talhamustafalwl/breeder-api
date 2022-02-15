@@ -144,6 +144,7 @@ class SearchController {
           return {
             name: x.data["name"],
             id: x._id,
+            type: "Animal",
           };
         });
         console.log("animalMap", animalMap);
@@ -157,6 +158,7 @@ class SearchController {
           return {
             name: x.data["name"],
             id: x._id,
+            type: "Product",
           };
         });
         console.log("productMap", productMap);
@@ -176,6 +178,7 @@ class SearchController {
           return {
             name: x.name,
             id: x._id,
+            type: "Business",
           };
         });
         individual = await User.find({
@@ -193,6 +196,7 @@ class SearchController {
           return {
             name: x.name,
             id: x._id,
+            type: "Individual",
           };
         });
         // console.log("individualMap", individualMap);
