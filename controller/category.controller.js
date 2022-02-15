@@ -132,6 +132,7 @@ class CategoryController {
         },
       ]).then((result) => {
         console.log("result", result);
+
         return res.status(200).json({
           status: 200,
           message: "All Categories",

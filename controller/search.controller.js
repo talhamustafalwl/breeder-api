@@ -8,8 +8,12 @@ class SearchController {
   async globalSearch(req, res, next) {
     const { type } = req.query;
     let animal,
+      animalMap,
       business,
+      businessMap,
       individual,
+      individualMap,
+      productMap,
       all,
       product = [];
 
@@ -19,6 +23,14 @@ class SearchController {
         animal = await Animal.find({
           "data.name": { $regex: req.params.name, $options: "i" },
         });
+        animalMap = animal.map((x) => {
+          x.data["name"], x._id;
+          return {
+            name: x.data["name"],
+            id: x._id,
+          };
+        });
+
         if (!animal) {
           return res.json({
             status: 404,
@@ -29,9 +41,7 @@ class SearchController {
         return res.status(200).json({
           status: 200,
           message: "Animal Found",
-          data: {
-            animal,
-          },
+          data: animalMap,
         });
       }
 
@@ -45,6 +55,13 @@ class SearchController {
             { accountType: "Business" },
           ],
         });
+        businessMap = business.map((x) => {
+          x.name, x._id;
+          return {
+            name: x.name,
+            id: x._id,
+          };
+        });
         if (!business) {
           return res.json({
             status: 404,
@@ -55,9 +72,7 @@ class SearchController {
         return res.status(200).json({
           status: 200,
           message: "Business Profile Found",
-          data: {
-            business,
-          },
+          data: business,
         });
       }
 
@@ -71,6 +86,13 @@ class SearchController {
             { packageType: "Individual" },
           ],
         });
+        individualMap = individual.map((x) => {
+          x.name, x._id;
+          return {
+            name: x.name,
+            id: x._id,
+          };
+        });
         if (!individual) {
           return res.json({
             status: 404,
@@ -81,9 +103,7 @@ class SearchController {
         return res.status(200).json({
           status: 200,
           message: "Individual Profile Found",
-          data: {
-            individual,
-          },
+          data: individual,
         });
       }
 
@@ -93,6 +113,13 @@ class SearchController {
           "data.name": { $regex: req.params.name, $options: "i" },
         });
 
+        productMap = product.map((x) => {
+          x.data["name"], x._id;
+          return {
+            name: x.data["name"],
+            id: x._id,
+          };
+        });
         if (!product) {
           return res.json({
             status: 404,
@@ -103,9 +130,7 @@ class SearchController {
         return res.status(200).json({
           status: 200,
           message: "Product Found",
-          data: {
-            product,
-          },
+          data: productMap,
         });
       }
 
@@ -113,12 +138,28 @@ class SearchController {
         animal = await Animal.find({
           "data.name": { $regex: req.params.name, $options: "i" },
         });
-        console.log("animal", animal);
+
+        animalMap = animal.map((x) => {
+          x.data["name"], x._id;
+          return {
+            name: x.data["name"],
+            id: x._id,
+          };
+        });
+        console.log("animalMap", animalMap);
+
         product = await Product.find({
           "data.name": { $regex: req.params.name, $options: "i" },
         });
         console.log("product", product);
-
+        productMap = product.map((x) => {
+          x.data["name"], x._id;
+          return {
+            name: x.data["name"],
+            id: x._id,
+          };
+        });
+        console.log("productMap", productMap);
         business = await User.find({
           $and: [
             {
@@ -129,6 +170,14 @@ class SearchController {
           ],
         });
         console.log("business", business);
+
+        businessMap = business.map((x) => {
+          x.name, x._id;
+          return {
+            name: x.name,
+            id: x._id,
+          };
+        });
         individual = await User.find({
           $and: [
             {
@@ -139,16 +188,25 @@ class SearchController {
           ],
         });
         console.log("individual", individual);
+        individualMap = individual.map((x) => {
+          x.name, x._id;
+          return {
+            name: x.name,
+            id: x._id,
+          };
+        });
+        // console.log("individualMap", individualMap);
 
-        all = [].concat.apply([], [animal, product, business, individual]);
+        all = [].concat.apply(
+          [],
+          [animalMap, productMap, businessMap, individualMap]
+        );
         console.log(all);
       }
       return res.status(200).json({
         status: 200,
         message: "Search Found",
-        data: {
-          all,
-        },
+        data: all,
       });
     } catch (err) {
       console.log(err);
