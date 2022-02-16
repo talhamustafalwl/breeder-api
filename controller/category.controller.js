@@ -156,34 +156,39 @@ class CategoryController {
   }
 
   async getall(req, res) {
-    console.log("req.query", req.query.type);
+    let category;
     const activity = req.query;
     const breederId =
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     try {
       console.log("getting categories");
 
-      const category = await Category.find(
-        // {
-        // ...(req.query.type ? { type: req.query.type } : {}),
-        // ...(req.query.type === "animalproduct"
-        //   ? { type: { $in: ["animal", "product"] } }
-        //   : {}),
-        // ...(req.query.type === "contact" || req.query.type === "activity"
-        //   ? { $or: [{ isDefault: true }, { addedBy: breederId }] }
-        //   : {}),
-        // ...(req.query.type === "activity"
-        //   ? {
-        //       $or: [
-        //         // { isDefault: true },
-        //         { type: { $in: ["activity"] } },
-        //         { addedBy: breederId },
-        //       ],
-        //     }
-        //   : {}),
-        //  }
-        { type: req.query.type }
-      ).sort({ createdAt: -1 });
+      if (req.query.type) {
+        category = await Category.find(
+          // {
+          // ...(req.query.type ? { type: req.query.type } : {}),
+          // ...(req.query.type === "animalproduct"
+          //   ? { type: { $in: ["animal", "product"] } }
+          //   : {}),
+          // ...(req.query.type === "contact" || req.query.type === "activity"
+          //   ? { $or: [{ isDefault: true }, { addedBy: breederId }] }
+          //   : {}),
+          // ...(req.query.type === "activity"
+          //   ? {
+          //       $or: [
+          //         // { isDefault: true },
+          //         { type: { $in: ["activity"] } },
+          //         { addedBy: breederId },
+          //       ],
+          //     }
+          //   : {}),
+          //  }
+          { type: req.query.type }
+        ).sort({ createdAt: -1 });
+      } else {
+        category = await Category.find({});
+      }
+
       //removed (.populate("parentId");)
       return res.status(200).json({
         status: 200,
