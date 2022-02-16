@@ -111,39 +111,29 @@ class CategoryController {
   }
 
   async getDataActivityType(req, res) {
+    let category;
     const breederId =
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     try {
       console.log("getting categories");
-      // const category = await Category.find(
-      //   { type: req.params.activity },
-      //   { addedBy: "605dfeea2fc20a58e0826328" }
-      // ).sort({
-      //   createdAt: -1,
-      // });
 
-      Category.aggregate([
-        {
-          $match: {
-            type: "activity",
-            //  addedBy: breederId,
-            $and: [{ isDefault: true }, { addedBy: breederId }],
-          },
-        },
-      ]).then((result) => {
-        console.log("result", result);
-
-        return res.status(200).json({
-          status: 200,
-          message: "All Categories",
-          data: result,
+      if (req.query.type) {
+        category = await Category.find({
+          $or: [
+            { type: req.query.type, isDefault: true },
+            { addedBy: breederId },
+          ],
+        }).sort({
+          createdAt: -1,
         });
-      });
+      }
 
-      // return res.status(200).json({
-      //   status: 200,
-      //   message: "All Categories",
-      // });
+      return res.status(200).json({
+        status: 200,
+        message: "All Categories",
+
+        data: category,
+      });
     } catch (err) {
       console.log(err);
       return res.json({
@@ -156,48 +146,30 @@ class CategoryController {
   }
 
   async getall(req, res) {
-    let category;
-    const activity = req.query;
     const breederId =
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     try {
       console.log("getting categories");
-
-      if (req.query.type) {
-        category = await Category.find(
-          // {
-          // ...(req.query.type ? { type: req.query.type } : {}),
-          // ...(req.query.type === "animalproduct"
-          //   ? { type: { $in: ["animal", "product"] } }
-          //   : {}),
-          // ...(req.query.type === "contact" || req.query.type === "activity"
-          //   ? { $or: [{ isDefault: true }, { addedBy: breederId }] }
-          //   : {}),
-          // ...(req.query.type === "activity"
-          //   ? {
-          //       $or: [
-          //         // { isDefault: true },
-          //         { type: { $in: ["activity"] } },
-          //         { addedBy: breederId },
-          //       ],
-          //     }
-          //   : {}),
-          //  }
-          { type: req.query.type }
-        ).sort({ createdAt: -1 });
-      } else {
-        category = await Category.find({});
-      }
-
+      const category = await Category.find({
+        ...(req.query.type ? { type: req.query.type } : {}),
+        ...(req.query.type === "animalproduct"
+          ? { type: { $in: ["animal", "product"] } }
+          : {}),
+        ...(req.query.type === "contact" || req.query.type === "activity"
+          ? { $or: [{ isDefault: true }, { addedBy: breederId }] }
+          : {}),
+        ...(req.query.type === "activity"
+          ? { $or: [{ isDefault: true }, { addedBy: breederId }] }
+          : {}),
+      }).sort({ createdAt: -1 });
       //removed (.populate("parentId");)
       return res.status(200).json({
         status: 200,
         message: "All Categories",
-        //   data: category.map((e) => ({
-        //     ...e.toObject(),
-        //     ...{ icon: `${baseImageURL}form/${e.toObject().icon}` },
-        //   })),
-        data: category,
+        data: category.map((e) => ({
+          ...e.toObject(),
+          ...{ icon: `${baseImageURL}form/${e.toObject().icon}` },
+        })),
       });
     } catch (err) {
       console.log(err);
