@@ -4,14 +4,25 @@ class RecentController {
 
   async createRecentSearch(req, res, next) {
     try {
-      const recent = await new RecentSearch(req.body);
-      const doc = await recent.save();
-      console.log("doc", doc);
-      return res.status(200).json({
-        status: 200,
-        message: "Activity created successfully",
-        data: doc,
+      const sid = req.body.searchId;
+
+      const result = await RecentSearch.find({
+        searchId: sid,
       });
+      if (!result.length == 0) {
+        return res.status(200).json({
+          status: 400,
+          message: "SearchId Already Exists",
+        });
+      } else {
+        const recent = await new RecentSearch(req.body);
+        const doc = await recent.save();
+        return res.status(200).json({
+          status: 200,
+          message: "Activity created successfully",
+          data: doc,
+        });
+      }
     } catch (err) {
       console.log(err);
       return next(err);
