@@ -9,6 +9,9 @@ const recentSearch = mongoose.Schema({
   searchId: {
     type: String,
   },
+  type: {
+    type: String,
+  },
 
   breederId: { type: Schema.Types.ObjectId, ref: "User" },
 });

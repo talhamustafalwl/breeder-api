@@ -127,7 +127,7 @@ class CategoryController {
           $match: {
             type: "activity",
             //  addedBy: breederId,
-            $or: [{ isDefault: true }, { addedBy: breederId }],
+            $and: [{ isDefault: true }, { addedBy: breederId }],
           },
         },
       ]).then((result) => {
@@ -160,23 +160,29 @@ class CategoryController {
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     try {
       console.log("getting categories");
+      const activity = req.query.type;
       const category = await Category.find({
-        ...(req.query.type ? { type: req.query.type } : {}),
-        ...(req.query.type === "animalproduct"
-          ? { type: { $in: ["animal", "product"] } }
-          : {}),
-        ...(req.query.type === "contact" || req.query.type === "activity"
-          ? { $or: [{ isDefault: true }, { addedBy: breederId }] }
-          : {}),
+        // ...(req.query.type ? { type: req.query.type } : {}),
+        // ...(req.query.type === "animalproduct"
+        //   ? { type: { $in: ["animal", "product"] } }
+        //   : {}),
+        // ...(req.query.type === "contact" || req.query.type === "activity"
+        //   ? { $or: [{ isDefault: true }, { addedBy: breederId }] }
+        //   : {}),
+        // ...(req.query.type === "activity"
+        //   ? { $or: [{ isDefault: true }, { addedBy: breederId }] }
+        //   : {}),
+        activity,
       }).sort({ createdAt: -1 });
       //removed (.populate("parentId");)
       return res.status(200).json({
         status: 200,
         message: "All Categories",
-        data: category.map((e) => ({
-          ...e.toObject(),
-          ...{ icon: `${baseImageURL}form/${e.toObject().icon}` },
-        })),
+        //   data: category.map((e) => ({
+        //     ...e.toObject(),
+        //     ...{ icon: `${baseImageURL}form/${e.toObject().icon}` },
+        //   })),
+        data: category,
       });
     } catch (err) {
       console.log(err);
