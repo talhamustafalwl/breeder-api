@@ -186,8 +186,8 @@ class ActivityController {
         {
           $match: {
             type: "activity",
-            addedBy: breederId,
-            // $or: [{ isDefault: true }, { addedBy: breederId }],
+            // addedBy: breederId,
+            $or: [{ isDefault: true }, { addedBy: breederId }],
           },
         },
         {
