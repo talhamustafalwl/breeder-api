@@ -6,12 +6,12 @@ const RecentController = require("../controller/recent.controller");
 
 // const {upload}=require("../middleware/multerimage")
 
-router
-  .route("/")
-  .post(auth, RecentController.createRecentSearch)
-  .get(auth, RecentController.getRecentSearch);
+router.route("/").post(auth, RecentController.createRecentSearch);
 
 //for see/delete/update recent search by id
-router.route("/:id").delete(auth, RecentController.deleteSearchbyId);
+router
+  .route("/:id")
+  .delete(auth, RecentController.deleteSearchbyId)
+  .get(auth, RecentController.getRecentSearch);
 router.route("/delete/all").delete(auth, RecentController.deleteall);
 module.exports = router;

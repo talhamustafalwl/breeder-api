@@ -8,14 +8,26 @@ class RecentController {
 
       const result = await RecentSearch.find({
         searchId: sid,
+        breederId: req.user._id,
       });
+      // let bdy = req.body;
+      // let usr, reqbody;
+      // usr = req.user._id;
+      // reqbody = { bdy, usr };
       if (!result.length == 0) {
         return res.status(200).json({
           status: 400,
           message: "SearchId Already Exists",
         });
       } else {
-        const recent = await new RecentSearch(req.body);
+        let bdy = req.body;
+        let breederId = req.user._id;
+
+        let finalBody = { ...bdy, breederId };
+
+        console.log(finalBody);
+
+        const recent = await new RecentSearch(finalBody);
         const doc = await recent.save();
         return res.status(200).json({
           status: 200,
@@ -31,8 +43,11 @@ class RecentController {
 
   async getRecentSearch(req, res, next) {
     console.log(req.body);
+
     try {
-      const getRecent = await RecentSearch.find({});
+      const getRecent = await RecentSearch.find({
+        breederId: req.user._id,
+      });
       return res
         .status(200)
         .json({ status: 200, message: "All Recent Search", data: getRecent });
