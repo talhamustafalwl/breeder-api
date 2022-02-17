@@ -28,6 +28,7 @@ class SearchController {
           return {
             name: x.data["name"],
             id: x._id,
+            breederId: x.breederId,
           };
         });
 
@@ -118,6 +119,7 @@ class SearchController {
           return {
             name: x.data["name"],
             id: x._id,
+            breederId: x.breederId,
           };
         });
         if (!product) {
@@ -136,15 +138,19 @@ class SearchController {
 
       if (type == "all") {
         animal = await Animal.find({
+          isPrivate: false,
           "data.name": { $regex: req.params.name, $options: "i" },
         });
 
         animalMap = animal.map((x) => {
+          console.log("x", x);
           x.data["name"], x._id;
+          x.breederId;
           return {
             name: x.data["name"],
             id: x._id,
             type: "Animal",
+            breederId: x.breederId,
           };
         });
         console.log("animalMap", animalMap);
@@ -154,11 +160,12 @@ class SearchController {
         });
         console.log("product", product);
         productMap = product.map((x) => {
-          x.data["name"], x._id;
+          x.data["name"], x._id, x.breederId;
           return {
             name: x.data["name"],
             id: x._id,
             type: "Product",
+            breederId: x.breederId,
           };
         });
         console.log("productMap", productMap);
@@ -196,7 +203,7 @@ class SearchController {
           return {
             name: x.name,
             id: x._id,
-            type: "Individual",
+            type: "Pet Lover",
           };
         });
         // console.log("individualMap", individualMap);
