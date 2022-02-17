@@ -187,7 +187,11 @@ class ActivityController {
           $match: {
             type: "activity",
             // addedBy: breederId,
-            $or: [{ isDefault: true }, { addedBy: breederId }],
+            $or: [
+              { isDefault: true },
+              { isDefault: false },
+              { addedBy: breederId },
+            ],
           },
         },
         {
@@ -198,11 +202,11 @@ class ActivityController {
             as: "activities",
           },
         },
-        {
-          $sort: {
-            createdAt: 1,
-          },
-        },
+        // {
+        //   $sort: {
+        //     createdAt: 1,
+        //   },
+        // },
       ])
         .then((result) => {
           console.log("result", result);
@@ -212,7 +216,7 @@ class ActivityController {
             .filter((item) => item.length > 0);
           const mergedArray = [].concat.apply([], mapArray);
 
-          const sortedArray = mergedArray.sort((a, b) => {
+          const sortedArray = result.sort((a, b) => {
             return b.createdAt - a.createdAt;
           });
           console.log("sorted array", sortedArray);
@@ -238,20 +242,6 @@ class ActivityController {
     let breederId =
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     try {
-      // categoryController.allCategories('activity').then(categoryResult => {
-
-      // });
-      // const findAdmin = Category.aggregate([
-      //   {
-      //     $match: {
-      //       type: "activity",
-      //       isDefault: true,
-      //     },
-      //   },
-      // ]);
-
-      // console.log("admin", findAdmin);
-
       Category.aggregate([
         {
           $match: {
