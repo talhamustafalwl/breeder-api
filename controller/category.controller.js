@@ -112,27 +112,47 @@ class CategoryController {
 
   async getDataActivityType(req, res) {
     let category;
+
     const breederId =
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     try {
       console.log("getting categories");
 
+      const adminCategory = await Category.aggregate([
+        {
+          $match: {
+            type: "activity",
+            $or: [{ isDefault: true }],
+          },
+        },
+      ]);
+      console.log("adminCategory", adminCategory);
+
       if (req.query.type) {
         category = await Category.find({
           $or: [
-            { type: req.query.type, isDefault: true },
+            { type: req.query.type, isDefault: false },
             { addedBy: breederId },
           ],
         }).sort({
           createdAt: -1,
         });
       }
+      const finalCategory = adminCategory.concat(category);
+
+      const update = await User.findOneAndUpdate(
+        { _id: req.user._id },
+        { isGotAdmin: true },
+        { upsert: true }
+      );
+
+      console.log(finalCategory);
 
       return res.status(200).json({
         status: 200,
         message: "All Categories",
 
-        data: category,
+        data: finalCategory,
       });
     } catch (err) {
       console.log(err);

@@ -241,6 +241,17 @@ class ActivityController {
       // categoryController.allCategories('activity').then(categoryResult => {
 
       // });
+      // const findAdmin = Category.aggregate([
+      //   {
+      //     $match: {
+      //       type: "activity",
+      //       isDefault: true,
+      //     },
+      //   },
+      // ]);
+
+      // console.log("admin", findAdmin);
+
       Category.aggregate([
         {
           $match: {

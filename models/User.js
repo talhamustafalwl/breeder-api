@@ -233,6 +233,10 @@ const userSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "BusinessDetail",
     },
+    isGotAdmin: {
+      type: Boolean,
+      default: false,
+    },
     addedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
