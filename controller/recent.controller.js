@@ -31,7 +31,7 @@ class RecentController {
         const doc = await recent.save();
         return res.status(200).json({
           status: 200,
-          message: "Activity created successfully",
+          message: "Recent search created successfully",
           data: doc,
         });
       }
@@ -42,12 +42,12 @@ class RecentController {
   }
 
   async getRecentSearch(req, res, next) {
-    console.log(req.body);
-
     try {
+      console.log(req);
       const getRecent = await RecentSearch.find({
         breederId: req.user._id,
       });
+      console.log(getRecent);
       return res
         .status(200)
         .json({ status: 200, message: "All Recent Search", data: getRecent });
