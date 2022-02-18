@@ -2884,9 +2884,10 @@ class UserController {
     }
   }
 
-  async getUserByEmail(req, res, next) {
+  async getUserEmail(req, res, next) {
+    console.log("req", req);
     let emailId;
-    let name, email, phone, state, city, address, image;
+    let _id, name, email, phone, state, city, address, image;
 
     try {
       console.log(req.user.email);
@@ -2898,6 +2899,7 @@ class UserController {
         });
       } else {
         emailId = await User.find({ email: req.query.email }).lean();
+        _id = emailId[0]._id;
         name = emailId[0].name;
         email = emailId[0].email;
         phone = emailId[0].phone;
@@ -2910,6 +2912,7 @@ class UserController {
         status: 200,
         message: "Email Found",
         data: {
+          _id,
           name: name,
           email,
           phone,
@@ -2928,6 +2931,52 @@ class UserController {
       });
     }
   }
+
+  // async getUserByEmail(req, res, next) {
+  //   console.log("req", req);
+  //   let emailId;
+  //   let name, email, phone, state, city, address, image;
+
+  //   try {
+  //     console.log(req.user.email);
+
+  //     if (req.user.email === req.query.email) {
+  //       return res.status(200).json({
+  //         status: 400,
+  //         message: "your Email is not required",
+  //       });
+  //     } else {
+  //       emailId = await User.find({ email: req.query.email }).lean();
+  //       name = emailId[0].name;
+  //       email = emailId[0].email;
+  //       phone = emailId[0].phone;
+  //       state = emailId[0].state;
+  //       city = emailId[0].city;
+  //       address = emailId[0].address;
+  //       image = emailId[0].image;
+  //     }
+  //     return res.status(200).json({
+  //       status: 200,
+  //       message: "Email Found",
+  //       data: {
+  //         name: name,
+  //         email,
+  //         phone,
+  //         state,
+  //         city,
+  //         image,
+  //         address,
+  //       },
+  //     });
+  //   } catch (err) {
+  //     return res.json({
+  //       status: 400,
+  //       message: "Email not found",
+  //       errors: err,
+  //       data: {},
+  //     });
+  //   }
+  // }
 
   async getMatchingEmails(req, res, next) {
     try {

@@ -79,6 +79,16 @@ router.get(
   authenticateRole,
   UserController.getAllEmployees
 );
+
+router.get(
+  "/v2/userDetail",
+  auth,
+  allowAdmin,
+  allowBreeder,
+  authenticateRole,
+  UserController.getUserEmail
+);
+
 router.get(
   "/breeders/all",
   auth,
@@ -98,14 +108,6 @@ router.get(
   UserController.getEmployeeById
 );
 
-router.get(
-  "/userData",
-  auth,
-  allowAdmin,
-  allowBreeder,
-  authenticateRole,
-  UserController.getUserByEmail
-);
 router.get(
   "/breeder/employees",
   auth,
