@@ -1834,13 +1834,24 @@ class UserController {
   async getUserById(req, res, next) {
     try {
       console.log("user detail by id");
-      const user = await User.find({ _id: req.params.id });
-      if (user == "") {
+      const resultUser = await User.find({ _id: req.params.id });
+      if (resultUser == "") {
         return res.json({ status: 400, message: "Invalid Id", data: {} });
       }
-      return res
-        .status(200)
-        .json({ status: 200, message: "User by Id", data: user });
+      const busDetails = await BusinessDetail.findOne({
+        breederId: req.params.id,
+      })
+        .populate("BusinessDetail._id")
+        .exec();
+
+      console.log("busDetails", busDetails);
+
+      return res.status(200).json({
+        status: 200,
+        message: "User by Id",
+        data: resultUser,
+        busDetails,
+      });
     } catch (error) {
       return next(error);
     }
