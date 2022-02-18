@@ -7,15 +7,17 @@ class SearchController {
 
   async globalSearch(req, res, next) {
     const { type } = req.query;
-    let animal, charity, charityMap,
-    animalMap,
+    let animal,
+      charity,
+      charityMap,
+      animalMap,
       business,
       businessMap,
       individual,
       individualMap,
       productMap,
       all,
-      (product = []);
+      product = [];
 
     try {
       const regex = new RegExp(req.params.name);
