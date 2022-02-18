@@ -7,7 +7,7 @@ class SearchController {
 
   async globalSearch(req, res, next) {
     const { type } = req.query;
-    let animal, charity, charityMap;
+    let animal, charity, charityMap,
     animalMap,
       business,
       businessMap,
