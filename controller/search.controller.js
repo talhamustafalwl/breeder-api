@@ -239,6 +239,22 @@ class SearchController {
             type: "Pet Lover",
           };
         });
+        charity = await User.find({
+          $and: [
+            {
+              //    name: regex
+              name: { $regex: req.params.name, $options: "i" },
+            },
+            { packageType: "Charity Organization" },
+          ],
+        });
+        charityMap = charity.map((x) => {
+          x.name, x._id;
+          return {
+            name: x.name,
+            id: x._id,
+          };
+        });
         // console.log("individualMap", individualMap);
 
         all = [].concat.apply(
