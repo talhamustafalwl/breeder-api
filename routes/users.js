@@ -47,6 +47,8 @@ router.get(
   UserController.getUserDetailById
 );
 
+router.route("/:id").get(auth, UserController.getUserById);
+
 router.get(
   "/dashboardAnalysis",
   auth,

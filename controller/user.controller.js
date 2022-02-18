@@ -1831,6 +1831,21 @@ class UserController {
     }
   }
 
+  async getUserById(req, res, next) {
+    try {
+      console.log("user detail by id");
+      const user = await User.find({ _id: req.params.id });
+      if (user == "") {
+        return res.json({ status: 400, message: "Invalid Id", data: {} });
+      }
+      return res
+        .status(200)
+        .json({ status: 200, message: "User by Id", data: user });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
   async getUserDetail(req, res, next) {
     try {
       console.log("user detail called");
