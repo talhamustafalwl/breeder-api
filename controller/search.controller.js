@@ -7,15 +7,15 @@ class SearchController {
 
   async globalSearch(req, res, next) {
     const { type } = req.query;
-    let animal,
-      animalMap,
+    let animal, charity, charityMap;
+    animalMap,
       business,
       businessMap,
       individual,
       individualMap,
       productMap,
       all,
-      product = [];
+      (product = []);
 
     try {
       const regex = new RegExp(req.params.name);
@@ -105,6 +105,37 @@ class SearchController {
           status: 200,
           message: "Individual Profile Found",
           data: individual,
+        });
+      }
+
+      if (type == "charity") {
+        charity = await User.find({
+          $and: [
+            {
+              //    name: regex
+              name: { $regex: req.params.name, $options: "i" },
+            },
+            { packageType: "Charity Organization" },
+          ],
+        });
+        charityMap = charity.map((x) => {
+          x.name, x._id;
+          return {
+            name: x.name,
+            id: x._id,
+          };
+        });
+        if (!charity) {
+          return res.json({
+            status: 404,
+            message: "Charity Organization Profile Not Found",
+            data: {},
+          });
+        }
+        return res.status(200).json({
+          status: 200,
+          message: "Charity Organization Profile Found",
+          data: charity,
         });
       }
 
@@ -210,7 +241,7 @@ class SearchController {
 
         all = [].concat.apply(
           [],
-          [animalMap, productMap, businessMap, individualMap]
+          [animalMap, productMap, businessMap, individualMap, charityMap]
         );
         console.log(all);
       }
