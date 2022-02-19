@@ -957,7 +957,7 @@ class CategoryController {
   }
 
   async addType(req, res, next) {
-    req.body.type = req.body.type ? req.body.type.toLowerCase() : "";
+    // req.body.type = req.body.type ? req.body.type.toLowerCase() : "";
 
     try {
       const add = await Category.updateOne({ _id: req.params.id }, req.body);

@@ -34,7 +34,6 @@ router.put(
   // uploadCategory.single("file"),
   CategoryController.addType
 );
-
 router
   .route("/all")
   .delete(adminauth, CategoryController.deleteall)
