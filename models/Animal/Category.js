@@ -43,6 +43,7 @@ const categorySchema = mongoose.Schema(
     ],
     subCategories: [{ name: { type: String }, value: { type: String } }],
     animals: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
+    activities: [{ type: mongoose.Schema.Types.ObjectId, ref: "Activity" }],
   },
   { timestamps: true }
 );

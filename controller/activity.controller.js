@@ -3,6 +3,7 @@ const { validateActivity } = require("../validation/activity");
 const mongoose = require("mongoose");
 const categoryController = require("./category.controller");
 const { Category } = require("../models/Animal/Category");
+const moment = require("moment");
 
 class ActivityController {
   constructor() {}
@@ -186,12 +187,7 @@ class ActivityController {
         {
           $match: {
             type: "activity",
-            // addedBy: breederId,
-            $or: [
-              { isDefault: true },
-              { isDefault: false },
-              { addedBy: breederId },
-            ],
+            addedBy: breederId,
           },
         },
         {
@@ -202,29 +198,32 @@ class ActivityController {
             as: "activities",
           },
         },
-        // {
-        //   $sort: {
-        //     createdAt: 1,
-        //   },
-        // },
       ])
         .then((result) => {
-          console.log("result", result);
-
           const mapArray = result
             .map((item) => item.activities)
             .filter((item) => item.length > 0);
           const mergedArray = [].concat.apply([], mapArray);
-
-          const sortedArray = result.sort((a, b) => {
-            return b.createdAt - a.createdAt;
+          const mapMergedArray = [];
+          mergedArray.forEach((activity) => {
+            const timeInActivity = activity.time.map((time) => {
+              return {
+                ...activity,
+                time: time,
+              };
+            });
+            mapMergedArray.push(...timeInActivity);
           });
-          console.log("sorted array", sortedArray);
+
+          const sortedArray = mapMergedArray.sort((a, b) => {
+            return moment(a.time, "hh:mm A") - moment(b.time, "hh:mm A");
+          });
+          // console.log("sorted array", sortedArray);
 
           return res.status(200).json({
             status: 200,
             message: "Schedule Activities",
-            data: mergedArray,
+            data: sortedArray,
           });
         })
         .catch((error) => {
