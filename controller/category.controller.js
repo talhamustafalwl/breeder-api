@@ -118,41 +118,89 @@ class CategoryController {
     try {
       console.log("getting categories");
 
-      const adminCategory = await Category.aggregate([
+      if (req.query.type !== "activity") {
+        return res.status(200).json({
+          status: 200,
+          message: "Please enter type Activity",
+
+          data: [],
+        });
+      }
+      const userCount = await User.count({
+        _id: breederId,
+        isGotAdmin: true,
+      });
+
+      if (userCount > 0) {
+        const categories = await Category.aggregate([
+          {
+            $match: {
+              type: "activity",
+              addedBy: breederId,
+            },
+          },
+        ]).sort({
+          createdAt: -1,
+        });
+
+        return res.status(200).json({
+          status: 200,
+          message: "Categories already added",
+
+          data: categories,
+        });
+      }
+
+      const adminCategories = await Category.aggregate([
         {
           $match: {
             type: "activity",
-            $or: [{ isDefault: true }],
+            $and: [{ isDefault: true }],
           },
         },
       ]);
-      console.log("adminCategory", adminCategory);
+      const cloneObj = adminCategories.map((x, index) => {
+        return {
+          active: x.active,
+          addedBy: breederId,
+          breeds: x.breeds,
+          name: x.name,
+          subCategories: x.subCategories,
+          subType: x.subType,
+          traits: x.traits,
+          type: x.type,
+        };
+      });
+      console.log("cloned", cloneObj);
 
-      if (req.query.type) {
-        category = await Category.find({
-          $or: [
-            { type: req.query.type, isDefault: false },
-            { addedBy: breederId },
-          ],
-        }).sort({
-          createdAt: -1,
-        });
-      }
-      const finalCategory = adminCategory.concat(category);
+      await Category.insertMany(cloneObj);
+
+      const finalCategories = await Category.aggregate([
+        {
+          $match: {
+            type: "activity",
+            addedBy: breederId,
+          },
+        },
+      ]).sort({
+        createdAt: -1,
+      });
+      console.log("category", finalCategories);
+      // const finalCategories = cloneObj.concat(newCategories);
 
       const update = await User.findOneAndUpdate(
-        { _id: req.user._id },
+        { _id: breederId },
         { isGotAdmin: true },
         { upsert: true }
       );
 
-      console.log(finalCategory);
+      console.log(finalCategories);
 
       return res.status(200).json({
         status: 200,
         message: "All Categories",
 
-        data: finalCategory,
+        data: finalCategories,
       });
     } catch (err) {
       console.log(err);
