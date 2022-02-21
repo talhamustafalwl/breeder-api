@@ -1869,7 +1869,13 @@ class UserController {
       console.log("busDetails", busDetails);
       User.findById(req.user._id)
         .populate("dealCategories")
+
         .then((resultUser) => {
+          let description;
+          console.log("result ", resultUser);
+          description = resultUser.description;
+
+          console.log("description ", description);
           return res.status(200).send({
             status: 200,
             data: {
@@ -1887,7 +1893,10 @@ class UserController {
                       ...{ filename: `${config.baseImageURL}${e.filename}` },
                     }))
                   : [],
-              businessDetails: busDetails,
+              businessDetails: {
+                ...busDetails["_doc"],
+                businessInfo: description,
+              },
             },
           });
         })
