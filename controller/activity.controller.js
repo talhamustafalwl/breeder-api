@@ -1,4 +1,5 @@
 const { Activity } = require("../models/Activity/Activity");
+const { ActivityMeta } = require("../models/Activity/ActivityMeta");
 const { validateActivity } = require("../validation/activity");
 const mongoose = require("mongoose");
 const categoryController = require("./category.controller");
@@ -23,11 +24,133 @@ class ActivityController {
     req.body.breederId =
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     req.body.addedBy = req.user._id;
-
+    req.body.period;
+    let doc;
     try {
       let data = [];
-      const activity = await new Activity(req.body);
-      const doc = await activity.save();
+      if (req.body.period == "Daily") {
+        const bdy = {
+          ...req.body,
+          orignalId: true,
+          startDate: new Date(),
+        };
+        const activity = new Activity(bdy);
+        doc = await activity.save();
+        doc.time.map(async (item) => {
+          const activityMeta = new ActivityMeta({
+            activityId: doc._id,
+            employeeId: doc.employeeId,
+            period: doc.period,
+            time: item,
+          });
+
+          const docActivityMeta = await activityMeta.save();
+        });
+      } else if (req.body.period == "Weekly") {
+        const today = moment().format("ddd").toLowerCase();
+        const { days } = req.body;
+        const dayMatched = days.find((day) => day.toLowerCase() === today);
+
+        let startDate = "";
+        if (dayMatched) {
+          startDate = moment().format("YYYY-MM-DD");
+        } else {
+          const nextDay = days.find(
+            (day) => moment(day.toLowerCase(), "ddd") > moment(today, "ddd")
+          );
+          startDate = moment(nextDay, "ddd").format("YYYY-MM-DD");
+          console.log({ nextDay });
+        }
+
+        const bdy = {
+          ...req.body,
+          orignalId: true,
+          startDate,
+        };
+        const activity = new Activity(bdy);
+        doc = await activity.save();
+        doc.time.map(async (item) => {
+          const activityMeta = new ActivityMeta({
+            activityId: doc._id,
+            employeeId: doc.employeeId,
+            period: doc.period,
+            time: item,
+          });
+
+          const docActivityMeta = await activityMeta.save();
+        });
+      } else if (req.body.period == "Monthly") {
+        const today = moment().format("MMM").toLowerCase();
+        const { months } = req.body;
+        const monthMatched = months.find(
+          (month) => month.toLowerCase() === today
+        );
+
+        let startDate = "";
+        if (monthMatched) {
+          startDate = moment().format("YYYY-MM-DD");
+        } else {
+          const nextMonth = months.find(
+            (month) => moment(month.toLowerCase(), "MMM") > moment(today, "MMM")
+          );
+          startDate = moment(nextMonth, "MMM").format("YYYY-MM-DD");
+          console.log({ nextMonth });
+        }
+
+        const bdy = {
+          ...req.body,
+          orignalId: true,
+          startDate,
+        };
+        const activity = new Activity(bdy);
+        doc = await activity.save();
+        doc.time.map(async (item) => {
+          const activityMeta = new ActivityMeta({
+            activityId: doc._id,
+            employeeId: doc.employeeId,
+            period: doc.period,
+            time: item,
+          });
+
+          const docActivityMeta = await activityMeta.save();
+        });
+      } else {
+        const today = moment().format("YYYY").toLowerCase();
+        const { years } = req.body;
+        const yearMatched = years.find((year) => year.toLowerCase() === today);
+
+        let startDate = "";
+        if (yearMatched) {
+          startDate = moment().format("YYYY-MM-DD");
+        } else {
+          const nextYear = years.find(
+            (year) => moment(year.toLowerCase(), "YYYY") > moment(today, "YYYY")
+          );
+          startDate = moment(nextYear, "YYYY").format("YYYY-MM-DD");
+          console.log({ nextYear });
+        }
+
+        const bdy = {
+          ...req.body,
+          orignalId: true,
+          startDate,
+        };
+
+        const activity = new Activity(bdy);
+        doc = await activity.save();
+
+        doc.time.map(async (item) => {
+          const activityMeta = new ActivityMeta({
+            activityId: doc._id,
+            employeeId: doc.employeeId,
+            period: doc.period,
+            time: item,
+          });
+
+          const docActivityMeta = await activityMeta.save();
+        });
+      }
+
       if (doc.period == "Daily") {
         data.push({
           ...doc["_doc"],
@@ -63,7 +186,7 @@ class ActivityController {
 
       return res.status(200).json({
         status: 200,
-        message: "Activity of animal created successfully",
+        messat: "Activity of animal created successfully",
         data,
       });
     } catch (err) {
@@ -199,26 +322,34 @@ class ActivityController {
           },
         },
       ])
-        .then((result) => {
+        .then(async (result) => {
           const mapArray = result
             .map((item) => item.activities)
             .filter((item) => item.length > 0);
           const mergedArray = [].concat.apply([], mapArray);
           const mapMergedArray = [];
-          mergedArray.forEach((activity) => {
-            const timeInActivity = activity.time.map((time) => {
-              return {
-                ...activity,
-                time: time,
-              };
-            });
-            mapMergedArray.push(...timeInActivity);
-          });
+
+          await Promise.all(
+            mergedArray.map(async (activity) => {
+              // await mergedArray.forEach(async (activity) => {
+              const activityMetas = await ActivityMeta.find({
+                activityId: activity._id,
+              }).lean();
+
+              activityMetas.map((activityMeta) => {
+                mapMergedArray.push({
+                  ...activity,
+                  ...activityMeta,
+                });
+              });
+            })
+          );
+
+          console.log({ mapMergedArray });
 
           const sortedArray = mapMergedArray.sort((a, b) => {
             return moment(a.time, "hh:mm A") - moment(b.time, "hh:mm A");
           });
-          // console.log("sorted array", sortedArray);
 
           return res.status(200).json({
             status: 200,
@@ -350,6 +481,39 @@ class ActivityController {
       return res.json({
         status: 400,
         message: "Error in deleting Activity",
+        errors: err,
+        data: {},
+      });
+    }
+  }
+
+  async activityUpdatebyId(req, res) {
+    // const { name, rotationName } = req.body;
+
+    try {
+      const activity = await ActivityMeta.findOne({
+        _id: req.params.id,
+      })
+        .populate("employeeId")
+        .lean();
+      const employeeName = activity.employeeId[0].name;
+      console.log(employeeName);
+      // console.log(activity);
+
+      const update = await ActivityMeta.updateOne(
+        { _id: req.params.id },
+        { ...req.body, employeeName, performedDate: new Date() }
+      );
+
+      return res.status(200).json({
+        status: 200,
+        message: "Activity Meta updated successfully",
+        data: update,
+      });
+    } catch (err) {
+      return res.json({
+        status: 400,
+        message: "Error in updating Activity",
         errors: err,
         data: {},
       });

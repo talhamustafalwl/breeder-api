@@ -4,6 +4,10 @@ const mongoose = require("mongoose");
 const ActivitySchema = mongoose.Schema(
   {
     // name: { type: String },
+    orignalId: {
+      type: Boolean,
+      default: false,
+    },
     categoryType: { type: String },
     description: { type: String },
     assignToType: {
@@ -47,6 +51,9 @@ const ActivitySchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       require: true,
+    },
+    startDate: {
+      type: Date,
     },
     date: { type: Date },
     period: {

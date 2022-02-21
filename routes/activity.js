@@ -52,6 +52,7 @@ router
   .get("/group", auth, contactController.getallByType)
   .get("/:id", auth, contactController.getbyId)
   .put("/:id", auth, contactController.updatebyId)
+  .put("/v2/:id", auth, contactController.activityUpdatebyId)
   .delete("/:id", auth, contactController.deletebyId);
 
 module.exports = router;

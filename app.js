@@ -5,6 +5,9 @@ const config = require("./config/key");
 const { auth } = require("./middleware/auth");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const cron = require("node-cron");
+const activityController = require("./controller/activity.controller");
+
 require("dotenv").config();
 const routes = require("./routes");
 
@@ -41,6 +44,17 @@ app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// cron.schedule(
+//   "0 1 * * *",
+//   () => {
+//     console.log("Activity Cron is running");
+//     activityController
+//   },
+//   {
+//     scheduled: true,
+//   }
+// );
 
 //for image,qrcode,videos
 app.use("/api/uploads", express.static("uploads"));
