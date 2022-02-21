@@ -74,6 +74,9 @@ class ActivityController {
         doc.time.map(async (item) => {
           const activityMeta = new ActivityMeta({
             activityId: doc._id,
+            days: doc.days,
+            months: doc.months,
+            years: doc.years,
             employeeId: doc.employeeId,
             period: doc.period,
             time: item,
@@ -109,6 +112,9 @@ class ActivityController {
         doc.time.map(async (item) => {
           const activityMeta = new ActivityMeta({
             activityId: doc._id,
+            days: doc.days,
+            months: doc.months,
+            years: doc.years,
             employeeId: doc.employeeId,
             period: doc.period,
             time: item,
@@ -145,6 +151,9 @@ class ActivityController {
           const activityMeta = new ActivityMeta({
             activityId: doc._id,
             employeeId: doc.employeeId,
+            days: doc.days,
+            months: doc.months,
+            years: doc.years,
             period: doc.period,
             time: item,
           });
