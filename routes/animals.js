@@ -132,6 +132,17 @@ router
     AnimalController.updateAnimalbyId
   );
 
+router
+  .route("/v2/:id")
+  .get(
+    auth,
+    allowBreeder,
+    allowEmployee,
+    allowAdmin,
+    authenticateRole,
+    AnimalController.getAnimalsbyUser
+  );
+
 //for specific animal update/view/delete
 router
   .route("/:id")

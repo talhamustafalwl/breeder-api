@@ -633,6 +633,23 @@ class AnimalController {
       });
     }
   }
+  async getAnimalsbyUser(req, res) {
+    try {
+      let breederId = req.params.id;
+      const animal = await Animal.find({ breederId });
+
+      return res
+        .status(200)
+        .json({ status: 200, message: "Animal", data: animal });
+    } catch (err) {
+      return res.json({
+        status: 400,
+        message: "Error in get Animal",
+        errors: err,
+        data: {},
+      });
+    }
+  }
 
   async getBreederAnimals(req, res) {
     console.log("====>>", req.user.role === "employee");
