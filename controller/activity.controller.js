@@ -37,15 +37,15 @@ class ActivityController {
         const activity = new Activity(bdy);
         doc = await activity.save();
         doc.time.map(async (item) => {
-          console.log("doc", doc);
-          console.log("item", item);
+          console.log("doc..", doc);
+          console.log("item..", item);
           const activityMeta = new ActivityMeta({
             activityId: doc._id,
             employeeId: doc.employeeId,
             period: doc.period,
             time: item,
           });
-          console.log("activityMeta", activityMeta);
+          console.log("activityMeta...", activityMeta);
           const docActivityMeta = await activityMeta.save();
         });
       } else if (req.body.period == "Weekly") {
