@@ -1867,16 +1867,17 @@ class UserController {
         .populate("BusinessDetail._id")
         .exec();
 
-      console.log("busDetails", busDetails);
+      console.log("busDetails", busDetails.businessInfo);
+      let description = busDetails.businessInfo;
       User.findById(req.user._id)
         .populate("dealCategories")
 
         .then((resultUser) => {
-          let description;
           console.log("result ", resultUser);
-          description = resultUser.description;
+          // description = resultUser.description;
 
           console.log("description ", description);
+          let desc = description;
           return res.status(200).send({
             status: 200,
             data: {
@@ -1896,7 +1897,7 @@ class UserController {
                   : [],
               businessDetails: {
                 ...busDetails["_doc"],
-                businessInfo: description,
+                businessInfo: desc,
               },
             },
           });
