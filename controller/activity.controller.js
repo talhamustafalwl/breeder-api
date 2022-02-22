@@ -71,18 +71,19 @@ class ActivityController {
         };
         const activity = new Activity(bdy);
         doc = await activity.save();
-        doc.time.map(async (item) => {
-          const activityMeta = new ActivityMeta({
-            activityId: doc._id,
-            days: doc.days,
-            months: doc.months,
-            years: doc.years,
-            employeeId: doc.employeeId,
-            period: doc.period,
-            time: item,
+        doc.days.map(async (daysItem) => {
+          doc.time.map(async (item) => {
+            console.log("days..", daysItem);
+            console.log("item..", item);
+            const activityMeta = new ActivityMeta({
+              activityId: doc._id,
+              days: daysItem,
+              employeeId: doc.employeeId,
+              period: doc.period,
+              time: item,
+            });
+            await activityMeta.save();
           });
-
-          const docActivityMeta = await activityMeta.save();
         });
       } else if (req.body.period == "Monthly") {
         const today = moment().format("MMM").toLowerCase();
@@ -109,19 +110,35 @@ class ActivityController {
         };
         const activity = new Activity(bdy);
         doc = await activity.save();
-        doc.time.map(async (item) => {
-          const activityMeta = new ActivityMeta({
-            activityId: doc._id,
-            days: doc.days,
-            months: doc.months,
-            years: doc.years,
-            employeeId: doc.employeeId,
-            period: doc.period,
-            time: item,
+        doc.months.map(async (monthItem) => {
+          doc.days.map(async (daysItem) => {
+            doc.time.map(async (item) => {
+              console.log("days..", daysItem);
+              console.log("item..", item);
+              const activityMeta = new ActivityMeta({
+                activityId: doc._id,
+                days: daysItem,
+                employeeId: doc.employeeId,
+                period: doc.period,
+                time: item,
+                months: monthItem,
+              });
+              await activityMeta.save();
+            });
           });
-
-          const docActivityMeta = await activityMeta.save();
         });
+        // doc.time.map(async (item) => {
+        //   const activityMeta = new ActivityMeta({
+        //     activityId: doc._id,
+        //     days: doc.days,
+        //     months: doc.months,
+        //     years: doc.years,
+        //     employeeId: doc.employeeId,
+        //     period: doc.period,
+        //     time: item,
+        //   });
+
+        //   const docActivityMeta = await activityMeta.save();
       } else {
         const today = moment().format("YYYY").toLowerCase();
         const { years } = req.body;
@@ -146,19 +163,25 @@ class ActivityController {
 
         const activity = new Activity(bdy);
         doc = await activity.save();
-
-        doc.time.map(async (item) => {
-          const activityMeta = new ActivityMeta({
-            activityId: doc._id,
-            employeeId: doc.employeeId,
-            days: doc.days,
-            months: doc.months,
-            years: doc.years,
-            period: doc.period,
-            time: item,
+        doc.years.map((yearItem) => {
+          doc.months.map(async (monthItem) => {
+            doc.days.map(async (daysItem) => {
+              doc.time.map(async (item) => {
+                console.log("days..", daysItem);
+                console.log("item..", item);
+                const activityMeta = new ActivityMeta({
+                  activityId: doc._id,
+                  days: daysItem,
+                  employeeId: doc.employeeId,
+                  period: doc.period,
+                  time: item,
+                  months: monthItem,
+                  years: yearItem,
+                });
+                await activityMeta.save();
+              });
+            });
           });
-
-          const docActivityMeta = await activityMeta.save();
         });
       }
 
