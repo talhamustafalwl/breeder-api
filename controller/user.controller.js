@@ -1859,6 +1859,7 @@ class UserController {
 
   async getUserDetail(req, res, next) {
     try {
+      let businessDetails;
       console.log("user detail called");
       const busDetails = await BusinessDetail.findOne({
         breederId: req.user._id,
@@ -1901,10 +1902,19 @@ class UserController {
           });
         })
         .catch((error) => {
-          return res
-            .status(400)
-            .json({ status: 400, message: "Internal Server Error", data: {} });
+          return res.status(400).json({
+            status: 400,
+            message: "Internal Server Error",
+            data: {},
+          });
         });
+      // const updateBusDetails = await BusinessDetail.updateOne(
+      //   {
+      //     breederId: req.user._id,
+      //   },
+      //   businessDetails
+      // );
+      // console.log("business details updated", updateBusDetails);
     } catch (error) {
       return next(error);
     }
@@ -1916,6 +1926,7 @@ class UserController {
       if (type === "card") {
         console.log(req.body);
         console.log(req.user._id);
+
         User.updateOne(
           { _id: req.user._id },
           { $push: { creditCard: req.body } }
@@ -1939,10 +1950,21 @@ class UserController {
       } else {
         console.log(req.body);
         console.log(req.user._id);
+
+        const u = await User.find({ _id: req.user._id }).lean();
+        let bussId = u[0].businessId;
+        console.log(bussId);
+
+        const updateBus = await BusinessDetail.updateOne(
+          {
+            _id: bussId,
+          },
+          { businessInfo: req.body.description }
+        );
+        console.log("update", updateBus);
         User.updateOne({ _id: req.user._id }, { $set: req.body })
           .then((resultUser) => {
-            console.log(resultUser);
-            console.log("user reulst");
+            console.log("user reulst", resultUser);
             return res.send({
               status: 200,
               message: "User updated successfully",
