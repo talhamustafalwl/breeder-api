@@ -220,14 +220,14 @@ class ActivityController {
 
       return res.status(200).json({
         status: 200,
-        messat: "Activity of animal created successfully",
+        messat: "Activity created successfully",
         data,
       });
     } catch (err) {
       console.log(err);
       return res.json({
         status: 400,
-        message: "Error in creating Activity of animal",
+        message: "Error in creating Activity",
         errors: err,
         data: {},
       });
@@ -255,14 +255,14 @@ class ActivityController {
       const doc = await activity.save();
       return res.status(200).json({
         status: 200,
-        message: "Activity of animal created successfully",
+        message: "Activity created successfully",
         data: doc,
       });
     } catch (err) {
       console.log(err);
       return res.json({
         status: 400,
-        message: "Error in creating Activity of animal",
+        message: "Error in creating Activity",
         errors: err,
         data: {},
       });
@@ -541,7 +541,7 @@ class ActivityController {
 
       return res.status(200).json({
         status: 200,
-        message: "Activity Meta updated successfully",
+        message: "Activity updated successfully",
         data: update,
       });
     } catch (err) {
