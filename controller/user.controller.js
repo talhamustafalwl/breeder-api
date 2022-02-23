@@ -1859,63 +1859,45 @@ class UserController {
 
   async getUserDetail(req, res, next) {
     try {
-      let businessDetails;
-      console.log("user detail called");
+      const result = await User.findById(req.user._id)
+        .populate("dealCategories")
+        .lean();
       const busDetails = await BusinessDetail.findOne({
         breederId: req.user._id,
       })
         .populate("BusinessDetail._id")
         .exec();
 
-      console.log("busDetails", busDetails.businessInfo);
-      let description = busDetails.businessInfo;
-      User.findById(req.user._id)
-        .populate("dealCategories")
-
-        .then((resultUser) => {
-          console.log("result ", resultUser);
-          // description = resultUser.description;
-
-          console.log("description ", description);
-          let desc = description;
-          return res.status(200).send({
-            status: 200,
-            data: {
-              ...resultUser.toObject(),
-              coverImage: resultUser.toObject().coverImage
-                ? `${config.baseImageURL}${resultUser.toObject().coverImage}`
-                : null,
-              image: resultUser.toObject().image
-                ? `${config.baseImageURL}${resultUser.toObject().image}`
-                : null,
-              gallery:
-                resultUser.gallery && resultUser.gallery[0]
-                  ? resultUser.toObject().gallery.map((e) => ({
-                      ...e,
-                      ...{ filename: `${config.baseImageURL}${e.filename}` },
-                    }))
-                  : [],
-              businessDetails: {
-                ...busDetails["_doc"],
-                businessInfo: desc,
-              },
-            },
-          });
-        })
-        .catch((error) => {
-          return res.status(400).json({
-            status: 400,
-            message: "Internal Server Error",
-            data: {},
-          });
-        });
-      // const updateBusDetails = await BusinessDetail.updateOne(
-      //   {
-      //     breederId: req.user._id,
-      //   },
-      //   businessDetails
-      // );
-      // console.log("business details updated", updateBusDetails);
+      return res.status(200).send({
+        status: 200,
+        data: {
+          ...result,
+          businessDetails: {
+            ...busDetails,
+            // businessInfo: businessInfo ? desc : {},
+          },
+        },
+        // data: {
+        //   ...resultUser.toObject(),
+        //   coverImage: resultUser.toObject().coverImage
+        //     ? `${config.baseImageURL}${resultUser.toObject().coverImage}`
+        //     : null,
+        //   image: resultUser.toObject().image
+        //     ? `${config.baseImageURL}${resultUser.toObject().image}`
+        //     : null,
+        //   gallery:
+        //     resultUser.gallery && resultUser.gallery[0]
+        //       ? resultUser.toObject().gallery.map((e) => ({
+        //           ...e,
+        //           ...{ filename: `${config.baseImageURL}${e.filename}` },
+        //         }))
+        //       : [],
+        //   // businessDetails: {
+        //   //   ...busDetails["_doc"],
+        //   //   businessInfo: businessInfo ? desc : {},
+        //   // },
+        // },
+      });
     } catch (error) {
       return next(error);
     }
