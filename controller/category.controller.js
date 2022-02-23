@@ -961,9 +961,11 @@ class CategoryController {
 
     try {
       const add = await Category.updateOne({ _id: req.params.id }, req.body);
-      return res
-        .status(200)
-        .json({ status: 200, message: "Updated successfully", data: add });
+      return res.status(200).json({
+        status: 200,
+        message: "Activity updated successfully",
+        data: add,
+      });
     } catch (err) {
       console.log(error);
       return next(error);
