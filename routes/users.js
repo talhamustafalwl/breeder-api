@@ -32,6 +32,18 @@ const {
 } = require("../validation/users");
 const { Subscriber } = require("../models/Subscription/Subscriber");
 
+//auth route check
+router.get(
+  "/auth",
+  auth,
+  allowBreeder,
+  allowAdmin,
+  allowEmployee,
+  authenticateRole,
+  UserController.authentication
+);
+router.patch("/isblocked/:id", adminauth, UserController.isblocked);
+
 router.get(
   "/allusers",
   auth,
@@ -47,7 +59,22 @@ router.get(
   UserController.getUserDetailById
 );
 
-router.route("/:id").get(auth, UserController.getUserById);
+router.get(
+  "/:id",
+  auth,
+  allowAdmin,
+  allowBreeder,
+  authenticateRole,
+  UserController.getUserById
+);
+
+// router.route("/:id").get(
+//   // auth,
+//   // allowAdmin,
+//   // allowBreeder,
+//   // authenticateRole,
+//   UserController.getUserById
+// );
 
 router.get(
   "/dashboardAnalysis",
@@ -59,16 +86,6 @@ router.get(
 );
 
 //auth route check
-router.get(
-  "/auth",
-  auth,
-  allowBreeder,
-  allowAdmin,
-  allowEmployee,
-  authenticateRole,
-  UserController.authentication
-);
-router.patch("/isblocked/:id", adminauth, UserController.isblocked);
 
 // Employees ---------------------------------------------------------------------------
 router.get(

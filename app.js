@@ -2,10 +2,9 @@ const express = require("express");
 const app = express();
 const cookieParser = require("cookie-parser");
 const config = require("./config/key");
-const { auth } = require("./middleware/auth");
+// const { auth } = require("./middleware/auth");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const cron = require("node-cron");
 const activityController = require("./controller/activity.controller");
 
 require("dotenv").config();
