@@ -1873,7 +1873,7 @@ class UserController {
         data: {
           ...result,
           businessDetails: {
-            ...busDetails,
+            ...busDetails["_doc"],
             // businessInfo: businessInfo ? desc : {},
           },
         },
