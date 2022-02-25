@@ -2,6 +2,8 @@ const { Activity } = require("../models/Activity/Activity");
 const { ActivityMeta } = require("../models/Activity/ActivityMeta");
 const { validateActivity } = require("../validation/activity");
 const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
+
 const categoryController = require("./category.controller");
 const { Category } = require("../models/Animal/Category");
 const moment = require("moment");
@@ -401,6 +403,59 @@ class ActivityController {
   }
 
   //
+
+  async getActivityByCategory(req, res, next) {
+    let breederId =
+      req.user.role == "employee" ? req.user.breederId : req.user._id;
+    let { categoryId, activityId } = req.query;
+    console.log(breederId);
+    console.log(categoryId);
+    console.log(activityId);
+    try {
+      Activity.aggregate([
+        {
+          $match: {
+            breederId: ObjectId(breederId),
+            categoryId: ObjectId(categoryId),
+            _id: ObjectId(activityId),
+          },
+        },
+        {
+          $lookup: {
+            from: "activitymetas",
+            localField: "_id",
+            foreignField: "activityId",
+            as: "activities",
+          },
+        },
+        {
+          $sort: {
+            createdAt: 1,
+          },
+        },
+        {
+          $project: {
+            ativities: {
+              $filter: {
+                input: "$activities",
+                as: "activities",
+                cond: { $eq: ["$$activities.isPerformed", true] },
+              },
+            },
+          },
+        },
+      ]).then((result) => {
+        console.log(result);
+        return res.status(200).json({
+          status: 200,
+          message: "Get activity by category succesfully",
+          data: result,
+        });
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
 
   async getActivityData(req, res, next) {
     let breederId =

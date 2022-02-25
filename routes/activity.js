@@ -41,6 +41,14 @@ router
     contactController.getActivityData
   )
   .get(
+    "/getActivityByCategory",
+    auth,
+    allowAdmin,
+    allowBreeder,
+    authenticateRole,
+    contactController.getActivityByCategory
+  )
+  .get(
     "/getScheduleData",
     auth,
     allowAdmin,
