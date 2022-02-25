@@ -407,17 +407,16 @@ class ActivityController {
   async getActivityByCategory(req, res, next) {
     let breederId =
       req.user.role == "employee" ? req.user.breederId : req.user._id;
-    let { categoryId, activityId } = req.query;
-    console.log(breederId);
-    console.log(categoryId);
-    console.log(activityId);
+    let { animalId } = req.query;
+    let bId = breederId.toString();
     try {
       Activity.aggregate([
         {
           $match: {
-            breederId: ObjectId(breederId),
-            categoryId: ObjectId(categoryId),
-            _id: ObjectId(activityId),
+            // breederId: ObjectId(bId),
+
+            animalId: ObjectId(animalId),
+            categoryId: ObjectId("6005c5b7f8c0e7071d835978"),
           },
         },
         {
