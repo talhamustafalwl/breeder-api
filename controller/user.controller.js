@@ -2898,6 +2898,28 @@ class UserController {
     }
   }
 
+  async deviceToken(req, res, next) {
+    // console.log("req: ", req);
+    const breederId =
+      req.user.role == "employee" ? req.user.breederId : req.user._id;
+
+    try {
+      const result = await User.findById(req.user._id);
+      let token;
+      if (result.deviceToken) {
+        token = result.deviceToken;
+      }
+      console.log("token", token);
+      return res.status(200).json({
+        status: 200,
+        message: "device",
+        data: { deviceToken: token },
+      });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
   async getUserEmail(req, res, next) {
     console.log("req", req);
     let emailId;

@@ -45,6 +45,17 @@ router.get(
 router.patch("/isblocked/:id", adminauth, UserController.isblocked);
 
 router.get(
+  "/device",
+  auth,
+  allowBreeder,
+  allowEmployee,
+
+  authenticateRole,
+
+  UserController.deviceToken
+);
+
+router.get(
   "/allusers",
   auth,
   allowAdmin,
@@ -535,6 +546,16 @@ router.put(
   authenticateRole,
   UserController.updateUser
 );
+
+// router.get(
+//   "/device",
+//   auth,
+//   allowAdmin,
+//   allowEmployee,
+//   allowBreeder,
+//   authenticateRole,
+//   UserController.deviceToken
+// );
 
 router.post("/force_verify", (req, res, next) => {
   User.updateOne({ email: req.body.email }, { $set: { verified: true } }).then(
