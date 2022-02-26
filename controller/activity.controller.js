@@ -409,14 +409,15 @@ class ActivityController {
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     let { animalId } = req.query;
     let bId = breederId.toString();
+    console.log("bid", bId);
     try {
-      Activity.aggregate([
+      await Activity.aggregate([
         {
           $match: {
-            // breederId: ObjectId(bId),
-
             animalId: ObjectId(animalId),
             categoryId: ObjectId("6005c5b7f8c0e7071d835978"),
+            // breederId: ObjectId(bId),
+            breederId: mongoose.Types.ObjectId(bId),
           },
         },
         {
