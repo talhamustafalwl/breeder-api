@@ -409,14 +409,31 @@ class ActivityController {
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     let { animalId } = req.query;
     let bId = breederId.toString();
+    let catId;
     console.log("bid", bId);
+
     try {
+      const cat = await Category.aggregate([
+        {
+          $match: {
+            type: "activity",
+            name: {
+              $regex: new RegExp("^" + "Vaccination".toLowerCase(), "i"),
+            },
+
+            addedBy: mongoose.Types.ObjectId(bId),
+          },
+        },
+      ]);
+
+      catId = cat[0]._id.toString();
+      console.log(catId);
+
       await Activity.aggregate([
         {
           $match: {
             animalId: ObjectId(animalId),
-            categoryId: ObjectId("6005c5b7f8c0e7071d835978"),
-            // breederId: ObjectId(bId),
+            categoryId: mongoose.Types.ObjectId(catId),
             breederId: mongoose.Types.ObjectId(bId),
           },
         },
