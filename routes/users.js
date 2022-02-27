@@ -55,6 +55,17 @@ router.get(
   UserController.deviceToken
 );
 
+router.put(
+  "/device",
+  auth,
+  allowBreeder,
+  allowEmployee,
+
+  authenticateRole,
+
+  UserController.updateDeviceToken
+);
+
 router.get(
   "/allusers",
   auth,

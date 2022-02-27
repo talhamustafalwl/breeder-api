@@ -1857,6 +1857,33 @@ class UserController {
     }
   }
 
+  async updateDeviceToken(req, res, next) {
+    try {
+      console.log(req.body);
+      console.log(req.user._id);
+
+      const u = await User.find({ _id: req.user._id }).lean();
+      User.updateOne({ _id: req.user._id }, { $set: req.body })
+        .then((resultUser) => {
+          console.log("user reulst", resultUser);
+          return res.send({
+            status: 200,
+            message: "User updated successfully",
+          });
+        })
+        .catch((error) => {
+          return res.json({
+            status: 400,
+            message: error.message ? error.message : "Internal Server Error",
+            data: {},
+            error,
+          });
+        });
+    } catch (error) {
+      return next(error);
+    }
+  }
+
   async getUserDetail(req, res, next) {
     let b, businessDetails;
     try {
@@ -1946,7 +1973,7 @@ class UserController {
         let bussId = u[0].businessId;
         console.log(bussId);
 
-        const updateBus = await BusinessDetail.updateOne(
+        const uupdateBus = await BusinessDetail.updateOne(
           {
             _id: bussId,
           },
