@@ -70,15 +70,6 @@ router.get(
   UserController.getUserDetailById
 );
 
-router.get(
-  "/:id",
-  auth,
-  allowAdmin,
-  allowBreeder,
-  authenticateRole,
-  UserController.getUserById
-);
-
 // router.route("/:id").get(
 //   // auth,
 //   // allowAdmin,
@@ -545,6 +536,15 @@ router.put(
   allowAdmin,
   authenticateRole,
   UserController.updateUser
+);
+
+router.get(
+  "/:id",
+  auth,
+  allowAdmin,
+  allowBreeder,
+  authenticateRole,
+  UserController.getUserById
 );
 
 // router.get(
