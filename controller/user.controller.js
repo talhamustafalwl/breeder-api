@@ -1858,6 +1858,7 @@ class UserController {
   }
 
   async getUserDetail(req, res, next) {
+    let b, businessDetails;
     try {
       const result = await User.findById(req.user._id)
         .populate("dealCategories")
@@ -1867,15 +1868,22 @@ class UserController {
       })
         .populate("BusinessDetail._id")
         .exec();
+      console.log("business Details", busDetails);
+      if (busDetails) {
+        console.log("business details not null");
+        b = { ...busDetails["_doc"] };
+      }
 
       return res.status(200).send({
         status: 200,
         data: {
           ...result,
-          businessDetails: {
-            ...busDetails["_doc"],
-            // businessInfo: businessInfo ? desc : {},
-          },
+          businessDetails: businessDetails ? b : {},
+          // {
+          // ...busDetails["_doc"],
+
+          // businessInfo: businessInfo ? desc : {},
+          // },
         },
         // data: {
         //   ...resultUser.toObject(),
