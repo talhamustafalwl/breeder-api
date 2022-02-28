@@ -22,6 +22,7 @@ class SubscriberController {
 
   async initialSubscribeBreeder(breederId, body = {}) {
     console.log(breederId);
+    let subscriber;
     return new Promise((resolve, reject) => {
       if (body.mobile) {
         resolve({});
@@ -35,21 +36,39 @@ class SubscriberController {
             body.packageId
           );
           // subscribe package monthly..
-          const subscriber = new Subscriber({
-            userType: "breeder",
-            userId: breederId,
-            fromDate: new Date(),
-            // expire after 15 days
-            toDate: new Date(new Date().setDate(new Date().getDate() + 15)),
-            subscriptionId: result._id,
-            type: body.type, //result.priceMethod !== 'Lifetime' ? 'monthly' : 'lifetime'
-            productId: body.productId ? body.productId : "",
-            transactionId: body.transactionId ? body.transactionId : "",
-            transactionDate: body.transactionDate ? body.transactionDate : "",
-            transactionReceipt: body.transactionReceipt
-              ? body.transactionReceipt
-              : "",
-          });
+          if (body.type !== "yearly") {
+            subscriber = new Subscriber({
+              userType: "breeder",
+              userId: breederId,
+              fromDate: new Date(),
+              // expire after 15 days
+              toDate: new Date(new Date().setDate(new Date().getDate() + 15)),
+              subscriptionId: result._id,
+              type: body.type, //result.priceMethod !== 'Lifetime' ? 'monthly' : 'lifetime'
+              productId: body.productId ? body.productId : "",
+              transactionId: body.transactionId ? body.transactionId : "",
+              transactionDate: body.transactionDate ? body.transactionDate : "",
+              transactionReceipt: body.transactionReceipt
+                ? body.transactionReceipt
+                : "",
+            });
+          } else {
+            subscriber = new Subscriber({
+              userType: "breeder",
+              userId: breederId,
+              fromDate: new Date(),
+              // expire after 15 days
+              toDate: new Date(new Date().setMonth(new Date().getMonth() + 3)),
+              subscriptionId: result._id,
+              type: body.type, //result.priceMethod !== 'Lifetime' ? 'monthly' : 'lifetime'
+              productId: body.productId ? body.productId : "",
+              transactionId: body.transactionId ? body.transactionId : "",
+              transactionDate: body.transactionDate ? body.transactionDate : "",
+              transactionReceipt: body.transactionReceipt
+                ? body.transactionReceipt
+                : "",
+            });
+          }
 
           subscriber
             .save()
@@ -793,13 +812,11 @@ class SubscriberController {
         "Business Listing",
       ].map((e) => ({ packageType: e, count: 0 }));
 
-      return res
-        .status(200)
-        .json({
-          status: 200,
-          message: "Subscribers packages detail",
-          data: [...feed, ...OtherData],
-        });
+      return res.status(200).json({
+        status: 200,
+        message: "Subscribers packages detail",
+        data: [...feed, ...OtherData],
+      });
     } catch (err) {
       return res.json({
         status: 400,
