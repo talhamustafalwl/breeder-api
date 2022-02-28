@@ -409,7 +409,7 @@ class ActivityController {
       req.user.role == "employee" ? req.user.breederId : req.user._id;
     let { animalId } = req.query;
     let bId = breederId.toString();
-    let catId;
+    let catId, categoryName, categoryType, finalObj;
     console.log("bid", bId);
 
     try {
@@ -427,7 +427,9 @@ class ActivityController {
       ]);
 
       catId = cat[0]._id.toString();
-      console.log(catId);
+      categoryName = cat[0].name;
+      categoryType = cat[0].type;
+      // console.log(catId);
 
       await Activity.aggregate([
         {
@@ -452,7 +454,7 @@ class ActivityController {
         },
         {
           $project: {
-            ativities: {
+            activities: {
               $filter: {
                 input: "$activities",
                 as: "activities",
@@ -462,11 +464,24 @@ class ActivityController {
           },
         },
       ]).then((result) => {
-        console.log(result);
+        // console.log(Object.keys(result));
+        let keys = Object.keys(result);
+        for (var i = 0; i < result[keys].activities.length; i++) {
+          const obj = result[keys].activities[i];
+          finalObj = [
+            {
+              ...obj,
+              categoryName: categoryName,
+              categoryType: categoryType,
+            },
+          ];
+
+          // console.log(finalObj);
+        }
         return res.status(200).json({
           status: 200,
           message: "Get activity by category succesfully",
-          data: result,
+          data: finalObj,
         });
       });
     } catch (error) {
