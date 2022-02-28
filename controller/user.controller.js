@@ -1905,7 +1905,7 @@ class UserController {
         status: 200,
         data: {
           ...result,
-          businessDetails: businessDetails ? b : {},
+          businessDetails: busDetails ? b : {},
           // {
           // ...busDetails["_doc"],
 
